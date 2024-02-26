@@ -27,7 +27,7 @@ void writeToFile(const std::string& filename, const std::vector<std::string>& da
 	file.close();
 }
 
-int other() {
+int other2() {
 	const std::string filename = "output.txt";
 	const int data_size = 1000000; // Adjust the size of data as needed
 	const int num_threads = 8; // Number of threads for parallel writing

@@ -23,6 +23,7 @@
     <ClCompile Include="InputStream.cpp" />
     <ClCompile Include="OutputStream.cpp" />
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="test2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Global.h" />

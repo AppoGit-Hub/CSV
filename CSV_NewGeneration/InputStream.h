@@ -6,23 +6,21 @@
 #include <fstream>
 
 namespace fs = std::filesystem;
+typedef std::vector<std::string> HeaderType;
 
 class InputStream {
 public:
 	InputStream(const fs::path filepath, const char& delimiter, const bool& skip_bom);
-	size_t get_depth() const noexcept;
-	std::string get_at(const std::string& column, const size_t& row_index) const;
-	std::vector<std::string> get_row(const size_t& row) const;
-	std::string get_column_where(const std::string& column_search, const std::string& column_got, const std::string& value);
+	std::pair<size_t, size_t> for_each(void (*lambda)(size_t, size_t));
+	size_t extract(void (*lambda)(size_t), const std::vector<std::string>& columns);
 
 private:
-	std::vector<std::string> header;
-	std::vector<std::vector<std::string>> data;
-	
 	const fs::path filepath;
 	const char delimiter;
 
-	size_t lines_count;
+	std::shared_ptr<HeaderType> header;
+	std::streampos header_start;
+	std::streampos data_start;
 
-	void from_file(const bool& skip_bom);
+	void inspection(const bool& skip_bom);
 };

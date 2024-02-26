@@ -46,6 +46,7 @@ static void explore_directory(const fs::path& directory, std::vector<fs::path>& 
 	}
 }
 
+/*
 static void launch(
 	const std::vector<fs::path> files,
 	const std::shared_ptr<InputStream>& subject_handler,
@@ -79,8 +80,9 @@ static void launch(
 		}
 	}
 }
+*/
 
-int main() {
+int other() {
 	const auto& data_ptr = get_data_filepath();
 	const auto& data_filepath = *data_ptr.get();
 
@@ -97,5 +99,10 @@ int main() {
 		std::vector<std::string> { "mouvement", "genre", "index", "acceleration" }
 	);
 
-	launch(all_files, subject_handler, output_handler, 0);
+	std::cout << extract_string("one;two;three;four;five;six", ';', 2) << std::endl;
+	
+	
+	//launch(all_files, subject_handler, output_handler, 0);
+
+	return EXIT_SUCCESS;
 }

@@ -1,70 +1,70 @@
+#include "Global.h"
 #include "InputStream.h"
 
 InputStream::InputStream(
 	const fs::path filepath, 
 	const char& delimiter = ',', 
 	const bool& skip_bom = false
-) : filepath(filepath), delimiter(delimiter), lines_count(0) {
-	this->from_file(skip_bom);
+) : filepath(filepath), delimiter(delimiter) {
+	this->header = std::make_shared<HeaderType>();
+	this->inspection(skip_bom);
 }
 
-size_t InputStream::get_depth(
-) const noexcept {
-	return this->lines_count;
-}
+std::pair<size_t, size_t> InputStream::for_each(void (*lambda)(size_t, size_t)) {
+	std::ifstream file(this->filepath);
+	
+	file.seekg(this->data_start);
 
-std::string InputStream::get_at(
-	const std::string& column, 
-	const size_t& row_index
-) const {
-	const auto& column_iter = std::find(this->header.begin(), this->header.end(), column);
-	if (column_iter != this->header.end()) {
-		const auto& column_index = std::distance(this->header.begin(), column_iter);
-		const auto& row = this->get_row(row_index);
-		if (column_index < row.size()) {
-			return row[column_index];
+	size_t line_index = 0;
+	size_t max_rows = 0;
+	std::string line;
+	while (getline(file, line)) {
+		std::stringstream ss(line);
+		std::string cell;
+
+		size_t row_index = 0;
+		while (std::getline(ss, cell, this->delimiter)) {
+			lambda(line_index, row_index);
+			max_rows = std::max(max_rows, row_index);
+			row_index += 1;
 		}
+		line_index += 1;
 	}
+
+	file.close();
+	return std::make_pair(line_index, max_rows);
 }
 
-std::vector<std::string> InputStream::get_row(
-	const size_t& row
-) const {
-	if (row < this->data.size()) {
-		return this->data[row];
-	}
-	else {
-		std::cout << "error" << std::endl;
-	}
-}
 
-std::string InputStream::get_column_where(
-	const std::string& column_search, 
-	const std::string& column_got, 
-	const std::string& value
-) {
-	const auto& column_search_iter = std::find(this->header.begin(), this->header.end(), column_search);
-	const auto& column_got_iter = std::find(this->header.begin(), this->header.end(), column_got);
-	if (column_search_iter != this->header.end() && column_got_iter != this->header.end()) {
-		const auto& column_search_index = std::distance(this->header.begin(), column_search_iter);
-		const auto& column_got_index = std::distance(this->header.begin(), column_got_iter);
+size_t InputStream::extract(void (*lambda)(size_t), const std::vector<std::string>& columns) {
+	std::ifstream file(this->filepath);
 
-		std::vector<std::string> row;
-		for (size_t index = 0; index < this->get_depth(); index++) {
-			const auto& current_row = this->get_row(index);
-			if (current_row[column_search_index] == value) {
-				row = current_row;
-			}
+	file.seekg(this->data_start);
+
+	size_t line_index = 0;
+	std::string line;
+	while (getline(file, line)) {
+		std::stringstream ss(line);
+		std::string cell;
+		
+		/*
+		for (int i = 0; i < 9; ++i) {
+			std::getline(file, line);
 		}
 
-		if (!row.empty()) {
-			return row[column_got_index];
+		while (std::getline(ss, cell, this->delimiter)) {
 		}
+		*/
+
+
+		line_index += 1;
 	}
+
+	file.close();
+	return line_index;
 }
 
-
-void InputStream::from_file(
+void InputStream::inspection(
 	const bool& skip_bom = false
 ) {
 	std::ifstream file(this->filepath);
@@ -78,31 +78,19 @@ void InputStream::from_file(
 		file.read(bom, 3);
 	}
 
+	this->header_start = file.tellg();
+
 	std::string line;
 	if (getline(file, line)) {
 		std::stringstream ss(line);
 		std::string cell;
 
-		while (getline(ss, cell, ',')) {
-			this->header.push_back(cell);
+		while (getline(ss, cell, this->delimiter)) {
+			this->header->push_back(cell);
 		}
 	}
 
-	while (getline(file, line)) {
-		std::stringstream ss(line);
-		std::string cell;
-		std::vector<std::string> row;
+	this->data_start = file.tellg();
 
-		while (std::getline(ss, cell, this->delimiter)) {
-			row.push_back(cell);
-		}
-
-		this->data.push_back(row);
-		this->lines_count += 1;
-
-		if (row.size() != header.size()) {
-			std::cerr << "Expected: " << header.size() << ", Got: " << row.size() << std::endl;
-		}
-	}
+	file.close();
 }
-
