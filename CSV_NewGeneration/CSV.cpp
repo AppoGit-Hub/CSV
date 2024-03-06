@@ -44,7 +44,7 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("wlk_(\\d+)"), MovementType::Walking}
 } };
 
-[[nodiscard]] static const MovementType find_directory_type(const fs::path& directory) noexcept {
+[[nodiscard]] static const MovementType find_directory_type(const fs::path& directory) {
 	const auto& directory_name = directory.filename();
 	for (const auto& pair : MOVEMENT_REGEX) {
 		if (std::regex_match(directory_name.string(), pair.first)) {
@@ -54,7 +54,7 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	throw std::runtime_error("Couldnt find directory type for " + directory.string());
 }
 
-[[nodiscard]] static uint64_t find_person_id(const fs::path& filepath) noexcept {
+[[nodiscard]] static uint64_t find_person_id(const fs::path& filepath) {
 	const auto& filename = filepath.filename().string();
 	std::smatch matches;
 	if (std::regex_search(filename, matches, PERSON_FILE_REGEX)) {
@@ -73,7 +73,10 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	uint64_t gender = 0;
 
 	char delimiter;
-	
+
+	subjects.clear();
+	subjects.seekg(0, std::ios::beg);
+
 	std::string header;
 	std::getline(subjects, header);
 
@@ -87,10 +90,6 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 			height >> delimiter >>
 			age >> delimiter >>
 			gender;
-	}
-
-	if (code == person_id) {
-		std::cout << "Reach ? for " << person_id << std::endl;
 	}
 
 	return gender;
