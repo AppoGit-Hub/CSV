@@ -2,3 +2,5 @@
 archive
 .vs/CSV_NewGeneration/v16/ipch/AutoPCH
 .vs/CSV_NewGeneration
+CSV_NewGeneration/x64
+x64
