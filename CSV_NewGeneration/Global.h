@@ -11,9 +11,9 @@
 #include <string>
 #include <sstream>
 #include <thread>
-#include <span>
 #include <fstream>
 #include <cassert>
+#include <cstdint>
 
 namespace fs = std::filesystem;
 
@@ -25,6 +25,10 @@ inline const double TESTSET_PROPORTION = 0.1;
 inline const std::string BASE_FOLDER = "archive";
 inline const std::string DATA_FOLDER = "data";
 inline const std::string SUBJECT_FILENAME = "data_subjects_info.csv";
+
+inline const std::string DELIMITER = ",";
+inline const uint64_t TRAINSET_COLUMNS = 600;
+inline const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS * TESTSET_PROPORTION;
 
 inline const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");
 

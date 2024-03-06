@@ -55,124 +55,111 @@ static uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects) {
 	return gender;
 }
 
-static void go(
-	uint64_t& file_index, 
-	const fs::path& directory, 
-	std::ofstream& trainset, 
-	std::ofstream& testset, 
+static uint64_t proccess_file(
+	uint64_t& file_index,
+	uint64_t line_count,
+	const fs::path current_path,
+	std::ifstream& current_file,
+	std::ofstream& output_file, 
+	std::ifstream& subjects
+) {
+	const auto& directory_type = find_directory_type(current_path.parent_path());
+	const uint64_t person_id = find_person_id(current_path);
+	const uint64_t gender = find_gender(person_id, subjects);
+	
+	uint64_t id;
+	double attitude_roll;
+	double attitude_pitch;
+	double attitude_yaw;
+	double gravity_x;
+	double gravity_y;
+	double gravity_z;
+	double rotationRate_x;
+	double rotationRate_y;
+	double rotationRate_z;
+	double userAcceleration_x;
+	double userAcceleration_y;
+	double userAcceleration_z;
+	
+	char delimiter;
+	std::string line;
+
+	std::getline(current_file, line);
+
+	output_file << static_cast<uint64_t>(directory_type) << DELIMITER << gender << DELIMITER << file_index;
+	
+	uint64_t index;
+	for (index = 0; index < line_count && std::getline(current_file, line); index++) {
+		std::istringstream iss(line);
+		iss >>
+			id >> delimiter >>
+			attitude_roll >> delimiter >>
+			attitude_pitch >> delimiter >>
+			attitude_yaw >> delimiter >>
+			gravity_x >> delimiter >>
+			gravity_y >> delimiter >>
+			gravity_z >> delimiter >>
+			rotationRate_x >> delimiter >>
+			rotationRate_y >> delimiter >>
+			rotationRate_z >> delimiter >>
+			userAcceleration_x >> delimiter >>
+			userAcceleration_y >> delimiter >>
+			userAcceleration_z >> delimiter;
+
+		double acceleration = sqrt(pow(userAcceleration_x, 2) + pow(userAcceleration_y, 2) + pow(userAcceleration_z, 2));
+		output_file << DELIMITER << acceleration;
+	}
+	output_file << std::endl;
+
+	return index;
+}
+
+static void launch(
+	uint64_t& file_index,
+	const fs::path& directory,
+	std::ofstream& trainset,
+	std::ofstream& testset,
 	std::ifstream& subjects
 ) {
 	for (const auto& entry : fs::directory_iterator(directory)) {
 		const auto& current_path = entry.path();
 		if (fs::is_regular_file(current_path)) {
-			const auto& directory_type = find_directory_type(current_path.parent_path());
-			const uint64_t person_id = find_person_id(current_path);
-			const uint64_t gender = find_gender(person_id, subjects);
-
 			std::ifstream file(current_path);
-
-			std::string header;
-			std::getline(file, header);
-
-			uint64_t max_lines = 0;
-			uint64_t min_lines = UINT64_MAX;
-
-			uint64_t id;
-			double attitude_roll;
-			double attitude_pitch;
-			double attitude_yaw;
-			double gravity_x;
-			double gravity_y;
-			double gravity_z;
-			double rotationRate_x;
-			double rotationRate_y;
-			double rotationRate_z;
-			double userAcceleration_x;
-			double userAcceleration_y;
-			double userAcceleration_z;
-			char delimiter = ', ';
-
-			trainset << static_cast<uint64_t>(directory_type) << delimiter << gender << delimiter << file_index;
-
-			std::string line;
-			uint64_t traint_index;
-			for (traint_index = 0; traint_index < 600 && std::getline(file, line); traint_index++) {
-				std::istringstream iss(line);
-				iss >> 
-					id >> delimiter >> 
-					attitude_roll >> delimiter >> 
-					attitude_pitch >> delimiter >> 
-					attitude_yaw >> delimiter >> 
-					gravity_x >> delimiter >>
-					gravity_y >> delimiter >> 
-					gravity_z >> delimiter >>
-					rotationRate_x >> delimiter >>
-					rotationRate_y >> delimiter >>
-					rotationRate_z >> delimiter >> 
-					userAcceleration_x >> delimiter >>
-					userAcceleration_y >> delimiter >>
-					userAcceleration_z >> delimiter;
-
-				double acceleration = sqrt(pow(userAcceleration_x, 2) + pow(userAcceleration_y, 2) + pow(userAcceleration_z, 2));
-				trainset << delimiter << acceleration;
+			uint64_t train_index = proccess_file(file_index, 600, current_path, file, trainset, subjects);
+			if (train_index == 600) {
+				uint64_t test_index = proccess_file(file_index, 60, current_path, file, testset, subjects);
 			}
-			trainset << '\n';
-
-			if (traint_index == 600) {
-				testset << static_cast<uint64_t>(directory_type) << delimiter << gender << delimiter << file_index;
-				for (uint64_t test_index = 600; test_index < 660 && std::getline(file, line); test_index++) {
-					std::istringstream iss(line);
-					iss >>
-						id >> delimiter >>
-						attitude_roll >> delimiter >>
-						attitude_pitch >> delimiter >>
-						attitude_yaw >> delimiter >>
-						gravity_x >> delimiter >>
-						gravity_y >> delimiter >>
-						gravity_z >> delimiter >>
-						rotationRate_x >> delimiter >>
-						rotationRate_y >> delimiter >>
-						rotationRate_z >> delimiter >>
-						userAcceleration_x >> delimiter >>
-						userAcceleration_y >> delimiter >>
-						userAcceleration_z >> delimiter;
-
-					double acceleration = sqrt(pow(userAcceleration_x, 2) + pow(userAcceleration_y, 2) + pow(userAcceleration_z, 2));
-					testset << delimiter << acceleration;
-				}
-				testset << '\n';
-			}
-
 			file_index++;
 		}
 		else if (fs::is_directory(current_path)) {
-			go(file_index, current_path, trainset, testset, subjects);
+			launch(file_index, current_path, trainset, testset, subjects);
 		}
 	}
+
 }
 
 int main() {
 	const auto& data_filepath = get_data_filepath();
 	const auto& subject_filepath = get_subject_filepath();
 	
-	std::ofstream trainset_file("trainset.csv", std::ios::app);
-	std::ofstream testset_file("testset.csv", std::ios::app);
+	std::ofstream trainset_file("trainset.csv", std::ios::out | std::ios::app);
+	std::ofstream testset_file("testset.csv", std::ios::out | std::ios::app);
 	std::ifstream subjects_file(subject_filepath);
 
 	trainset_file << "Mouvement, Gender, Index";
 	for (uint64_t index = 0; index < 600; index++) {
 		trainset_file << ", Vacc";
 	}
-	trainset_file << "\n";
+	trainset_file << std::endl;
 
 	testset_file << "Mouvement, Gender, Index";
 	for (uint64_t index = 0; index < 60; index++) {
 		testset_file << ", Vacc";
 	}
-	testset_file << "\n";
+	testset_file << std::endl;
 
 	uint64_t file_index = 1;
-	go(file_index, data_filepath, trainset_file, testset_file, subjects_file);
+	launch(file_index, data_filepath, trainset_file, testset_file, subjects_file);
 
 	return EXIT_SUCCESS;
 }
