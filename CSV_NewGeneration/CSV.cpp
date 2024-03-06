@@ -7,6 +7,7 @@
 #include <array>
 #include <string>
 #include <filesystem>
+#include <optional>
 
 namespace fs = std::filesystem;
 
@@ -42,7 +43,7 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("wlk_(\\d+)"), MovementType::Walking}
 } };
 
-static const MovementType find_directory_type(const fs::path& directory) noexcept {
+[[nodiscard]] static const MovementType find_directory_type(const fs::path& directory) noexcept {
 	const auto& directory_name = directory.filename();
 	for (const auto& pair : MOVEMENT_REGEX) {
 		if (std::regex_match(directory_name.string(), pair.first)) {
@@ -51,7 +52,7 @@ static const MovementType find_directory_type(const fs::path& directory) noexcep
 	}
 }
 
-static uint64_t find_person_id(const fs::path& filepath) noexcept {
+[[nodiscard]] static uint64_t find_person_id(const fs::path& filepath) noexcept {
 	const auto& filename = filepath.filename().string();
 	std::smatch matches;
 	if (std::regex_search(filename, matches, PERSON_FILE_REGEX)) {
@@ -61,7 +62,7 @@ static uint64_t find_person_id(const fs::path& filepath) noexcept {
 	}
 }
 
-static uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects) {
+[[nodiscard]] static uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects) noexcept {
 	uint64_t code = 0;
 	uint64_t weight;
 	uint64_t height;
@@ -88,7 +89,7 @@ static uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects) {
 	return gender;
 }
 
-static uint64_t proccess_file(
+[[nodiscard]] static uint64_t proccess_file(
 	uint64_t& file_index,
 	uint64_t line_count,
 	const fs::path current_path,
@@ -99,6 +100,13 @@ static uint64_t proccess_file(
 	const auto& directory_type = find_directory_type(current_path.parent_path());
 	const uint64_t person_id = find_person_id(current_path);
 	const uint64_t gender = find_gender(person_id, subjects);
+	
+	char delimiter;
+	std::string line;
+
+	std::getline(current_file, line);
+
+	output_file << static_cast<uint64_t>(directory_type) << DELIMITER << gender << DELIMITER << file_index;
 	
 	uint64_t id;
 	double attitude_roll;
@@ -113,14 +121,7 @@ static uint64_t proccess_file(
 	double userAcceleration_x;
 	double userAcceleration_y;
 	double userAcceleration_z;
-	
-	char delimiter;
-	std::string line;
 
-	std::getline(current_file, line);
-
-	output_file << static_cast<uint64_t>(directory_type) << DELIMITER << gender << DELIMITER << file_index;
-	
 	uint64_t index;
 	for (index = 0; index < line_count && std::getline(current_file, line); index++) {
 		std::istringstream iss(line);
