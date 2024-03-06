@@ -15,6 +15,8 @@ inline const double TESTSET_PROPORTION = 0.1;
 inline const std::string BASE_FOLDER = "archive";
 inline const std::string DATA_FOLDER = "data";
 inline const std::string SUBJECT_FILENAME = "data_subjects_info.csv";
+inline const std::string TRAINSET_FILENAME = "trainset.csv";
+inline const std::string TESTSET_FILENAME = "testset.csv";
 
 inline const std::string DELIMITER = ",";
 inline const uint64_t TRAINSET_COLUMNS = 600;
@@ -183,8 +185,8 @@ int main() {
 	
 	std::ifstream subjects_file(subject_filepath);
 
-	std::ofstream trainset_file("trainset.csv", std::ios::out | std::ios::app);
-	std::ofstream testset_file("testset.csv", std::ios::out | std::ios::app);
+	std::ofstream trainset_file(TRAINSET_FILENAME, std::ios::out | std::ios::app);
+	std::ofstream testset_file(TESTSET_FILENAME, std::ios::out | std::ios::app);
 
 	create_header(trainset_file, TRAINSET_COLUMNS);
 	create_header(testset_file, TESTSET_COLUMNS);
