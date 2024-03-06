@@ -1,15 +1,46 @@
 // frederic.clerin@henallux.be
-#include "Global.h"
 
-static fs::path get_subject_filepath() noexcept {
-	return fs::path{ BASE_FOLDER } / SUBJECT_FILENAME;
-}
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <regex>
+#include <array>
+#include <string>
+#include <filesystem>
 
-static fs::path get_data_filepath() noexcept {
-	return fs::path{ BASE_FOLDER } / DATA_FOLDER;
-}
+namespace fs = std::filesystem;
 
-static const MovementType& find_directory_type(const fs::path& directory) noexcept {
+inline const double TESTSET_PROPORTION = 0.1;
+
+inline const std::string BASE_FOLDER = "archive";
+inline const std::string DATA_FOLDER = "data";
+inline const std::string SUBJECT_FILENAME = "data_subjects_info.csv";
+
+inline const std::string DELIMITER = ",";
+inline const uint64_t TRAINSET_COLUMNS = 600;
+inline const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS * TESTSET_PROPORTION;
+
+inline const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");
+
+enum class MovementType : uint64_t {
+	Downstair = 1,
+	Jogging,
+	Upstairs,
+	SitDown,
+	StandUp,
+	Walking,
+};
+
+static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
+	{std::regex("dws_(\\d+)"), MovementType::Downstair},
+	{std::regex("jog_(\\d+)"), MovementType::Jogging},
+	{std::regex("ups_(\\d+)"), MovementType::Upstairs},
+	{std::regex("sit_(\\d+)"), MovementType::SitDown},
+	{std::regex("std_(\\d+)"), MovementType::StandUp},
+	{std::regex("wlk_(\\d+)"), MovementType::Walking}
+} };
+
+static const MovementType find_directory_type(const fs::path& directory) noexcept {
 	const auto& directory_name = directory.filename();
 	for (const auto& pair : MOVEMENT_REGEX) {
 		if (std::regex_match(directory_name.string(), pair.first)) {
@@ -35,7 +66,7 @@ static uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects) {
 	uint64_t age;
 	uint64_t gender = 0;
 
-	char delimiter = ',';
+	char delimiter;
 	
 	std::string header;
 	std::getline(subjects, header);
@@ -114,6 +145,14 @@ static uint64_t proccess_file(
 	return index;
 }
 
+static void create_header(std::ofstream& output_file, const size_t columns_count) {
+	output_file << "Mouvement, Gender, Index";
+	for (size_t index = 0; index < columns_count; index++) {
+		output_file << ", Vacc";
+	}
+	output_file << std::endl;
+}
+
 static void launch(
 	uint64_t& file_index,
 	const fs::path& directory,
@@ -125,9 +164,9 @@ static void launch(
 		const auto& current_path = entry.path();
 		if (fs::is_regular_file(current_path)) {
 			std::ifstream file(current_path);
-			uint64_t train_index = proccess_file(file_index, 600, current_path, file, trainset, subjects);
-			if (train_index == 600) {
-				uint64_t test_index = proccess_file(file_index, 60, current_path, file, testset, subjects);
+			uint64_t train_index = proccess_file(file_index, TRAINSET_COLUMNS, current_path, file, trainset, subjects);
+			if (train_index == TRAINSET_COLUMNS) {
+				uint64_t test_index = proccess_file(file_index, TESTSET_COLUMNS, current_path, file, testset, subjects);
 			}
 			file_index++;
 		}
@@ -139,24 +178,16 @@ static void launch(
 }
 
 int main() {
-	const auto& data_filepath = get_data_filepath();
-	const auto& subject_filepath = get_subject_filepath();
+	const auto& data_filepath = fs::path{BASE_FOLDER} / DATA_FOLDER;
+	const auto& subject_filepath = fs::path{BASE_FOLDER} / SUBJECT_FILENAME;
 	
-	std::ofstream trainset_file("trainset.csv", std::ios::out | std::ios::app);
-	std::ofstream testset_file("testset.csv", std::ios::out | std::ios::app);
 	std::ifstream subjects_file(subject_filepath);
 
-	trainset_file << "Mouvement, Gender, Index";
-	for (uint64_t index = 0; index < 600; index++) {
-		trainset_file << ", Vacc";
-	}
-	trainset_file << std::endl;
+	std::ofstream trainset_file("trainset.csv", std::ios::out | std::ios::app);
+	std::ofstream testset_file("testset.csv", std::ios::out | std::ios::app);
 
-	testset_file << "Mouvement, Gender, Index";
-	for (uint64_t index = 0; index < 60; index++) {
-		testset_file << ", Vacc";
-	}
-	testset_file << std::endl;
+	create_header(trainset_file, TRAINSET_COLUMNS);
+	create_header(testset_file, TESTSET_COLUMNS);
 
 	uint64_t file_index = 1;
 	launch(file_index, data_filepath, trainset_file, testset_file, subjects_file);
