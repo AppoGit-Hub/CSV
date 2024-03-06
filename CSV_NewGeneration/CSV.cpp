@@ -8,6 +8,7 @@
 #include <string>
 #include <filesystem>
 #include <optional>
+#include <stdexcept>
 
 namespace fs = std::filesystem;
 
@@ -50,6 +51,7 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 			return pair.second;
 		}
 	}
+	throw std::runtime_error("Couldnt find directory type for " + directory.string());
 }
 
 [[nodiscard]] static uint64_t find_person_id(const fs::path& filepath) noexcept {
@@ -60,6 +62,7 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 			return std::stoull(matches[1].str());
 		}
 	}
+	throw std::runtime_error("Couldnt find id for file of " + filepath.string());
 }
 
 [[nodiscard]] static uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects) noexcept {
@@ -84,6 +87,10 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 			height >> delimiter >>
 			age >> delimiter >>
 			gender;
+	}
+
+	if (code == person_id) {
+		std::cout << "Reach ? for " << person_id << std::endl;
 	}
 
 	return gender;
@@ -167,9 +174,15 @@ static void launch(
 		const auto& current_path = entry.path();
 		if (fs::is_regular_file(current_path)) {
 			std::ifstream file(current_path);
-			uint64_t train_index = proccess_file(file_index, TRAINSET_COLUMNS, current_path, file, trainset, subjects);
-			if (train_index == TRAINSET_COLUMNS) {
-				uint64_t test_index = proccess_file(file_index, TESTSET_COLUMNS, current_path, file, testset, subjects);
+			try {
+				uint64_t train_index = proccess_file(file_index, TRAINSET_COLUMNS, current_path, file, trainset, subjects);
+				if (train_index == TRAINSET_COLUMNS) {
+					uint64_t test_index = proccess_file(file_index, TESTSET_COLUMNS, current_path, file, testset, subjects);
+				}
+				std::cout << "Processed file : " << current_path << std::endl;
+			}
+			catch (const std::exception& error) {
+				std::cout << "Couldnt process file : " << current_path << std::endl;
 			}
 			file_index++;
 		}
