@@ -55,53 +55,16 @@ static uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects) {
 	return gender;
 }
 
-/*
-static void launch(
-	const std::vector<fs::path> files,
-	const std::shared_ptr<InputStream>& subject_handler,
-	const std::shared_ptr<OutputStream>& output_handler,
-	const uint64_t& bundle_index
-) {
-	for (size_t index = 0; index < files.size(); index++) {
-		const fs::path& filepath = files[index];
-		
-		std::cout << filepath << std::endl;
-
-		const auto& directory_type = find_directory_type(filepath.parent_path());
-		const auto& person_id = find_person_id(filepath);
-
-		const auto& file_handler = std::make_unique<InputStream>(filepath, ',', false);
-
-		for (size_t row_index = 0; row_index < file_handler->get_depth(); row_index++) {
-			const double& acceleration_x = std::stod(file_handler->get_at("userAcceleration.x", index));
-			const double& acceleration_y = std::stod(file_handler->get_at("userAcceleration.y", index));
-			const double& acceleration_z = std::stod(file_handler->get_at("userAcceleration.z", index));
-			const double& accleration = std::sqrt(std::pow(acceleration_x, 2) + std::pow(acceleration_y, 2) + std::pow(acceleration_z, 2));
-
-			const auto& gender = subject_handler->get_column_where("code", "gender", person_id);
-
-			output_handler->add_line({
-				std::to_string(static_cast<uint64_t>(directory_type)),
-				gender,
-				std::to_string(bundle_index + index),
-				std::to_string(accleration)
-			});
-		}
-	}
-}
-*/
-
 static void go(
-	uint64_t& file_index,
+	uint64_t& file_index, 
 	const fs::path& directory, 
-	std::ofstream& trainset,
-	std::ofstream& testset,
-	std::ifstream& subjects) {
+	std::ofstream& trainset, 
+	std::ofstream& testset, 
+	std::ifstream& subjects
+) {
 	for (const auto& entry : fs::directory_iterator(directory)) {
 		const auto& current_path = entry.path();
 		if (fs::is_regular_file(current_path)) {
-			char delimiter = ',';
-
 			const auto& directory_type = find_directory_type(current_path.parent_path());
 			const uint64_t person_id = find_person_id(current_path);
 			const uint64_t gender = find_gender(person_id, subjects);
@@ -127,6 +90,7 @@ static void go(
 			double userAcceleration_x;
 			double userAcceleration_y;
 			double userAcceleration_z;
+			char delimiter = ', ';
 
 			trainset << static_cast<uint64_t>(directory_type) << delimiter << gender << delimiter << file_index;
 
