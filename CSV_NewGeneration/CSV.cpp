@@ -148,9 +148,9 @@ static uint64_t proccess_file(
 }
 
 static void create_header(std::ofstream& output_file, const size_t columns_count) {
-	output_file << "Mouvement, Gender, Index";
+	output_file << "Mouvement" << DELIMITER << "Gender" << DELIMITER << "Index";
 	for (size_t index = 0; index < columns_count; index++) {
-		output_file << ", Vacc";
+		output_file << DELIMITER << "Vacc";
 	}
 	output_file << std::endl;
 }
@@ -185,8 +185,8 @@ int main() {
 	
 	std::ifstream subjects_file(subject_filepath);
 
-	std::ofstream trainset_file(TRAINSET_FILENAME, std::ios::out | std::ios::app);
-	std::ofstream testset_file(TESTSET_FILENAME, std::ios::out | std::ios::app);
+	std::ofstream trainset_file(TRAINSET_FILENAME, std::ios::app);
+	std::ofstream testset_file(TESTSET_FILENAME, std::ios::app);
 
 	create_header(trainset_file, TRAINSET_COLUMNS);
 	create_header(testset_file, TESTSET_COLUMNS);
