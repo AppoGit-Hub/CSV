@@ -20,14 +20,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CSV.cpp" />
+    <ClCompile Include="Generator.cpp" />
     <ClCompile Include="InputStream.cpp" />
+    <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="OutputStream.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="test2.cpp" />
+    <ClCompile Include="test3.cpp" />
+    <ClCompile Include="test4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Generator.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="InputStream.h" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="OutputStream.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
