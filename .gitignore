@@ -4,3 +4,5 @@ archive
 .vs/CSV_NewGeneration
 CSV_NewGeneration/x64
 x64
+CSV_NewGeneration/testset.csv
+CSV_NewGeneration/trainset.csv
