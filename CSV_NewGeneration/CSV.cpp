@@ -1,5 +1,3 @@
-// frederic.clerin@henallux.be
-
 #include <iostream>
 #include <sstream>
 #include <fstream>
