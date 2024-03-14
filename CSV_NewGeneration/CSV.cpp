@@ -190,7 +190,7 @@ static void launch(
 
 }
 
-int main() {
+void csv() {
 	const auto& data_filepath = fs::path{BASE_FOLDER} / DATA_FOLDER;
 	const auto& subject_filepath = fs::path{BASE_FOLDER} / SUBJECT_FILENAME;
 	
@@ -204,6 +204,4 @@ int main() {
 
 	uint64_t file_index = 1;
 	launch(file_index, data_filepath, trainset_file, testset_file, subjects_file);
-
-	return EXIT_SUCCESS;
 }
