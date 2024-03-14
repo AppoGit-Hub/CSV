@@ -22,24 +22,24 @@ inline const std::string DELIMITER = ",";
 inline const uint64_t TRAINSET_COLUMNS = 600;
 inline const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS * TESTSET_PROPORTION;
 
-inline const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");
+inline const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");// pourquoi deux fois \ ?
 
 enum class MovementType : uint64_t {
-	Downstair = 1,
-	Jogging,
-	Upstairs,
-	SitDown,
-	StandUp,
-	Walking,
+	DOWNSTAIR = 1,
+	JOGGING,
+	UPSTAIRS,
+	SIT_DOWN,
+	STAND_UP,
+	WALKING,
 };
 
 static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
-	{std::regex("dws_(\\d+)"), MovementType::Downstair},
-	{std::regex("jog_(\\d+)"), MovementType::Jogging},
-	{std::regex("ups_(\\d+)"), MovementType::Upstairs},
-	{std::regex("sit_(\\d+)"), MovementType::SitDown},
-	{std::regex("std_(\\d+)"), MovementType::StandUp},
-	{std::regex("wlk_(\\d+)"), MovementType::Walking}
+	{std::regex("dws_(\\d+)"), MovementType::DOWNSTAIR},
+	{std::regex("jog_(\\d+)"), MovementType::JOGGING},
+	{std::regex("ups_(\\d+)"), MovementType::UPSTAIRS},
+	{std::regex("sit_(\\d+)"), MovementType::SIT_DOWN},
+	{std::regex("std_(\\d+)"), MovementType::STAND_UP},
+	{std::regex("wlk_(\\d+)"), MovementType::WALKING}
 } };
 
 [[nodiscard]] static const MovementType find_directory_type(const fs::path& directory) {
@@ -51,14 +51,11 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	}
 	throw std::runtime_error("Couldnt find directory type for " + directory.string());
 }
-
 [[nodiscard]] static uint64_t find_person_id(const fs::path& filepath) {
 	const auto& filename = filepath.filename().string();
 	std::smatch matches;
 	if (std::regex_search(filename, matches, PERSON_FILE_REGEX)) {
-		if (matches.size() > 1) {
 			return std::stoull(matches[1].str());
-		}
 	}
 	throw std::runtime_error("Couldnt find id for file of " + filepath.string());
 }
