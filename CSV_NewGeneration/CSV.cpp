@@ -22,7 +22,7 @@ inline const std::string DELIMITER = ",";
 inline const uint64_t TRAINSET_COLUMNS = 600;
 inline const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS * TESTSET_PROPORTION;
 
-inline const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");// pourquoi deux fois \ ?
+inline const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");
 
 enum class MovementType : uint64_t {
 	DOWNSTAIR = 1,
