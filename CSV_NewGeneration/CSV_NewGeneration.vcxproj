@@ -22,6 +22,9 @@
     <ClCompile Include="CSV.cpp" />
     <ClCompile Include="Verification.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Global.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

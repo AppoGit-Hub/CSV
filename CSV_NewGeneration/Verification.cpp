@@ -1,12 +1,4 @@
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <forward_list>
-#include <thread>
-#include <chrono>
-#include <ranges>
-
-namespace fs = std::filesystem;
+#include "Global.hpp"
 
 inline const std::string DELIMITER = ",";
 inline const std::string BASE_FOLDER = "archive";
@@ -14,6 +6,9 @@ inline const std::string DATA_FOLDER = "data";
 
 static void proccess_file(const fs::path& current_path) {
 	std::ifstream current_file(current_path);
+	
+	std::string header;
+	std::getline(current_file, header);
 
 	uint64_t total_lines = 0;
 	uint64_t last_id = 0;
@@ -66,23 +61,11 @@ static void proccess_file(const fs::path& current_path) {
 	}
 }
 
-static void explore(const fs::path& directory, std::vector<fs::path>& file_paths) {
-	for (const auto& entry : fs::directory_iterator(directory)) {
-		const auto& current_path = entry.path();
-		if (fs::is_regular_file(current_path)) {
-			file_paths.push_back(current_path);
-		}
-		else if (fs::is_directory(current_path)) {
-			explore(current_path, file_paths);
-		}
-	}
-}
-
 int main() {
 	const auto& data_filepath = fs::path{ BASE_FOLDER } / DATA_FOLDER;
 
-	std::vector<fs::path> file_paths;
-	explore(data_filepath, file_paths);
+	std::forward_list<fs::path> file_paths;
+	get_files(data_filepath, file_paths);
 
 	for (const fs::path file : file_paths) {
 		proccess_file(file);
