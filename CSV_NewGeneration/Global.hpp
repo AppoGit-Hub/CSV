@@ -6,6 +6,8 @@
 #include <thread>
 #include <chrono>
 #include <ranges>
+#include <functional>
+#include <math.h>
 
 namespace fs = std::filesystem;
 
