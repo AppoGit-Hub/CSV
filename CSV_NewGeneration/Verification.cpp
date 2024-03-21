@@ -19,8 +19,21 @@ struct Line {
 inline const std::string DELIMITER = ",";
 inline const std::string BASE_FOLDER = "archive";
 inline const std::string DATA_FOLDER = "data";
+inline const std::string DATA_CHECK = "résultats vérification";
 
-static void proccess_file(const fs::path& current_path, const std::function<void(const Line&)> on_line) {
+inline const double AVERAGE_X = 0.00096087;
+inline const double AVERAGE_Y = 0.05525659;
+inline const double AVERAGE_Z = 0.0352192;
+inline const double STANDARD_DEVIATION_X = 0.38875666;
+inline const double STANDARD_DEVIATION_Y = 0.61937128;
+inline const double STANDARD_DEVIATION_Z = 0.4300345;
+
+struct Aberration {
+	uint64_t index;
+	double value; 
+};
+
+static void process_file(const fs::path& current_path, const std::function<void(const Line&)> on_line) {
 	std::ifstream current_file(current_path);
 	
 	std::string header;
@@ -28,6 +41,7 @@ static void proccess_file(const fs::path& current_path, const std::function<void
 
 	char delimiter;
 	Line current_line;
+	uint64_t number_line = 1;
 
 	std::string line;
 	while (std::getline(current_file, line)) {
@@ -47,7 +61,71 @@ static void proccess_file(const fs::path& current_path, const std::function<void
 			current_line.user_acceleration_y >> delimiter >>
 			current_line.user_acceleration_z >> delimiter;
 
-		on_line(current_line);
+		on_line(current_line, number_line);
+		number_line++; 
+	}
+}
+
+static void check_data() {
+	std::ofstream file_check(DATA_CHECK);
+	if (!file_check.is_open()) {
+		sdt::cout << "ouverture du fichier (" << DATA_CHECK << ") : échouer"<<std::endl;
+	}
+	else {
+		const auto& data_filepath = fs::path{ BASE_FOLDER } / DATA_FOLDER;
+
+		std::forward_list<fs::path> file_paths;
+		get_files(data_filepath, file_paths);
+
+		for (const fs::path file : file_paths) {
+			std::string file_name = file.filename();
+
+			uint64_t nb_aberrations_acc_x = 0;
+			uint64_t nb_aberrations_acc_y = 0;
+			uint64_t nb_aberrations_acc_z = 0;
+
+			std::vector<Aberration> aberrations_acc_x;
+			std::vector<Aberration> aberrations_acc_y;
+			std::vector<Aberration> aberrations_acc_z;
+
+			uint64_t nb_lines = 0;
+			process_file(file, [&](const Line& line, uint64_t number_line) {
+				if (line.gravity_x > AVERAGE_X + 3 * STANDARD_DEVIATION_X || line.gravity_x < AVERAGE_X - 3 * STANDARD_DEVIATION_X) {
+					aberration_acc_x.push_back({ number_line,line.gravity_x });
+					nb_aberrations_acc_x++;
+				}
+				if (line.gravity_y > AVERAGE_Y + 3 * STANDARD_DEVIATION_Y || line.gravity_y < AVERAGE_Y - 3 * STANDARD_DEVIATION_Y) {
+					aberration_acc_y.push_back({ number_line,line.gravity_y });
+					nb_aberrations_acc_y++;
+				}
+				if (line.gravity_z > AVERAGE_Z + 3 * STANDARD_DEVIATION_Z || line.gravity_z < AVERAGE_Z - 3 * STANDARD_DEVIATION_Z) {
+					aberration_acc_z.push_back({ number_line,line.gravity_z });
+					nb_aberrations_acc_z++;
+				}
+				nb_lines++;
+			});
+
+			file_check << file_name << DELIMITER
+				<< nb_lines << std:enl;
+			file_check << nb_aberrations_acc_x;
+			for (Aberration aberration : nb_aberrations_acc_x) {
+				file_check << aberration.index << DELIMITER << aberration.value << DELIMITER;
+			}
+			file_check << std::enl;
+
+			file_check << nb_aberrations_acc_y;
+			for (Aberration aberration : nb_aberrations_acc_y) {
+				file_check << aberration.index << DELIMITER << aberration.value << DELIMITER;
+			}
+			file_check << std::enl;
+
+			file_check << nb_aberrations_acc_z;
+			for (Aberration aberration : nb_aberrations_acc_z) {
+				file_check << aberration.index << DELIMITER << aberration.value << DELIMITER;
+			}
+			file_check << std::enl;
+		}
+		file_check.close();
 	}
 }
 
@@ -58,21 +136,21 @@ int main() {
 	get_files(data_filepath, file_paths);
 
 	for (const fs::path file : file_paths) {
-		double user_acceleration_x = 0;
-		double user_acceleration_y = 0;
-		double user_acceleration_z = 0;
+		double sum_user_accelerations_x = 0;
+		double sum_user_accelerations_y = 0;
+		double sum_user_accelerations_z = 0;
 		uint64_t total_lines = 0;
 
-		proccess_file(file, [&](const Line& line) {
-			user_acceleration_x += line.user_acceleration_x;
-			user_acceleration_y += line.user_acceleration_y;
-			user_acceleration_z += line.user_acceleration_z;
+		process_file(file, [&](const Line& line) {
+			sum_user_accelerations_x += line.user_acceleration_x;
+			sum_user_accelerations_y += line.user_acceleration_y;
+			sum_user_accelerations_z += line.user_acceleration_z;
 			total_lines++;
 		});
 	
-		double average_acceleration_x = user_acceleration_x / total_lines;
-		double average_acceleration_y = user_acceleration_y / total_lines;
-		double average_acceleration_z = user_acceleration_z / total_lines;
+		double average_acceleration_x = sum_user_accelerations_x / total_lines;
+		double average_acceleration_y = sum_user_accelerations_y / total_lines;
+		double average_acceleration_z = sum_user_accelerations_z / total_lines;
 		
 		double squared_deviations_x = 0;
 		double squared_deviations_y = 0;
