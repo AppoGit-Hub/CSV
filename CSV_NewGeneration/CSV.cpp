@@ -1,46 +1,4 @@
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <regex>
-#include <array>
-#include <string>
-#include <filesystem>
-#include <optional>
-#include <stdexcept>
-
-namespace fs = std::filesystem;
-
-inline const double TESTSET_PROPORTION = 0.1;
-
-inline const std::string BASE_FOLDER = "archive";
-inline const std::string DATA_FOLDER = "data";
-inline const std::string SUBJECT_FILENAME = "data_subjects_info.csv";
-inline const std::string TRAINSET_FILENAME = "trainset.csv";
-inline const std::string TESTSET_FILENAME = "testset.csv";
-
-inline const std::string DELIMITER = ",";
-inline const uint64_t TRAINSET_COLUMNS = 600;
-inline const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS * TESTSET_PROPORTION;
-
-inline const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");
-
-enum class MovementType : uint64_t {
-	DOWNSTAIR = 1,
-	JOGGING,
-	UPSTAIRS,
-	SIT_DOWN,
-	STAND_UP,
-	WALKING,
-};
-
-static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
-	{std::regex("dws_(\\d+)"), MovementType::DOWNSTAIR},
-	{std::regex("jog_(\\d+)"), MovementType::JOGGING},
-	{std::regex("ups_(\\d+)"), MovementType::UPSTAIRS},
-	{std::regex("sit_(\\d+)"), MovementType::SIT_DOWN},
-	{std::regex("std_(\\d+)"), MovementType::STAND_UP},
-	{std::regex("wlk_(\\d+)"), MovementType::WALKING}
-} };
+#include "Global.hpp"
 
 [[nodiscard]] static const MovementType find_directory_type(const fs::path& directory) {
 	const auto& directory_name = directory.filename();
