@@ -38,7 +38,7 @@ static bool is_extreme(const double value, const double average, const double st
 	return z_score > average + (3 * std) || z_score < average - (3 * std);
 }
 
-int main() {
+int verification() {
 	double sum_user_accelerations_x = 0;
 	double sum_user_accelerations_y = 0;
 	double sum_user_accelerations_z = 0;
