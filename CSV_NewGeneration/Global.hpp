@@ -86,3 +86,35 @@ static void get_files(const fs::path& directory, std::function<void(fs::path)> o
 		}
 	}
 }
+
+static void process_file(const fs::path& current_path, const std::function<void(Line)> on_line) {
+	std::ifstream current_file(current_path);
+
+	std::string header;
+	std::getline(current_file, header);
+
+	char delimiter;
+	Line current_line;
+
+	std::string line;
+	while (std::getline(current_file, line)) {
+		std::istringstream iss(line);
+		iss >>
+			current_line.id >> delimiter >>
+			current_line.attitude_roll >> delimiter >>
+			current_line.attitude_pitch >> delimiter >>
+			current_line.attitude_yaw >> delimiter >>
+			current_line.gravity_x >> delimiter >>
+			current_line.gravity_y >> delimiter >>
+			current_line.gravity_z >> delimiter >>
+			current_line.rotation_rate_x >> delimiter >>
+			current_line.rotation_rate_y >> delimiter >>
+			current_line.rotation_rate_z >> delimiter >>
+			current_line.user_acceleration_x >> delimiter >>
+			current_line.user_acceleration_y >> delimiter >>
+			current_line.user_acceleration_z >> delimiter;
+
+		on_line(current_line);
+	}
+	current_file.close();
+}

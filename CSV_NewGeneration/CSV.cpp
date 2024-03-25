@@ -48,65 +48,6 @@
 	return gender;
 }
 
-[[nodiscard]] static uint64_t proccess_file(
-	uint64_t& file_index,
-	uint64_t line_count,
-	const fs::path current_path,
-	std::ifstream& current_file,
-	std::ofstream& output_file, 
-	std::ifstream& subjects
-) {
-	const auto& directory_type = find_directory_type(current_path.parent_path());
-	const uint64_t person_id = find_person_id(current_path);
-	const uint64_t gender = find_gender(person_id, subjects);
-	
-	char delimiter;
-	std::string line;
-
-	std::getline(current_file, line);
-
-	output_file << static_cast<uint64_t>(directory_type) << DELIMITER << gender << DELIMITER << file_index;
-	
-	uint64_t id;
-	double attitude_roll;
-	double attitude_pitch;
-	double attitude_yaw;
-	double gravity_x;
-	double gravity_y;
-	double gravity_z;
-	double rotationRate_x;
-	double rotationRate_y;
-	double rotationRate_z;
-	double userAcceleration_x;
-	double userAcceleration_y;
-	double userAcceleration_z;
-
-	uint64_t index;
-	for (index = 0; index < line_count && std::getline(current_file, line); index++) {
-		std::istringstream iss(line);
-		iss >>
-			id >> delimiter >>
-			attitude_roll >> delimiter >>
-			attitude_pitch >> delimiter >>
-			attitude_yaw >> delimiter >>
-			gravity_x >> delimiter >>
-			gravity_y >> delimiter >>
-			gravity_z >> delimiter >>
-			rotationRate_x >> delimiter >>
-			rotationRate_y >> delimiter >>
-			rotationRate_z >> delimiter >>
-			userAcceleration_x >> delimiter >>
-			userAcceleration_y >> delimiter >>
-			userAcceleration_z >> delimiter;
-
-		double acceleration = sqrt(pow(userAcceleration_x, 2) + pow(userAcceleration_y, 2) + pow(userAcceleration_z, 2));
-		output_file << DELIMITER << acceleration;
-	}
-	output_file << std::endl;
-
-	return index;
-}
-
 static void create_header(std::ofstream& output_file, const size_t columns_count) {
 	output_file << "Mouvement" << DELIMITER << "Gender" << DELIMITER << "Index";
 	for (size_t index = 0; index < columns_count; index++) {
@@ -115,34 +56,32 @@ static void create_header(std::ofstream& output_file, const size_t columns_count
 	output_file << std::endl;
 }
 
-static void launch(
-	uint64_t& file_index,
-	const fs::path& directory,
-	std::ofstream& trainset,
-	std::ofstream& testset,
-	std::ifstream& subjects
+[[nodiscard]] static uint64_t create_set(
+	const fs::path& current_path,
+	const uint64_t line_count,
+	std::ifstream& subjects, 
+	std::ofstream& output_file, 
+	const uint64_t file_index
 ) {
-	for (const auto& entry : fs::directory_iterator(directory)) {
-		const auto& current_path = entry.path();
-		if (fs::is_regular_file(current_path)) {
-			std::ifstream file(current_path);
-			try {
-				uint64_t train_index = proccess_file(file_index, TRAINSET_COLUMNS, current_path, file, trainset, subjects);
-				if (train_index == TRAINSET_COLUMNS) {
-					uint64_t test_index = proccess_file(file_index, TESTSET_COLUMNS, current_path, file, testset, subjects);
-				}
-				std::cout << "Processed file : " << current_path << std::endl;
-			}
-			catch (const std::exception& error) {
-				std::cout << "Couldnt process file : " << current_path << std::endl;
-			}
-			file_index++;
-		}
-		else if (fs::is_directory(current_path)) {
-			launch(file_index, current_path, trainset, testset, subjects);
-		}
-	}
+	const auto directory_type = find_directory_type(current_path.parent_path());
+	const uint64_t person_id = find_person_id(current_path);
+	const uint64_t gender = find_gender(person_id, subjects);
 
+	output_file << static_cast<uint64_t>(directory_type) << DELIMITER << gender << DELIMITER << file_index;
+
+	uint64_t total_lines = 0;
+	process_file(current_path, [&](const Line& line) {
+		if (total_lines > line_count) {
+			output_file << std::endl;
+			return total_lines;
+		}
+		
+		double acceleration = sqrt(pow(line.user_acceleration_x, 2) + pow(line.user_acceleration_y, 2) + pow(line.user_acceleration_z, 2));
+		output_file << DELIMITER << acceleration;
+		total_lines++;
+	});
+	output_file << std::endl;
+	return total_lines;
 }
 
 void csv() {
@@ -157,6 +96,19 @@ void csv() {
 	create_header(trainset_file, TRAINSET_COLUMNS);
 	create_header(testset_file, TESTSET_COLUMNS);
 
-	uint64_t file_index = 1;
-	launch(file_index, data_filepath, trainset_file, testset_file, subjects_file);
+	// untested code
+	uint64_t file_index = 0;
+	get_files(DATA_FOLDERPATH, [&](const fs::path current_path) {
+		try {
+			uint64_t train_index = create_set(current_path, TRAINSET_COLUMNS, subjects_file, trainset_file, file_index);
+			if (train_index == TRAINSET_COLUMNS) {
+				uint64_t test_index = create_set(current_path, TESTSET_COLUMNS, subjects_file, testset_file, file_index);
+			}
+			std::cout << "Processed file : " << current_path << std::endl;
+			file_index++;
+		}
+		catch (const std::exception& error) {
+			std::cout << "Couldnt process file : " << current_path << std::endl;
+		}
+	});
 }
