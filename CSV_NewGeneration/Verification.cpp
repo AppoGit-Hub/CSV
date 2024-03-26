@@ -1,6 +1,11 @@
 #include "Global.hpp"
 
-static bool is_extreme(const double value, const double average, const double std) {	
+// besoin du z_score ?
+// performance compte ?
+// structure du fichier des valeurs abérrantes ?
+// calculé l'ecartype ?
+
+static bool is_extreme(const double value, const double average, const double std) {
 	double z_score = (value - average) / std;
 	//std::cout << average - (3 * std) << " | " << z_score << " | " << average + (3 * std) << std::endl;
 	return z_score > average + (3 * std) || z_score < average - (3 * std);
