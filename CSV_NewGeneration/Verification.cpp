@@ -1,6 +1,6 @@
 #include "Global.hpp"
 
-static bool is_extreme(const double value, const double average, const double std) {
+[[nodiscard]] static const bool is_extreme(const double value, const double average, const double std) {
 	return value > average + (3 * std) || value < average - (3 * std);
 }
 
@@ -19,9 +19,9 @@ int main() {
 
 		for_file(DATA_FOLDERPATH, [&](const fs::path& file) {
 			for_line(file, [&](const Line& line) {
-				bool extreme_x = is_extreme(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
-				bool extreme_y = is_extreme(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
-				bool extreme_z = is_extreme(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
+				const bool extreme_x = is_extreme(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
+				const bool extreme_y = is_extreme(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
+				const bool extreme_z = is_extreme(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
 
 				if (extreme_x | extreme_y | extreme_z) {
 					output_file <<
