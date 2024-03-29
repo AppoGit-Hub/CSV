@@ -161,7 +161,7 @@ void threaded_process_file() {
 	std::cout << "Time taken " << elapsed_seconds.count() << std::endl;
 } 
 
-int main() {
+int test() {
 	naive_test();
 	threaded_test(4);
 }

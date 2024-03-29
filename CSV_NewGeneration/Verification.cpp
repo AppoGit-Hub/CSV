@@ -1,17 +1,16 @@
 #include "Global.hpp"
 
-// besoin du z_score ?
-// performance compte ?
-// structure du fichier des valeurs abérrantes ?
-// calculé l'ecartype ?
+// besoin du z_score ? Pas besoin (comme on veut)
+// performance compte ? Non, c'est tres secondaire
+// structure du fichier des valeurs abérrantes ? // fichier, line, valeur_x, valeur_y, valeur_z
+// calculé l'ecartype ? Pas besoin
 
 static bool is_extreme(const double value, const double average, const double std) {
 	double z_score = (value - average) / std;
-	//std::cout << average - (3 * std) << " | " << z_score << " | " << average + (3 * std) << std::endl;
 	return z_score > average + (3 * std) || z_score < average - (3 * std);
 }
 
-int verification() {
+int main() {
 	double sum_user_accelerations_x = 0;
 	double sum_user_accelerations_y = 0;
 	double sum_user_accelerations_z = 0;
