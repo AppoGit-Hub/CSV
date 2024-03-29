@@ -70,7 +70,7 @@ static void create_header(std::ofstream& output_file, const size_t columns_count
 	output_file << static_cast<uint64_t>(directory_type) << DELIMITER << gender << DELIMITER << file_index;
 
 	uint64_t total_lines = 0;
-	process_file(current_path, [&](const Line& line) {
+	for_line(current_path, [&](const Line& line) {
 		if (total_lines > line_count) {
 			output_file << std::endl;
 			return total_lines;

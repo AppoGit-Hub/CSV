@@ -32,6 +32,7 @@ inline const double TESTSET_PROPORTION = 0.1;
 inline const double AVERAGE_X = 0.00096087;
 inline const double AVERAGE_Y = 0.05525659;
 inline const double AVERAGE_Z = 0.0352192;
+
 inline const double STANDARD_DEVIATION_X = 0.38875666;
 inline const double STANDARD_DEVIATION_Y = 0.61937128;
 inline const double STANDARD_DEVIATION_Z = 0.4300345;
@@ -75,19 +76,19 @@ struct Line {
 	double user_acceleration_z;
 };
 
-static void get_files(const fs::path& directory, std::function<void(fs::path)> on_file) {
+static void for_file(const fs::path& directory, std::function<void(fs::path)> on_file) {
 	for (const auto& entry : fs::directory_iterator(directory)) {
 		const auto& current_path = entry.path();
 		if (fs::is_regular_file(current_path)) {
 			on_file(current_path);
 		}
 		else if (fs::is_directory(current_path)) {
-			get_files(current_path, on_file);
+			for_file(current_path, on_file);
 		}
 	}
 }
 
-static void process_file(const fs::path& current_path, const std::function<void(Line)> on_line) {
+static void for_line(const fs::path& current_path, const std::function<void(Line)> on_line) {
 	std::ifstream current_file(current_path);
 
 	std::string header;
