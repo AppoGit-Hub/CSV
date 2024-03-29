@@ -98,7 +98,7 @@ void csv() {
 
 	// untested code
 	uint64_t file_index = 0;
-	get_files(DATA_FOLDERPATH, [&](const fs::path current_path) {
+	for_file(DATA_FOLDERPATH, [&](const fs::path current_path) {
 		try {
 			uint64_t train_index = create_set(current_path, TRAINSET_COLUMNS, subjects_file, trainset_file, file_index);
 			if (train_index == TRAINSET_COLUMNS) {
