@@ -97,7 +97,7 @@ static void process_file_threaded(const fs::path& current_path, const std::funct
 
 void naive_test() {
 	auto start = std::chrono::steady_clock::now();
-	get_files(DATA_FOLDERPATH, [&](const fs::path filepath) {
+	for_file(DATA_FOLDERPATH, [&](const fs::path filepath) {
 		process_file(filepath, [&](const Line& line) {
 		});
 	});
@@ -122,7 +122,7 @@ void threaded_test(const size_t chunk) {
 	std::vector<fs::path> all_files;
 
 	auto start = std::chrono::steady_clock::now();
-	get_files(DATA_FOLDERPATH, [&](const fs::path filepath) {
+	for_file(DATA_FOLDERPATH, [&](const fs::path filepath) {
 		all_files.push_back(filepath);
 	});
 	size_t delta = all_files.size() / chunk;

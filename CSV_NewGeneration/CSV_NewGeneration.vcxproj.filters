@@ -21,7 +21,13 @@
     <ClCompile Include="Verification.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="Test.cpp">
+    <ClCompile Include="Pattern.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Set.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Global.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

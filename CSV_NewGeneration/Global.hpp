@@ -21,6 +21,7 @@ const std::string DELIMITER = ",";
 const std::string BASE_FOLDER = "archive";
 const std::string DATA_FOLDER = "data";
 const std::string CHECK_FILENAME = "extreme.csv";
+const std::string PATTERN_FILENAME = "pattern.csv";
 const std::string SUBJECT_FILENAME = "data_subjects_info.csv";
 const std::string TRAINSET_FILENAME = "trainset.csv";
 const std::string TESTSET_FILENAME = "testset.csv";
@@ -60,7 +61,7 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("wlk_(\\d+)"), MovementType::WALKING}
 } };
 
-struct Line {
+struct RawLine {
 	uint64_t id;
 	double attitude_roll;
 	double attitude_pitch;
@@ -74,83 +75,45 @@ struct Line {
 	double user_acceleration_x;
 	double user_acceleration_y;
 	double user_acceleration_z;
-};
 
-struct TrainsetLine {
+	static const RawLine extract(std::istringstream& iss) {
+		char delimiter;
+		RawLine line;
 
-};
-
-static void for_file(const fs::path& directory, std::function<void(fs::path)> on_file) {
-	for (const auto& entry : fs::directory_iterator(directory)) {
-		const auto& current_path = entry.path();
-		if (fs::is_regular_file(current_path)) {
-			on_file(current_path);
-		}
-		else if (fs::is_directory(current_path)) {
-			for_file(current_path, on_file);
-		}
-	}
-}
-
-static const Line extract_raw_line(std::istringstream& iss) {
-	char delimiter;
-	Line line;
-	
-	iss >>
-		line.id >> delimiter >>
-		line.attitude_roll >> delimiter >>
-		line.attitude_pitch >> delimiter >>
-		line.attitude_yaw >> delimiter >>
-		line.gravity_x >> delimiter >>
-		line.gravity_y >> delimiter >>
-		line.gravity_z >> delimiter >>
-		line.rotation_rate_x >> delimiter >>
-		line.rotation_rate_y >> delimiter >>
-		line.rotation_rate_z >> delimiter >>
-		line.user_acceleration_x >> delimiter >>
-		line.user_acceleration_y >> delimiter >>
-		line.user_acceleration_z >> delimiter;
-
-	return line;
-}
-
-static const TrainsetLine extract_trainset_line(std::istringstream& iss) {
-
-}
-
-template<typename LineType>
-static void for_line(
-	const fs::path& current_path, 
-	const std::function<void(LineType)> on_line,
-	const std::function<LineType(std::istringstream)> extract_func
-) {
-	std::ifstream current_file(current_path);
-
-	std::string header;
-	std::getline(current_file, header);
-
-	char delimiter;
-	Line current_line;
-
-	std::string line;
-	while (std::getline(current_file, line)) {
-		std::istringstream iss(line);
 		iss >>
-			current_line.id >> delimiter >>
-			current_line.attitude_roll >> delimiter >>
-			current_line.attitude_pitch >> delimiter >>
-			current_line.attitude_yaw >> delimiter >>
-			current_line.gravity_x >> delimiter >>
-			current_line.gravity_y >> delimiter >>
-			current_line.gravity_z >> delimiter >>
-			current_line.rotation_rate_x >> delimiter >>
-			current_line.rotation_rate_y >> delimiter >>
-			current_line.rotation_rate_z >> delimiter >>
-			current_line.user_acceleration_x >> delimiter >>
-			current_line.user_acceleration_y >> delimiter >>
-			current_line.user_acceleration_z >> delimiter;
+			line.id >> delimiter >>
+			line.attitude_roll >> delimiter >>
+			line.attitude_pitch >> delimiter >>
+			line.attitude_yaw >> delimiter >>
+			line.gravity_x >> delimiter >>
+			line.gravity_y >> delimiter >>
+			line.gravity_z >> delimiter >>
+			line.rotation_rate_x >> delimiter >>
+			line.rotation_rate_y >> delimiter >>
+			line.rotation_rate_z >> delimiter >>
+			line.user_acceleration_x >> delimiter >>
+			line.user_acceleration_y >> delimiter >>
+			line.user_acceleration_z >> delimiter;
 
-		on_line(current_line);
-	}
-	current_file.close();
-}
+		return line;
+	};
+};
+
+struct SetLine {
+	MovementType movement_type;
+	uint64_t person_id;
+	uint64_t gender;
+	std::vector<double> accelerations;
+};
+
+void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
+[[nodiscard]] const MovementType find_directory_type(const fs::path& directory);
+[[nodiscard]] uint64_t find_person_id(const fs::path& filepath);
+[[nodiscard]] uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects) noexcept;
+void create_header(std::ofstream& output_file, const size_t columns_count);
+[[nodiscard]] uint64_t create_set(const fs::path& current_path, const uint64_t line_count, std::ifstream& subjects, std::ofstream& output_file, const uint64_t file_index);
+[[nodiscard]] const bool is_extreme(const double value, const double average, const double std);
+
+void pattern();
+void set();
+void verification();
