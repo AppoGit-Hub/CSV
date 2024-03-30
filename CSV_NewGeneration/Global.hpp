@@ -76,6 +76,10 @@ struct Line {
 	double user_acceleration_z;
 };
 
+struct TrainsetLine {
+
+};
+
 static void for_file(const fs::path& directory, std::function<void(fs::path)> on_file) {
 	for (const auto& entry : fs::directory_iterator(directory)) {
 		const auto& current_path = entry.path();
@@ -88,7 +92,38 @@ static void for_file(const fs::path& directory, std::function<void(fs::path)> on
 	}
 }
 
-static void for_line(const fs::path& current_path, const std::function<void(Line)> on_line) {
+static const Line extract_raw_line(std::istringstream& iss) {
+	char delimiter;
+	Line line;
+	
+	iss >>
+		line.id >> delimiter >>
+		line.attitude_roll >> delimiter >>
+		line.attitude_pitch >> delimiter >>
+		line.attitude_yaw >> delimiter >>
+		line.gravity_x >> delimiter >>
+		line.gravity_y >> delimiter >>
+		line.gravity_z >> delimiter >>
+		line.rotation_rate_x >> delimiter >>
+		line.rotation_rate_y >> delimiter >>
+		line.rotation_rate_z >> delimiter >>
+		line.user_acceleration_x >> delimiter >>
+		line.user_acceleration_y >> delimiter >>
+		line.user_acceleration_z >> delimiter;
+
+	return line;
+}
+
+static const TrainsetLine extract_trainset_line(std::istringstream& iss) {
+
+}
+
+template<typename LineType>
+static void for_line(
+	const fs::path& current_path, 
+	const std::function<void(LineType)> on_line,
+	const std::function<LineType(std::istringstream)> extract_func
+) {
 	std::ifstream current_file(current_path);
 
 	std::string header;
