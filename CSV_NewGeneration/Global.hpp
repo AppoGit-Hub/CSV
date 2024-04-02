@@ -14,6 +14,7 @@
 #include <optional>
 #include <stdexcept>
 #include <math.h>
+#include <unordered_map>
 
 namespace fs = std::filesystem;
 
@@ -22,6 +23,7 @@ const std::string BASE_FOLDER = "archive";
 const std::string DATA_FOLDER = "data";
 const std::string CHECK_FILENAME = "extreme.csv";
 const std::string PATTERN_FILENAME = "pattern.csv";
+const std::string EVALUATION_FILENAME = "evaluation.csv";
 const std::string SUBJECT_FILENAME = "data_subjects_info.csv";
 const std::string TRAINSET_FILENAME = "trainset.csv";
 const std::string TESTSET_FILENAME = "testset.csv";
@@ -50,6 +52,7 @@ enum class MovementType : uint64_t {
 	SIT_DOWN,
 	STAND_UP,
 	WALKING,
+	SIZE,
 };
 
 static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
@@ -113,7 +116,9 @@ void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
 void create_header(std::ofstream& output_file, const size_t columns_count);
 [[nodiscard]] uint64_t create_set(const fs::path& current_path, const uint64_t line_count, std::ifstream& subjects, std::ofstream& output_file, const uint64_t file_index);
 [[nodiscard]] const bool is_extreme(const double value, const double average, const double std);
+std::vector<double> find_acceleration(const std::string& filepath, const MovementType movement_type);
 
 void pattern();
 void set();
 void verification();
+void evaluation();

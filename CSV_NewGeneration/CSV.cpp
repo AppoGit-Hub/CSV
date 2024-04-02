@@ -1,7 +1,7 @@
 #include "Global.hpp"
 
 int main() {
-	pattern();
+	evaluation();
 
 	return EXIT_SUCCESS;
 }
