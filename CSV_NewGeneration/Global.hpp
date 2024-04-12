@@ -109,6 +109,11 @@ struct SetLine {
 	std::vector<double> accelerations;
 };
 
+struct EvalutionStats {
+	uint64_t right;
+	uint64_t wrong;
+};
+
 void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
 [[nodiscard]] const MovementType find_directory_type(const fs::path& directory);
 [[nodiscard]] uint64_t find_person_id(const fs::path& filepath);

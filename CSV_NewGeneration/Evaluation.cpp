@@ -34,6 +34,7 @@ std::vector<double> find_acceleration(const std::string& filepath, const Movemen
 }
 
 void evaluation() {
+	std::unordered_map<MovementType, EvalutionStats> verification;
 	std::unordered_map<MovementType, std::vector<double>> testset_lines;
 
 	std::ifstream file(TESTSET_FILENAME);
@@ -51,7 +52,9 @@ void evaluation() {
 	while (std::getline(file, line)) {
 		std::istringstream iss(line);
 
-		iss >> movement >> delimiter >> gender >> delimiter >> index >> delimiter;
+		iss >> movement >> delimiter 
+			>> gender >> delimiter 
+			>> index >> delimiter;
 
 		std::streampos accleration_begin = iss.tellg();
 
@@ -87,10 +90,25 @@ void evaluation() {
 				distance_min = distance;
 				movement_min = movement_type;
 			}
-
-			std::cout << type_index << " | " << distance << std::endl;
+		}
+		
+		MovementType type = static_cast<MovementType>(movement);
+		if (verification.find(type) == verification.end()) {
+			verification[type] = EvalutionStats{ 0, 0 };
+		}
+		
+		EvalutionStats& evalution = verification[type];
+		if (movement == static_cast<uint64_t>(movement_min)) {
+			evalution.right++;
+		}
+		else {
+			evalution.wrong++;
 		}
 
 		std::cout << movement << " >>> " << distance_min << " | " << static_cast<uint64_t>(movement_min) << std::endl;
+	}
+
+	for (auto [type, evaluation] : verification) {
+		std::cout << static_cast<uint64_t>(type) << " | " << evaluation.right << " | " << evaluation.wrong << " | " << (evaluation.right + evaluation.wrong) << std::endl;
 	}
 }
