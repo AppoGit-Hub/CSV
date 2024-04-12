@@ -29,7 +29,6 @@ std::vector<double> find_acceleration(const std::string& filepath, const Movemen
 		accelerations.push_back(acceleration);
 	}
 	
-	std::cout << movement << std::endl;
 	return accelerations;
 }
 
@@ -108,7 +107,9 @@ void evaluation() {
 		std::cout << movement << " >>> " << distance_min << " | " << static_cast<uint64_t>(movement_min) << std::endl;
 	}
 
+	std::cout << "Verification: " << std::endl;
 	for (auto [type, evaluation] : verification) {
-		std::cout << static_cast<uint64_t>(type) << " | " << evaluation.right << " | " << evaluation.wrong << " | " << (evaluation.right + evaluation.wrong) << std::endl;
+		double total = evaluation.right + evaluation.wrong;
+		std::cout << static_cast<uint64_t>(type) << " | " << evaluation.right << " | " << evaluation.wrong << " | " << total << " | " << std::round((evaluation.right / total) * 100) << "%" << std::endl;
 	}
 }
