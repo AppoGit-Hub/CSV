@@ -14,6 +14,8 @@
 #include <optional>
 #include <stdexcept>
 #include <math.h>
+#include <unordered_map>
+#include <cfloat>
 
 namespace fs = std::filesystem;
 
