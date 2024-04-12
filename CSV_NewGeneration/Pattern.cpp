@@ -33,6 +33,7 @@ void pattern() {
 		movement = block_movement;
 
 		accelerations.clear();
+		size_t block_lines = 0;
 		while (block_movement == movement && std::getline(current_file, block_line)) {
 			std::istringstream block_iss(block_line);
 
@@ -57,17 +58,13 @@ void pattern() {
 				}
 			}
 
-			size_t size = accelerations.size();
-			for (size_t acc_index = 0; acc_index < size; acc_index++) {
-				accelerations[acc_index] /= size;
-			}
-
-			std::cout << block_movement << " | " << cummulation << " | " << added << std::endl;		
+			std::cout << block_movement << " | " << cummulation << " | " << added << std::endl;
+			block_lines++;
 		}
 
 		pattern_file << block_movement;
 		for (size_t acc_index = 0; acc_index < accelerations.size(); acc_index++) {
-			pattern_file << DELIMITER << accelerations[acc_index];
+			pattern_file << DELIMITER << accelerations[acc_index] / block_lines;
 		}
 		pattern_file << std::endl;
 	}
