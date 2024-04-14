@@ -56,13 +56,8 @@ void create_header(std::ofstream& output_file, const size_t columns_count) {
 	output_file << std::endl;
 }
 
-[[nodiscard]] uint64_t create_set(
-	const fs::path& current_path,
-	const uint64_t line_count,
-	std::ifstream& subjects,
-	std::ofstream& output_file,
-	const uint64_t file_index
-) {
+[[nodiscard]] 
+uint64_t create_set(const fs::path& current_path, const uint64_t line_count, std::ifstream& subjects, std::ofstream& output_file, const uint64_t file_index) {
 	const MovementType directory_type = find_directory_type(current_path.parent_path());
 	const uint64_t person_id = find_person_id(current_path);
 	const uint64_t gender = find_gender(person_id, subjects);

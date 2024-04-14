@@ -122,8 +122,8 @@ struct EvalutionStats {
 };
 
 void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
-[[nodiscard]] const size_t find_directory_type(const fs::path& directory);
-[[nodiscard]] const uint64_t find_person_id(const fs::path& filepath);
+[[nodiscard]] const MovementType find_directory_type(const fs::path& directory);
+[[nodiscard]] uint64_t find_person_id(const fs::path& filepath);
 [[nodiscard]] uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects);
 void create_header(std::ofstream& output_file, const size_t columns_count);
 [[nodiscard]] uint64_t create_set(const fs::path& current_path, const uint64_t line_count, std::ifstream& subjects, std::ofstream& output_file, const uint64_t file_index);
