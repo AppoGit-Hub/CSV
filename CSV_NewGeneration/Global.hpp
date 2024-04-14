@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <math.h>
 #include <unordered_map>
+#include <optional>
 
 namespace fs = std::filesystem;
 
@@ -29,6 +30,7 @@ const std::string TRAINSET_FILENAME = "trainset.csv";
 const std::string TESTSET_FILENAME = "testset.csv";
 
 const auto DATA_FOLDERPATH = fs::path{ BASE_FOLDER } / DATA_FOLDER;
+const auto SUBJECT_FILEPATH = fs::path{ BASE_FOLDER } / SUBJECT_FILENAME;
 
 inline const double TESTSET_PROPORTION = 0.1;
 
@@ -54,6 +56,7 @@ enum class MovementType : uint64_t {
 	WALKING,
 	SIZE,
 };
+
 
 static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("dws_(\\d+)"), MovementType::DOWNSTAIR},
@@ -109,16 +112,20 @@ struct SetLine {
 	std::vector<double> accelerations;
 };
 
+struct SetResult {
+	uint64_t error;
+};
+
 void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
-[[nodiscard]] const MovementType find_directory_type(const fs::path& directory);
-[[nodiscard]] uint64_t find_person_id(const fs::path& filepath);
-[[nodiscard]] uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects) noexcept;
+[[nodiscard]] const size_t find_directory_type(const fs::path& directory);
+[[nodiscard]] const uint64_t find_person_id(const fs::path& filepath);
+[[nodiscard]] uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects);
 void create_header(std::ofstream& output_file, const size_t columns_count);
 [[nodiscard]] uint64_t create_set(const fs::path& current_path, const uint64_t line_count, std::ifstream& subjects, std::ofstream& output_file, const uint64_t file_index);
 [[nodiscard]] const bool is_extreme(const double value, const double average, const double std);
 std::vector<double> find_acceleration(const std::string& filepath, const MovementType movement_type);
 
-void pattern();
-void set();
+SetResult set(std::ifstream& subjects, std::ofstream& trainset, std::ofstream& testset);
 void verification();
+void pattern();
 void evaluation();

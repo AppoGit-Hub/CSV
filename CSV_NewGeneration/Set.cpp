@@ -90,24 +90,18 @@ void create_header(std::ofstream& output_file, const size_t columns_count) {
 	return total_lines;
 }
 
-void set() {
-	const auto& data_filepath = fs::path{ BASE_FOLDER } / DATA_FOLDER;
-	const auto& subject_filepath = fs::path{ BASE_FOLDER } / SUBJECT_FILENAME;
+SetResult set(std::ifstream& subjects, std::ofstream& trainset, std::ofstream& testset) {
+	SetResult result;
 
-	std::ifstream subjects_file(subject_filepath);
-
-	std::ofstream trainset_file(TRAINSET_FILENAME);
-	std::ofstream testset_file(TESTSET_FILENAME);
-
-	create_header(trainset_file, TRAINSET_COLUMNS);
-	create_header(testset_file, TESTSET_COLUMNS);
+	create_header(trainset, TRAINSET_COLUMNS);
+	create_header(testset, TESTSET_COLUMNS);
 
 	uint64_t file_index = 1;
 	for_file(DATA_FOLDERPATH, [&](const fs::path current_path) {
 		try {
-			uint64_t train_index = create_set(current_path, TRAINSET_COLUMNS, subjects_file, trainset_file, file_index);
+			uint64_t train_index = create_set(current_path, TRAINSET_COLUMNS, subjects, trainset, file_index);
 			if (train_index == TRAINSET_COLUMNS) {
-				uint64_t test_index = create_set(current_path, TESTSET_COLUMNS, subjects_file, testset_file, file_index);
+				uint64_t test_index = create_set(current_path, TESTSET_COLUMNS, subjects, trainset, file_index);
 			}
 			std::cout << "Processed file : " << current_path << std::endl;
 			file_index++;
