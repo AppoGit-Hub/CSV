@@ -108,4 +108,5 @@ ProcessError evaluation(std::fstream& testset, std::fstream& pattern) {
 		double total = evaluation.right + evaluation.wrong;
 		std::cout << static_cast<uint64_t>(type) << " | " << evaluation.right << " | " << evaluation.wrong << " | " << total << " | " << std::round((evaluation.right / total) * 100) << "%" << std::endl;
 	}
+	return NO_ERROR;
 }
