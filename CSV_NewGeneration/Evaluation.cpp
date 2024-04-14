@@ -31,6 +31,14 @@ std::vector<double> find_acceleration(std::fstream& pattern, const MovementType 
 }
 
 ProcessError evaluation(std::fstream& testset, std::fstream& pattern) {
+	testset.open(TESTSET_FILENAME, std::ios::in);
+	if (!testset.is_open())
+		return COUDLNT_OPEN_FILE;
+
+	pattern.open(PATTERN_FILENAME, std::ios::out);
+	if (!pattern.is_open())
+		return COUDLNT_OPEN_FILE;
+
 	std::unordered_map<MovementType, EvalutionStats> verification;
 	std::unordered_map<MovementType, std::vector<double>> testset_lines;
 	

@@ -73,6 +73,18 @@ uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::
 }
 
 ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset) {
+	subjects.open(SUBJECT_FILEPATH, std::ios::in);
+	if (!subjects.is_open()) 
+		return COUDLNT_OPEN_FILE;
+	
+	trainset.open(TRAINSET_FILENAME, std::ios::out);
+	if (!trainset.is_open()) 
+		return COUDLNT_OPEN_FILE;
+	
+	testset.open(TESTSET_FILENAME, std::ios::out);
+	if (!testset.is_open())
+		return COUDLNT_OPEN_FILE;
+	
 	std::unordered_map<uint64_t, uint64_t> gender_map;
 	
 	create_header(trainset, TRAINSET_COLUMNS);

@@ -1,6 +1,14 @@
 #include "Global.hpp"
 
 ProcessError create_pattern(std::fstream& pattern, std::fstream& trainset) {
+	pattern.open(PATTERN_FILENAME, std::ios::out);
+	if (!pattern.is_open())
+		return COUDLNT_OPEN_FILE;
+
+	trainset.open(TRAINSET_FILENAME, std::ios::in);
+	if (!trainset.is_open())
+		return COUDLNT_OPEN_FILE;
+	
 	pattern << "Mouvement";
 	for (size_t index = 0; index < TRAINSET_COLUMNS; index++) {
 		pattern << DELIMITER << "Vacc";

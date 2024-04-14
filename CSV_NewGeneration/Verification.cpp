@@ -6,6 +6,10 @@ bool is_extreme(const double value, const double average, const double std) {
 }
 
 ProcessError verification(std::fstream& checkfile) {
+	checkfile.open(CHECK_FILENAME, std::ios::in);
+	if (!checkfile.is_open())
+		return COUDLNT_OPEN_FILE;
+	
 	checkfile <<
 		"Filename" << DELIMITER <<
 		"Line" << DELIMITER <<
