@@ -1,24 +1,16 @@
 #include "Global.hpp"
 
-[[nodiscard]] const MovementType find_directory_type(const fs::path& directory) {
-	const auto& directory_name = directory.filename();
-	for (const auto& pair : MOVEMENT_REGEX) {
-		if (std::regex_match(directory_name.string(), pair.first)) {
-			return pair.second;
-		}
+[[nodiscard]] 
+const size_t find_directory_type(const std::string& directory_name) {
+	size_t pair_index = 0;
+	while (pair_index < MOVEMENT_REGEX.size() && !std::regex_match(directory_name, MOVEMENT_REGEX[pair_index].first)) {
+		pair_index++;
 	}
-	throw std::runtime_error("Couldnt find directory type for " + directory.string());
-}
-[[nodiscard]] uint64_t find_person_id(const fs::path& filepath) {
-	const auto& filename = filepath.filename().string();
-	std::smatch matches;
-	if (std::regex_search(filename, matches, PERSON_FILE_REGEX)) {
-		return std::stoull(matches[1].str());
-	}
-	throw std::runtime_error("Couldnt find id for file of " + filepath.string());
+	return pair_index;
 }
 
-[[nodiscard]] uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects) noexcept {
+[[nodiscard]] 
+uint64_t find_gender(std::ifstream& subjects, const uint64_t person_id) noexcept {
 	uint64_t code = 0;
 	uint64_t weight;
 	uint64_t height;
@@ -57,52 +49,67 @@ void create_header(std::ofstream& output_file, const size_t columns_count) {
 }
 
 [[nodiscard]] 
-uint64_t create_set(const fs::path& current_path, const uint64_t line_count, std::ifstream& subjects, std::ofstream& output_file, const uint64_t file_index) {
-	const MovementType directory_type = find_directory_type(current_path.parent_path());
-	const uint64_t person_id = find_person_id(current_path);
-	const uint64_t gender = find_gender(person_id, subjects);
-	uint64_t total_lines = 0;
-
-	output_file << static_cast<uint64_t>(directory_type) << DELIMITER << gender << DELIMITER << file_index;
-
-	std::ifstream current_file(current_path);
-
-	std::string header;
-	std::getline(current_file, header);
+uint64_t create_set(std::ifstream& current_file, const uint64_t line_count, std::ofstream& output_file) {
+	uint64_t lines_explored = 0;
 
 	std::string line;
-	while (total_lines < line_count && std::getline(current_file, line)) {
+	while (lines_explored < line_count && std::getline(current_file, line)) {
 		std::istringstream iss(line);
 
 		const RawLine line = RawLine::extract(iss);
 
-		double acceleration = sqrt(pow(line.user_acceleration_x, 2) + pow(line.user_acceleration_y, 2) + pow(line.user_acceleration_z, 2));
-		output_file << DELIMITER << acceleration;
-		total_lines++;
-	}
+		double acceleration = sqrt(
+			pow(line.user_acceleration_x, 2) + 
+			pow(line.user_acceleration_y, 2) + 
+			pow(line.user_acceleration_z, 2)
+		);
 
+		output_file << DELIMITER << acceleration;
+		lines_explored++;
+	}
 	output_file << std::endl;
-	return total_lines;
+	
+	return lines_explored;
 }
 
-SetResult set(std::ifstream& subjects, std::ofstream& trainset, std::ofstream& testset) {
-	SetResult result;
-
+CreateSetError set(std::ifstream& subjects, std::ofstream& trainset, std::ofstream& testset) {
 	create_header(trainset, TRAINSET_COLUMNS);
 	create_header(testset, TESTSET_COLUMNS);
 
 	uint64_t file_index = 1;
 	for_file(DATA_FOLDERPATH, [&](const fs::path current_path) {
-		try {
-			uint64_t train_index = create_set(current_path, TRAINSET_COLUMNS, subjects, trainset, file_index);
-			if (train_index == TRAINSET_COLUMNS) {
-				uint64_t test_index = create_set(current_path, TESTSET_COLUMNS, subjects, trainset, file_index);
-			}
-			std::cout << "Processed file : " << current_path << std::endl;
-			file_index++;
+		const std::string directory_name = current_path.parent_path().filename().string();
+
+		const size_t directory_index = find_directory_type(directory_name);
+		if (directory_index == MOVEMENT_REGEX.size())
+			return DIRECTORY_TYPE_NOT_FOUND;
+
+		const std::string filepath_name = current_path.string();
+		std::smatch matches;
+		if (!std::regex_search(filepath_name, matches, PERSON_FILE_REGEX))
+			return PERSON_FILE_NOT_FOUND;
+
+		const MovementType directory_type = MOVEMENT_REGEX[directory_index].second;
+		const uint64_t person_id = std::stoull(matches[1].str());
+		const uint64_t gender = find_gender(subjects, person_id);
+
+		std::ifstream current_file(current_path);
+		if (!current_file.is_open())
+			return COUDLNT_OPEN_FILE;
+
+		std::string header;
+		std::getline(current_file, header);
+
+		trainset << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		uint64_t trainset_lines = create_set(current_file, TRAINSET_COLUMNS, trainset);
+
+		if (trainset_lines == TRAINSET_COLUMNS) {
+			testset << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			uint64_t testset_lines = create_set(current_file, TESTSET_COLUMNS, testset);
 		}
-		catch (const std::exception& error) {
-			std::cout << "Couldnt process file : " << current_path << std::endl;
-		}
+
+		file_index++;
 	});
+
+	return NO_ERROR;
 }

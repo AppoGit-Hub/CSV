@@ -57,6 +57,12 @@ enum class MovementType : uint64_t {
 	SIZE,
 };
 
+enum CreateSetError : uint64_t {
+	NO_ERROR,
+	DIRECTORY_TYPE_NOT_FOUND,
+	PERSON_FILE_NOT_FOUND,
+	COUDLNT_OPEN_FILE
+};
 
 static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("dws_(\\d+)"), MovementType::DOWNSTAIR},
@@ -122,15 +128,12 @@ struct EvalutionStats {
 };
 
 void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
-[[nodiscard]] const MovementType find_directory_type(const fs::path& directory);
-[[nodiscard]] uint64_t find_person_id(const fs::path& filepath);
-[[nodiscard]] uint64_t find_gender(const uint64_t person_id, std::ifstream& subjects);
 void create_header(std::ofstream& output_file, const size_t columns_count);
-[[nodiscard]] uint64_t create_set(const fs::path& current_path, const uint64_t line_count, std::ifstream& subjects, std::ofstream& output_file, const uint64_t file_index);
+uint64_t create_set(std::ifstream& current_file, const uint64_t line_count, std::ofstream& output_file);
 [[nodiscard]] const bool is_extreme(const double value, const double average, const double std);
 std::vector<double> find_acceleration(const std::string& filepath, const MovementType movement_type);
 
-SetResult set(std::ifstream& subjects, std::ofstream& trainset, std::ofstream& testset);
+CreateSetError set(std::ifstream& subjects, std::ofstream& trainset, std::ofstream& testset);
 void verification();
 void pattern();
 void evaluation();
