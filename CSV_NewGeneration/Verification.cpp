@@ -6,7 +6,7 @@ bool is_extreme(const double value, const double average, const double std) {
 }
 
 ProcessError verification(std::fstream& checkfile) {
-	checkfile.open(CHECK_FILENAME, std::ios::in);
+	checkfile.open(CHECK_FILENAME, std::ios::out);
 	if (!checkfile.is_open())
 		return COUDLNT_OPEN_FILE;
 	
