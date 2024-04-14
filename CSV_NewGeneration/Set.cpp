@@ -1,7 +1,7 @@
 #include "Global.hpp"
 
 [[nodiscard]] 
-const size_t find_directory_type(const std::string& directory_name) {
+const size_t find_directory_type(const std::string& directory_name) noexcept {
 	size_t pair_index = 0;
 	while (pair_index < MOVEMENT_REGEX.size() && !std::regex_match(directory_name, MOVEMENT_REGEX[pair_index].first)) {
 		pair_index++;
@@ -40,7 +40,7 @@ uint64_t find_gender(std::ifstream& subjects, const uint64_t person_id) noexcept
 	return gender;
 }
 
-void create_header(std::ofstream& output_file, const size_t columns_count) {
+void create_header(std::ofstream& output_file, const size_t columns_count) noexcept {
 	output_file << "Mouvement" << DELIMITER << "Gender" << DELIMITER << "Index";
 	for (size_t index = 0; index < columns_count; index++) {
 		output_file << DELIMITER << "Vacc";
@@ -49,7 +49,7 @@ void create_header(std::ofstream& output_file, const size_t columns_count) {
 }
 
 [[nodiscard]] 
-uint64_t create_set(std::ifstream& current_file, const uint64_t line_count, std::ofstream& output_file) {
+uint64_t create_set(std::ifstream& current_file, const uint64_t line_count, std::ofstream& output_file) noexcept {
 	uint64_t lines_explored = 0;
 
 	std::string line;
@@ -72,7 +72,7 @@ uint64_t create_set(std::ifstream& current_file, const uint64_t line_count, std:
 	return lines_explored;
 }
 
-CreateSetError set(std::ifstream& subjects, std::ofstream& trainset, std::ofstream& testset) {
+CreateSetError set(std::ifstream& subjects, std::ofstream& trainset, std::ofstream& testset) noexcept {
 	std::unordered_map<uint64_t, uint64_t> gender_map;
 	
 	auto start = std::chrono::high_resolution_clock::now();
