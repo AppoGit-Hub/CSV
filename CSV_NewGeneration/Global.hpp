@@ -57,7 +57,7 @@ enum class MovementType : uint64_t {
 	SIZE,
 };
 
-enum CreateSetError : uint64_t {
+enum ProcessError : uint64_t {
 	NO_ERROR,
 	DIRECTORY_TYPE_NOT_FOUND,
 	PERSON_FILE_NOT_FOUND,
@@ -128,12 +128,17 @@ struct EvalutionStats {
 };
 
 void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
+
+size_t find_directory_type(const std::string& directory_name);
+uint64_t find_gender(std::fstream& subjects, const uint64_t person_id) ;
 void create_header(std::fstream& output_file, const size_t columns_count);
 uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::fstream& output_file);
-bool is_extreme(const double value, const double average, const double std);
-std::vector<double> find_acceleration(const std::string& filepath, const MovementType movement_type);
+ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset);
 
-CreateSetError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset);
-void verification();
+bool is_extreme(const double value, const double average, const double std);
+ProcessError verification(std::fstream& checkfile);
+
 void pattern();
+
+std::vector<double> find_acceleration(const std::string& filepath, const MovementType movement_type);
 void evaluation();
