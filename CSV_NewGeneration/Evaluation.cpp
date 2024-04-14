@@ -65,7 +65,7 @@ ProcessError evaluation(std::fstream& testset, std::fstream& pattern) {
 		MovementType movement_min = MovementType::SIZE;
 
 		std::vector<double> line_acceleration;
-		uint64_t movement_size = 7;
+		uint64_t movement_size = static_cast<uint64_t>(MovementType::SIZE);
 		for (uint64_t type_index = 1; type_index < movement_size; type_index++) {
 			MovementType movement_type = static_cast<MovementType>(type_index);
 
