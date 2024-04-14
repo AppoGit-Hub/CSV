@@ -128,12 +128,12 @@ struct EvalutionStats {
 };
 
 void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
-void create_header(std::ofstream& output_file, const size_t columns_count);
-uint64_t create_set(std::ifstream& current_file, const uint64_t line_count, std::ofstream& output_file);
+void create_header(std::fstream& output_file, const size_t columns_count);
+uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::fstream& output_file);
 bool is_extreme(const double value, const double average, const double std);
 std::vector<double> find_acceleration(const std::string& filepath, const MovementType movement_type);
 
-CreateSetError set(std::ifstream& subjects, std::ofstream& trainset, std::ofstream& testset);
+CreateSetError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset);
 void verification();
 void pattern();
 void evaluation();
