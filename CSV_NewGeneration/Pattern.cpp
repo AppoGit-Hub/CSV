@@ -1,17 +1,14 @@
 #include "Global.hpp"
 
-void pattern() {
-	std::ofstream pattern_file(PATTERN_FILENAME);
-	pattern_file << "Mouvement";
+ProcessError create_pattern(std::fstream& pattern, std::fstream& trainset) {
+	pattern << "Mouvement";
 	for (size_t index = 0; index < TRAINSET_COLUMNS; index++) {
-		pattern_file << DELIMITER << "Vacc";
+		pattern << DELIMITER << "Vacc";
 	}
-	pattern_file << std::endl;
-
-	std::ifstream current_file(TRAINSET_FILENAME);
+	pattern << std::endl;
 
 	std::string header;
-	std::getline(current_file, header);
+	std::getline(trainset, header);
 
 	char delimiter;
 
@@ -26,7 +23,7 @@ void pattern() {
 
 	std::vector<double> accelerations;
 
-	while (std::getline(current_file, line)) {
+	while (std::getline(trainset, line)) {
 		std::istringstream iss(line);
 
 		iss >> block_movement >> delimiter;
@@ -34,7 +31,7 @@ void pattern() {
 
 		accelerations.clear();
 		size_t block_lines = 0;
-		while (block_movement == movement && std::getline(current_file, block_line)) {
+		while (block_movement == movement && std::getline(trainset, block_line)) {
 			std::istringstream block_iss(block_line);
 
 			block_iss >>
@@ -62,13 +59,12 @@ void pattern() {
 			block_lines++;
 		}
 
-		pattern_file << block_movement;
+		pattern << block_movement;
 		for (size_t acc_index = 0; acc_index < accelerations.size(); acc_index++) {
-			pattern_file << DELIMITER << accelerations[acc_index] / block_lines;
+			pattern << DELIMITER << accelerations[acc_index] / block_lines;
 		}
-		pattern_file << std::endl;
+		pattern << std::endl;
 	}
 
-	pattern_file.close();
-	current_file.close();
+	return NO_ERROR;
 }

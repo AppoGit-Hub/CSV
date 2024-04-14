@@ -138,7 +138,7 @@ ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& t
 bool is_extreme(const double value, const double average, const double std);
 ProcessError verification(std::fstream& checkfile);
 
-void pattern();
+ProcessError create_pattern(std::fstream& pattern, std::fstream& trainset);
 
 std::vector<double> find_acceleration(const std::string& filepath, const MovementType movement_type);
-void evaluation();
+ProcessError evaluation(std::fstream& testset, std::fstream& pattern);

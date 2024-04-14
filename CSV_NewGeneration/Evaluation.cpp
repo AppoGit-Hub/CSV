@@ -1,12 +1,10 @@
 #include "Global.hpp"
 
-std::vector<double> find_acceleration(const std::string& filepath, const MovementType movement_type) {
+std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type) {
 	std::vector<double> accelerations;
-	
-	std::ifstream file(filepath);
-	
+		
 	std::string header;
-	std::getline(file, header);
+	std::getline(pattern, header);
 	
 	char delimiter;
 	uint64_t movement = 0;
@@ -15,7 +13,7 @@ std::vector<double> find_acceleration(const std::string& filepath, const Movemen
 	uint64_t movement_search = static_cast<uint64_t>(movement_type);
 
 	std::string line;
-	while (movement != movement_search && std::getline(file, line)) {
+	while (movement != movement_search && std::getline(pattern, line)) {
 		std::istringstream iss(line);
 		iss >> movement >> delimiter;
 	}
@@ -32,14 +30,12 @@ std::vector<double> find_acceleration(const std::string& filepath, const Movemen
 	return accelerations;
 }
 
-void evaluation() {
+ProcessError evaluation(std::fstream& testset, std::fstream& pattern) {
 	std::unordered_map<MovementType, EvalutionStats> verification;
 	std::unordered_map<MovementType, std::vector<double>> testset_lines;
-
-	std::ifstream file(TESTSET_FILENAME);
 	
 	std::string header;
-	std::getline(file, header);
+	std::getline(testset, header);
 
 	char delimiter;
 	uint64_t movement;
@@ -48,7 +44,7 @@ void evaluation() {
 	double testset_acceleration;
 
 	std::string line;
-	while (std::getline(file, line)) {
+	while (std::getline(testset, line)) {
 		std::istringstream iss(line);
 
 		iss >> movement >> delimiter 
@@ -69,7 +65,7 @@ void evaluation() {
 				line_acceleration = testset_lines[movement_type];
 			}
 			else {
-				line_acceleration = find_acceleration(PATTERN_FILENAME, movement_type);
+				line_acceleration = find_acceleration(pattern, movement_type);
 				testset_lines[movement_type] = line_acceleration;
 			}
 			
