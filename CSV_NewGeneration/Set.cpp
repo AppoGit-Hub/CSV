@@ -75,8 +75,6 @@ uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::
 ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset) {
 	std::unordered_map<uint64_t, uint64_t> gender_map;
 	
-	auto start = std::chrono::high_resolution_clock::now();
-
 	create_header(trainset, TRAINSET_COLUMNS);
 	create_header(testset, TESTSET_COLUMNS);
 
@@ -119,10 +117,6 @@ ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& t
 
 		file_index++;
 	});
-
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double, std::milli> duration = end - start;
-	std::cout << "Execution time: " << duration.count() << " milliseconds\n";
 
 	return NO_ERROR;
 }

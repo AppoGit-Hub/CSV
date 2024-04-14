@@ -17,12 +17,17 @@ ProcessError verification(std::fstream& checkfile) {
 		std::ifstream current_file(file);
 		if (!current_file.is_open())
 			return COUDLNT_OPEN_FILE;
+		
+		uint64_t total_extreme = 0;
+		uint64_t total_normal = 0;
 
 		std::string header;
 		std::getline(current_file, header);
 
 		std::string line;
 		while (std::getline(current_file, line)) {
+			total_normal++;
+
 			std::istringstream iss(line);
 				
 			const RawLine line = RawLine::extract(iss);
@@ -32,6 +37,8 @@ ProcessError verification(std::fstream& checkfile) {
 			const bool extreme_z = is_extreme(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
 
 			if (extreme_x || extreme_y || extreme_z) {
+				total_extreme++;
+
 				checkfile <<
 					file << DELIMITER <<
 					line.id - 1 << DELIMITER;
@@ -60,6 +67,8 @@ ProcessError verification(std::fstream& checkfile) {
 				checkfile << std::endl;
 			}
 		}
+
+		std::cout << file.string() << " | " << total_normal << " | " << total_extreme << std::endl;
 	});
 
 	return NO_ERROR;
