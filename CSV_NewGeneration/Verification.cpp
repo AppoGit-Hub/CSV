@@ -1,6 +1,6 @@
 #include "Global.hpp"
 
-[[nodiscard]] const bool is_extreme(const double value, const double average, const double std) {
+[[nodiscard]] bool is_extreme(const double value, const double average, const double std) {
 	return value > average + (3 * std) || value < average - (3 * std);
 }
 
