@@ -73,6 +73,10 @@ uint64_t create_set(std::ifstream& current_file, const uint64_t line_count, std:
 }
 
 CreateSetError set(std::ifstream& subjects, std::ofstream& trainset, std::ofstream& testset) {
+	std::unordered_map<uint64_t, uint64_t> gender_map;
+	
+	auto start = std::chrono::high_resolution_clock::now();
+
 	create_header(trainset, TRAINSET_COLUMNS);
 	create_header(testset, TESTSET_COLUMNS);
 
@@ -91,7 +95,12 @@ CreateSetError set(std::ifstream& subjects, std::ofstream& trainset, std::ofstre
 
 		const MovementType directory_type = MOVEMENT_REGEX[directory_index].second;
 		const uint64_t person_id = std::stoull(matches[1].str());
-		const uint64_t gender = find_gender(subjects, person_id);
+		
+		if (gender_map.find(person_id) == gender_map.end()) {
+			gender_map[person_id] = find_gender(subjects, person_id);
+		}
+		
+		const uint64_t gender = gender_map[person_id];
 
 		std::ifstream current_file(current_path);
 		if (!current_file.is_open())
@@ -110,6 +119,10 @@ CreateSetError set(std::ifstream& subjects, std::ofstream& trainset, std::ofstre
 
 		file_index++;
 	});
+
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double, std::milli> duration = end - start;
+	std::cout << "Execution time: " << duration.count() << " milliseconds\n";
 
 	return NO_ERROR;
 }
