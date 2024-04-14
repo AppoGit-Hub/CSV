@@ -1,7 +1,7 @@
 #include "Global.hpp"
 
 [[nodiscard]] 
-const size_t find_directory_type(const std::string& directory_name) noexcept {
+size_t find_directory_type(const std::string& directory_name) noexcept {
 	size_t pair_index = 0;
 	while (pair_index < MOVEMENT_REGEX.size() && !std::regex_match(directory_name, MOVEMENT_REGEX[pair_index].first)) {
 		pair_index++;
