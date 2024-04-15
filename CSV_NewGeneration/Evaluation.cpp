@@ -113,11 +113,27 @@ ProcessError evaluation() {
 
 		std::cout << movement << " >>> " << distance_min << " | " << static_cast<uint64_t>(movement_min) << std::endl;
 	}
-
+	double right_global = 0;
+	double total_global = 0;
 	std::cout << "Verification: " << std::endl;
 	for (auto [type, evaluation] : verification) {
-		double total = evaluation.right + evaluation.wrong;
-		std::cout << static_cast<uint64_t>(type) << " | " << evaluation.right << " | " << evaluation.wrong << " | " << total << " | " << std::round((evaluation.right / total) * 100) << "%" << std::endl;
+		double total_local = evaluation.right + evaluation.wrong;
+		right_global += evaluation.right;
+		total_global += total_local;
+		std::cout 
+			<< static_cast<uint64_t>(type) << " | " 
+			<< evaluation.right << " | "
+			<< evaluation.wrong << " | " 
+			<< total_local << " | " 
+			<< std::round((evaluation.right / total_local) * 100) << "%"
+			<< std::endl;
 	}
+	std::cout 
+		<< "Total: " 
+		<< right_global << " | " 
+		<< total_global << " | "
+		<< std::round((right_global / total_global) * 100) << "%" 
+		<< std::endl;
+
 	return NO_ERROR;
 }
