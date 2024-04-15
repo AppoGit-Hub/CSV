@@ -1,11 +1,11 @@
 #include "Global.hpp"
 
-ProcessError create_pattern(std::fstream& pattern, std::fstream& trainset) {
-	pattern.open(PATTERN_FILENAME, std::ios::out);
+ProcessError create_pattern() {
+	std::fstream pattern(PATTERN_FILENAME, std::ios::out);
 	if (!pattern.is_open())
 		return COUDLNT_OPEN_FILE;
 
-	trainset.open(TRAINSET_FILENAME, std::ios::in);
+	std::fstream trainset(TRAINSET_FILENAME, std::ios::in);
 	if (!trainset.is_open())
 		return COUDLNT_OPEN_FILE;
 	

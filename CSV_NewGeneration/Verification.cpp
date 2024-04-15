@@ -5,8 +5,8 @@ bool is_extreme(const double value, const double average, const double std) {
 	return value > average + (3 * std) || value < average - (3 * std);
 }
 
-ProcessError verification(std::fstream& checkfile) {
-	checkfile.open(CHECK_FILENAME, std::ios::out);
+ProcessError verification() {
+	std::fstream checkfile(CHECK_FILENAME, std::ios::out);
 	if (!checkfile.is_open())
 		return COUDLNT_OPEN_FILE;
 	

@@ -2,7 +2,10 @@
 
 std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type) {
 	std::vector<double> accelerations;
-		
+
+	pattern.clear();
+	pattern.seekg(std::ios::beg);
+
 	std::string header;
 	std::getline(pattern, header);
 	
@@ -30,12 +33,12 @@ std::vector<double> find_acceleration(std::fstream& pattern, const MovementType 
 	return accelerations;
 }
 
-ProcessError evaluation(std::fstream& testset, std::fstream& pattern) {
-	testset.open(TESTSET_FILENAME, std::ios::in);
+ProcessError evaluation() {
+	std::fstream testset(TESTSET_FILENAME, std::ios::in);
 	if (!testset.is_open())
 		return COUDLNT_OPEN_FILE;
 
-	pattern.open(PATTERN_FILENAME, std::ios::out);
+	std::fstream pattern(PATTERN_FILENAME, std::ios::in);
 	if (!pattern.is_open())
 		return COUDLNT_OPEN_FILE;
 

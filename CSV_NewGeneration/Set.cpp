@@ -58,13 +58,20 @@ uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::
 
 		const RawLine line = RawLine::extract(iss);
 
-		double acceleration = sqrt(
-			pow(line.user_acceleration_x, 2) + 
-			pow(line.user_acceleration_y, 2) + 
-			pow(line.user_acceleration_z, 2)
-		);
+		const bool extreme_x = is_extreme(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
+		const bool extreme_y = is_extreme(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
+		const bool extreme_z = is_extreme(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
+		
+		if (!extreme_x && !extreme_y && !extreme_z) {
+			double acceleration = sqrt(
+				pow(line.user_acceleration_x, 2) +
+				pow(line.user_acceleration_y, 2) +
+				pow(line.user_acceleration_z, 2)
+			);
 
-		output_file << DELIMITER << acceleration;
+			output_file << DELIMITER << acceleration;
+		}
+
 		lines_explored++;
 	}
 	output_file << std::endl;
@@ -72,16 +79,16 @@ uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::
 	return lines_explored;
 }
 
-ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset) {
-	subjects.open(SUBJECT_FILEPATH, std::ios::in);
+ProcessError set() {
+	std::fstream subjects(SUBJECT_FILEPATH, std::ios::in);
 	if (!subjects.is_open()) 
 		return COUDLNT_OPEN_FILE;
 	
-	trainset.open(TRAINSET_FILENAME, std::ios::out);
+	std::fstream trainset(TRAINSET_FILENAME, std::ios::out);
 	if (!trainset.is_open()) 
 		return COUDLNT_OPEN_FILE;
 	
-	testset.open(TESTSET_FILENAME, std::ios::out);
+	std::fstream testset(TESTSET_FILENAME, std::ios::out);
 	if (!testset.is_open())
 		return COUDLNT_OPEN_FILE;
 	

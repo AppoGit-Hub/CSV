@@ -28,6 +28,7 @@ const std::string EVALUATION_FILENAME = "evaluation.csv";
 const std::string SUBJECT_FILENAME = "data_subjects_info.csv";
 const std::string TRAINSET_FILENAME = "trainset.csv";
 const std::string TESTSET_FILENAME = "testset.csv";
+const std::string CLEANED_TRAINSET_FILENAME = "cleanedtrainset.csv";
 
 const auto DATA_FOLDERPATH = fs::path{ BASE_FOLDER } / DATA_FOLDER;
 const auto SUBJECT_FILEPATH = fs::path{ BASE_FOLDER } / SUBJECT_FILENAME;
@@ -133,12 +134,12 @@ size_t find_directory_type(const std::string& directory_name);
 uint64_t find_gender(std::fstream& subjects, const uint64_t person_id) ;
 void create_header(std::fstream& output_file, const size_t columns_count);
 uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::fstream& output_file);
-ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset);
+ProcessError set();
 
 bool is_extreme(const double value, const double average, const double std);
-ProcessError verification(std::fstream& checkfile);
+ProcessError verification();
 
-ProcessError create_pattern(std::fstream& pattern, std::fstream& trainset);
+ProcessError create_pattern();
 
-std::vector<double> find_acceleration(const std::string& filepath, const MovementType movement_type);
-ProcessError evaluation(std::fstream& testset, std::fstream& pattern);
+std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type);
+ProcessError evaluation();
