@@ -24,6 +24,7 @@
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="Set.cpp" />
+    <ClCompile Include="UnitTest.cpp" />
     <ClCompile Include="Verification.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,10 +1,15 @@
 #include "Global.hpp"
 
-int main() {
+void stack() {
 	phase_zero();
 	phase_one();
 	phase_two();
 	phase_three();
+}
+
+int main() {
+	test();
+
 
 	return EXIT_SUCCESS;
 }

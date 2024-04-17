@@ -94,12 +94,7 @@ ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& t
 
 		const MovementType directory_type = MOVEMENT_REGEX[directory_index].second;
 		const uint64_t person_id = std::stoull(matches[1].str());
-
-		if (gender_map.find(person_id) == gender_map.end()) {
-			gender_map[person_id] = find_gender(subjects, person_id);
-		}
-
-		const uint64_t gender = gender_map[person_id];
+		const uint64_t gender = find_gender(subjects, person_id);
 
 		std::fstream current_file(current_path);
 		if (!current_file.is_open())
@@ -115,7 +110,7 @@ ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& t
 			testset << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
 			uint64_t testset_lines = create_set(current_file, TESTSET_COLUMNS, testset);
 		}
-
+		
 		file_index++;
 	});
 

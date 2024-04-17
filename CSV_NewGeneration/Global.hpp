@@ -16,6 +16,7 @@
 #include <math.h>
 #include <unordered_map>
 #include <optional>
+#include <cassert>
 
 namespace fs = std::filesystem;
 
@@ -148,3 +149,5 @@ ProcessError phase_two();
 std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type);
 ProcessError evaluation(std::fstream& testset, std::fstream& pattern);
 ProcessError phase_three();
+
+ProcessError test();
