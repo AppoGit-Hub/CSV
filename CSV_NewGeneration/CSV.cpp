@@ -1,7 +1,10 @@
 #include "Global.hpp"
 
 int main() {
-	evaluation();
+	phase_zero();
+	phase_one();
+	phase_two();
+	phase_three();
 
 	return EXIT_SUCCESS;
 }

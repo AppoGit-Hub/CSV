@@ -58,19 +58,13 @@ uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::
 
 		const RawLine line = RawLine::extract(iss);
 
-		const bool extreme_x = is_extreme(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
-		const bool extreme_y = is_extreme(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
-		const bool extreme_z = is_extreme(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
-		
-		if (!extreme_x && !extreme_y && !extreme_z) {
-			double acceleration = sqrt(
-				pow(line.user_acceleration_x, 2) +
-				pow(line.user_acceleration_y, 2) +
-				pow(line.user_acceleration_z, 2)
-			);
+		double acceleration = sqrt(
+			pow(line.user_acceleration_x, 2) +
+			pow(line.user_acceleration_y, 2) +
+			pow(line.user_acceleration_z, 2)
+		);
 
-			output_file << DELIMITER << acceleration;
-		}
+		output_file << DELIMITER << acceleration;
 
 		lines_explored++;
 	}
@@ -79,21 +73,9 @@ uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::
 	return lines_explored;
 }
 
-ProcessError set() {
-	std::fstream subjects(SUBJECT_FILEPATH, std::ios::in);
-	if (!subjects.is_open()) 
-		return COUDLNT_OPEN_FILE;
-	
-	std::fstream trainset(TRAINSET_FILENAME, std::ios::out);
-	if (!trainset.is_open()) 
-		return COUDLNT_OPEN_FILE;
-	
-	std::fstream testset(TESTSET_FILENAME, std::ios::out);
-	if (!testset.is_open())
-		return COUDLNT_OPEN_FILE;
-	
+ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset) {
 	std::unordered_map<uint64_t, uint64_t> gender_map;
-	
+
 	create_header(trainset, TRAINSET_COLUMNS);
 	create_header(testset, TESTSET_COLUMNS);
 
@@ -112,11 +94,11 @@ ProcessError set() {
 
 		const MovementType directory_type = MOVEMENT_REGEX[directory_index].second;
 		const uint64_t person_id = std::stoull(matches[1].str());
-		
+
 		if (gender_map.find(person_id) == gender_map.end()) {
 			gender_map[person_id] = find_gender(subjects, person_id);
 		}
-		
+
 		const uint64_t gender = gender_map[person_id];
 
 		std::fstream current_file(current_path);
@@ -138,4 +120,20 @@ ProcessError set() {
 	});
 
 	return NO_ERROR;
+}
+
+ProcessError phase_zero() {
+	std::fstream subjects(SUBJECT_FILEPATH, std::ios::in);
+	if (!subjects.is_open()) 
+		return COUDLNT_OPEN_FILE;
+	
+	std::fstream trainset(TRAINSET_FILENAME, std::ios::out);
+	if (!trainset.is_open()) 
+		return COUDLNT_OPEN_FILE;
+	
+	std::fstream testset(TESTSET_FILENAME, std::ios::out);
+	if (!testset.is_open())
+		return COUDLNT_OPEN_FILE;
+
+	return set(subjects, trainset, testset);
 }

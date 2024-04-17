@@ -1,16 +1,17 @@
 #include "Global.hpp"
 
 [[nodiscard]] 
-bool is_extreme(const double value, const double average, const double std) {
+bool is_extreme_z(const double value, const double average, const double std) {
 	const double z_score = (value - average) / std;
 	return z_score > average + (3 * std) || z_score < average - (3 * std);
 }
 
-ProcessError verification() {
-	std::fstream checkfile(CHECK_FILENAME, std::ios::out);
-	if (!checkfile.is_open())
-		return COUDLNT_OPEN_FILE;
-	
+[[nodiscard]]
+bool is_extreme(const double value, const double average, const double std) {
+	return value > average + (3 * std) || value < average - (3 * std);
+}
+
+ProcessError verification(std::fstream& checkfile) {
 	checkfile <<
 		"Filename" << DELIMITER <<
 		"Line" << DELIMITER <<
@@ -22,7 +23,7 @@ ProcessError verification() {
 		std::ifstream current_file(file);
 		if (!current_file.is_open())
 			return COUDLNT_OPEN_FILE;
-		
+
 		uint64_t total_extreme = 0;
 		uint64_t total_normal = 0;
 
@@ -34,9 +35,9 @@ ProcessError verification() {
 			total_normal++;
 
 			std::istringstream iss(line);
-				
+
 			const RawLine line = RawLine::extract(iss);
-				
+
 			const bool extreme_x = is_extreme(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
 			const bool extreme_y = is_extreme(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
 			const bool extreme_z = is_extreme(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
@@ -74,7 +75,15 @@ ProcessError verification() {
 		}
 
 		std::cout << file.string() << " | " << total_normal << " | " << total_extreme << std::endl;
-	});
+		});
 
 	return NO_ERROR;
+}
+
+ProcessError phase_one() {
+	std::fstream checkfile(CHECK_FILENAME, std::ios::out);
+	if (!checkfile.is_open())
+		return COUDLNT_OPEN_FILE;
+	
+	return verification(checkfile);
 }

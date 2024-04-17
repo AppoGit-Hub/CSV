@@ -1,14 +1,6 @@
 #include "Global.hpp"
 
-ProcessError create_pattern() {
-	std::fstream pattern(PATTERN_FILENAME, std::ios::out);
-	if (!pattern.is_open())
-		return COUDLNT_OPEN_FILE;
-
-	std::fstream trainset(TRAINSET_FILENAME, std::ios::in);
-	if (!trainset.is_open())
-		return COUDLNT_OPEN_FILE;
-	
+ProcessError create_pattern(std::fstream& pattern, std::fstream& trainset) {
 	pattern << "Mouvement";
 	for (size_t index = 0; index < TRAINSET_COLUMNS; index++) {
 		pattern << DELIMITER << "Vacc";
@@ -75,4 +67,16 @@ ProcessError create_pattern() {
 	}
 
 	return NO_ERROR;
+}
+
+ProcessError phase_two() {
+	std::fstream pattern(PATTERN_FILENAME, std::ios::out);
+	if (!pattern.is_open())
+		return COUDLNT_OPEN_FILE;
+
+	std::fstream trainset(TRAINSET_FILENAME, std::ios::in);
+	if (!trainset.is_open())
+		return COUDLNT_OPEN_FILE;
+
+	return create_pattern(pattern, trainset);
 }

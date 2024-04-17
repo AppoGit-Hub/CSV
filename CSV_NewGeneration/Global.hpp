@@ -134,12 +134,17 @@ size_t find_directory_type(const std::string& directory_name);
 uint64_t find_gender(std::fstream& subjects, const uint64_t person_id) ;
 void create_header(std::fstream& output_file, const size_t columns_count);
 uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::fstream& output_file);
-ProcessError set();
+ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset);
+ProcessError phase_zero();
 
 bool is_extreme(const double value, const double average, const double std);
-ProcessError verification();
+bool is_extreme_z(const double value, const double average, const double std);
+ProcessError verification(std::fstream& checkfile);
+ProcessError phase_one();
 
-ProcessError create_pattern();
+ProcessError create_pattern(std::fstream& pattern, std::fstream& trainset);
+ProcessError phase_two();
 
 std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type);
-ProcessError evaluation();
+ProcessError evaluation(std::fstream& testset, std::fstream& pattern);
+ProcessError phase_three();
