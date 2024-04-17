@@ -1,6 +1,9 @@
 #include "Global.hpp"
 
-ProcessError create_pattern(std::fstream& pattern, std::fstream& trainset) {
+ProcessError create_pattern(
+	std::fstream& pattern, 
+	std::fstream& trainset
+) {
 	pattern << "Mouvement";
 	for (size_t index = 0; index < TRAINSET_COLUMNS; index++) {
 		pattern << DELIMITER << "Vacc";

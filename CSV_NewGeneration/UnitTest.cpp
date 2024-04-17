@@ -55,11 +55,24 @@ uint64_t test_set_out() {
 	std::cout << acceleration << std::endl;
 }
 
+ProcessError test_verification_extreme() {
+	std::fstream checkfile("test_check.csv", std::ios::out);
+	if (!checkfile.is_open())
+		return COUDLNT_OPEN_FILE;
 
+	verification(checkfile, is_extreme);
+
+	std::fstream checkfile_z("test_check_z.csv", std::ios::out);
+	if (!checkfile.is_open())
+		return COUDLNT_OPEN_FILE;
+
+	verification(checkfile_z, is_extreme_z);
+}
 
 ProcessError test() {
 	test_create_set();
 	test_set_out();
+	test_verification_extreme();
 
 	return NO_ERROR;
 }

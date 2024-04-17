@@ -1,7 +1,9 @@
 #include "Global.hpp"
 
 [[nodiscard]] 
-size_t find_directory_type(const std::string& directory_name) {
+size_t find_directory_type(
+	const std::string& directory_name
+) {
 	size_t pair_index = 0;
 	while (pair_index < MOVEMENT_REGEX.size() && !std::regex_match(directory_name, MOVEMENT_REGEX[pair_index].first)) {
 		pair_index++;
@@ -10,7 +12,10 @@ size_t find_directory_type(const std::string& directory_name) {
 }
 
 [[nodiscard]] 
-uint64_t find_gender(std::fstream& subjects, const uint64_t person_id) {
+uint64_t find_gender(
+	std::fstream& subjects, 
+	const uint64_t person_id
+) {
 	uint64_t code = 0;
 	uint64_t weight;
 	uint64_t height;
@@ -49,7 +54,11 @@ void create_header(std::fstream& output_file, const size_t columns_count) {
 }
 
 [[nodiscard]] 
-uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::fstream& output_file) {
+uint64_t create_set(
+	std::fstream& current_file, 
+	const uint64_t line_count, 
+	std::fstream& output_file
+) {
 	uint64_t lines_explored = 0;
 
 	std::string line;
@@ -73,7 +82,11 @@ uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::
 	return lines_explored;
 }
 
-ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset) {
+ProcessError set(
+	std::fstream& subjects, 
+	std::fstream& trainset, 
+	std::fstream& testset
+) {
 	std::unordered_map<uint64_t, uint64_t> gender_map;
 
 	create_header(trainset, TRAINSET_COLUMNS);

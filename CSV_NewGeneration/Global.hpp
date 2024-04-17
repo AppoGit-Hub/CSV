@@ -140,7 +140,7 @@ ProcessError phase_zero();
 
 bool is_extreme(const double value, const double average, const double std);
 bool is_extreme_z(const double value, const double average, const double std);
-ProcessError verification(std::fstream& checkfile);
+ProcessError verification(std::fstream& checkfile, std::function<bool(double, double, double)> extreme_func);
 ProcessError phase_one();
 
 ProcessError create_pattern(std::fstream& pattern, std::fstream& trainset);

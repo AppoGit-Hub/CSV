@@ -11,7 +11,10 @@ bool is_extreme(const double value, const double average, const double std) {
 	return value > average + (3 * std) || value < average - (3 * std);
 }
 
-ProcessError verification(std::fstream& checkfile) {
+ProcessError verification(
+	std::fstream& checkfile, 
+	std::function<bool(double, double, double)> extreme_func
+) {
 	checkfile <<
 		"Filename" << DELIMITER <<
 		"Line" << DELIMITER <<
@@ -19,13 +22,13 @@ ProcessError verification(std::fstream& checkfile) {
 		"Y" << DELIMITER <<
 		"Z" << DELIMITER << std::endl;
 
+	double total_extreme = 0;
+	double total_normal = 0;
+
 	for_file(DATA_FOLDERPATH, [&](const fs::path& file) {
 		std::ifstream current_file(file);
 		if (!current_file.is_open())
 			return COUDLNT_OPEN_FILE;
-
-		uint64_t total_extreme = 0;
-		uint64_t total_normal = 0;
 
 		std::string header;
 		std::getline(current_file, header);
@@ -38,9 +41,9 @@ ProcessError verification(std::fstream& checkfile) {
 
 			const RawLine line = RawLine::extract(iss);
 
-			const bool extreme_x = is_extreme(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
-			const bool extreme_y = is_extreme(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
-			const bool extreme_z = is_extreme(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
+			const bool extreme_x = extreme_func(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
+			const bool extreme_y = extreme_func(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
+			const bool extreme_z = extreme_func(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
 
 			if (extreme_x || extreme_y || extreme_z) {
 				total_extreme++;
@@ -73,9 +76,14 @@ ProcessError verification(std::fstream& checkfile) {
 				checkfile << std::endl;
 			}
 		}
+		//std::cout << file.string() << " | " << total_normal << " | " << total_extreme << std::endl;
+	});
 
-		std::cout << file.string() << " | " << total_normal << " | " << total_extreme << std::endl;
-		});
+	std::cout 
+		<< "Total : " 
+		<< total_extreme << " | " 
+		<< total_normal << " | " 
+		<< (total_extreme / total_normal) << std::endl;
 
 	return NO_ERROR;
 }
@@ -85,5 +93,5 @@ ProcessError phase_one() {
 	if (!checkfile.is_open())
 		return COUDLNT_OPEN_FILE;
 	
-	return verification(checkfile);
+	return verification(checkfile, is_extreme);
 }
