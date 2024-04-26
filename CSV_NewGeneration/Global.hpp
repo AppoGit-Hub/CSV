@@ -40,6 +40,7 @@ inline const double STANDARD_DEVIATION_X = 0.38875666;
 inline const double STANDARD_DEVIATION_Y = 0.61937128;
 inline const double STANDARD_DEVIATION_Z = 0.4300345;
 
+inline const uint64_t NUMBER_MOVEMENTS = 6;
 inline const uint64_t TRAINSET_COLUMNS = 600;
 const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS * TESTSET_PROPORTION;
 
@@ -119,3 +120,4 @@ void create_header(std::ofstream& output_file, const size_t columns_count);
 void pattern();
 void set();
 void verification();
+void evaluationTestSet();
