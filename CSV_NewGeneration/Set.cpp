@@ -57,7 +57,8 @@ void create_header(std::fstream& output_file, const size_t columns_count) {
 uint64_t create_set(
 	std::fstream& current_file, 
 	const uint64_t line_count, 
-	std::fstream& output_file
+	std::fstream& output_file,
+	std::function<bool(double, double, double)> extreme_func
 ) {
 	uint64_t lines_explored = 0;
 
@@ -67,13 +68,19 @@ uint64_t create_set(
 
 		const RawLine line = RawLine::extract(iss);
 
-		double acceleration = sqrt(
-			pow(line.user_acceleration_x, 2) +
-			pow(line.user_acceleration_y, 2) +
-			pow(line.user_acceleration_z, 2)
-		);
+		const bool extreme_x = extreme_func(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
+		const bool extreme_y = extreme_func(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
+		const bool extreme_z = extreme_func(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
 
-		output_file << DELIMITER << acceleration;
+		if (!extreme_x && !extreme_y && !extreme_z) {
+			double acceleration = sqrt(
+				pow(line.user_acceleration_x, 2) +
+				pow(line.user_acceleration_y, 2) +
+				pow(line.user_acceleration_z, 2)
+			);
+
+			output_file << DELIMITER << acceleration;
+		}
 
 		lines_explored++;
 	}
@@ -85,7 +92,8 @@ uint64_t create_set(
 ProcessError set(
 	std::fstream& subjects, 
 	std::fstream& trainset, 
-	std::fstream& testset
+	std::fstream& testset,
+	std::function<bool(double, double, double)> extreme_func
 ) {
 	std::unordered_map<uint64_t, uint64_t> gender_map;
 
@@ -117,11 +125,11 @@ ProcessError set(
 		std::getline(current_file, header);
 
 		trainset << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
-		uint64_t trainset_lines = create_set(current_file, TRAINSET_COLUMNS, trainset);
+		uint64_t trainset_lines = create_set(current_file, TRAINSET_COLUMNS, trainset, extreme_func);
 
 		if (trainset_lines == TRAINSET_COLUMNS) {
 			testset << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
-			uint64_t testset_lines = create_set(current_file, TESTSET_COLUMNS, testset);
+			uint64_t testset_lines = create_set(current_file, TESTSET_COLUMNS, testset, extreme_func);
 		}
 		
 		file_index++;
@@ -143,5 +151,5 @@ ProcessError phase_zero() {
 	if (!testset.is_open())
 		return COUDLNT_OPEN_FILE;
 
-	return set(subjects, trainset, testset);
+	return set(subjects, trainset, testset, no_extreme);
 }

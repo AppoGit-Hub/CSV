@@ -21,7 +21,7 @@ ProcessError test_create_set() {
 	std::getline(test_in, header);
 
 	test_out << 1 << DELIMITER << 1 << DELIMITER << 1;
-	create_set(test_in, columns_count, test_out);
+	create_set(test_in, columns_count, test_out, no_extreme);
 
 	return NO_ERROR;
 }
@@ -67,6 +67,30 @@ ProcessError test_verification_extreme() {
 		return COUDLNT_OPEN_FILE;
 
 	verification(checkfile_z, is_extreme_z);
+}
+
+ProcessError test_fstream() {
+	std::fstream testa("testa.csv", std::ios::out);
+	std::cout << "Test A: " << std::endl;
+	std::cout << testa.is_open() << std::endl;
+	testa << "testa" << std::endl;
+	std::cout << testa.is_open() << std::endl;
+
+	std::fstream testb("testb.csv", std::ios::in);
+	std::cout << "Test B: " << std::endl;
+	std::cout << testb.is_open() << std::endl;
+	testb.open("testb.csv", std::ios::in);
+	testb << "testb" << std::endl;
+	std::cout << testb.is_open() << std::endl;
+
+	std::fstream testc("testc.csv", std::ios::in | std::ios::out);
+	std::cout << "Test C: " << std::endl;
+	std::cout << testc.is_open() << std::endl;
+	testc.open("testc.csv", std::ios::in | std::ios::out);
+	testc << "testc" << std::endl;
+	std::cout << testc.is_open() << std::endl;
+
+	return NO_ERROR;
 }
 
 ProcessError test() {

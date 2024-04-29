@@ -103,11 +103,11 @@ ProcessError evaluation(std::fstream& testset, std::fstream& pattern) {
 			evalution.wrong++;
 		}
 
-		std::cout << movement << " >>> " << distance_min << " | " << static_cast<uint64_t>(movement_min) << std::endl;
+		//std::cout << movement << " >>> " << distance_min << " | " << static_cast<uint64_t>(movement_min) << std::endl;
 	}
 	double right_global = 0;
 	double total_global = 0;
-	std::cout << "Verification: " << std::endl;
+	//std::cout << "Verification: " << std::endl;
 	for (auto [type, evaluation] : verification) {
 		double total_local = evaluation.right + evaluation.wrong;
 		right_global += evaluation.right;
@@ -120,13 +120,14 @@ ProcessError evaluation(std::fstream& testset, std::fstream& pattern) {
 			<< std::round((evaluation.right / total_local) * 100) << "%"
 			<< std::endl;
 	}
+	/*
 	std::cout 
 		<< "Total: " 
 		<< right_global << " | " 
 		<< total_global << " | "
 		<< std::round((right_global / total_global) * 100) << "%" 
 		<< std::endl;
-
+	*/
 	return NO_ERROR;
 }
 

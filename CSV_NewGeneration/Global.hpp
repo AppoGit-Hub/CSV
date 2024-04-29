@@ -134,12 +134,13 @@ void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
 size_t find_directory_type(const std::string& directory_name);
 uint64_t find_gender(std::fstream& subjects, const uint64_t person_id) ;
 void create_header(std::fstream& output_file, const size_t columns_count);
-uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::fstream& output_file);
-ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset);
+uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::fstream& output_file, std::function<bool(double, double, double)> extreme_func);
+ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset, std::function<bool(double, double, double)> extreme_func);
 ProcessError phase_zero();
 
 bool is_extreme(const double value, const double average, const double std);
 bool is_extreme_z(const double value, const double average, const double std);
+bool no_extreme(const double value, const double average, const double std);
 ProcessError verification(std::fstream& checkfile, std::function<bool(double, double, double)> extreme_func);
 ProcessError phase_one();
 

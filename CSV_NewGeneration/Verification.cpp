@@ -11,6 +11,11 @@ bool is_extreme(const double value, const double average, const double std) {
 	return value > average + (3 * std) || value < average - (3 * std);
 }
 
+[[nodiscard]]
+bool no_extreme(const double value, const double average, const double std) {
+	return false;
+}
+
 ProcessError verification(
 	std::fstream& checkfile, 
 	std::function<bool(double, double, double)> extreme_func
@@ -79,11 +84,13 @@ ProcessError verification(
 		//std::cout << file.string() << " | " << total_normal << " | " << total_extreme << std::endl;
 	});
 
+	/*
 	std::cout 
 		<< "Total : " 
 		<< total_extreme << " | " 
 		<< total_normal << " | " 
 		<< (total_extreme / total_normal) << std::endl;
+	*/
 
 	return NO_ERROR;
 }
