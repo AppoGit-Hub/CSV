@@ -125,8 +125,7 @@ struct SetResult {
 };
 
 struct EvalutionStats {
-	uint64_t right;
-	uint64_t wrong;
+	std::array<uint64_t, 6> guess_at = {0};
 };
 
 void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
