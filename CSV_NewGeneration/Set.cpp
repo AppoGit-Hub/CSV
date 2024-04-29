@@ -53,6 +53,50 @@ void create_header(std::fstream& output_file, const size_t columns_count) {
 	output_file << std::endl;
 }
 
+void filter_justone(
+	const double acceleration_x, 
+	const double acceleration_y,
+	const double acceleration_z,
+	std::function<bool(double, double, double)> extreme_func,
+	std::fstream& output_file
+) {
+	const bool extreme_x = extreme_func(acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
+	const bool extreme_y = extreme_func(acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
+	const bool extreme_z = extreme_func(acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
+
+	if (!extreme_x && !extreme_y && !extreme_z) {
+		double acceleration = sqrt(pow(acceleration_x, 2) + pow(acceleration_y, 2) + pow(acceleration_z, 2));
+		output_file << DELIMITER << acceleration;
+	}
+}
+
+void filter_toaverage(
+	double acceleration_x,
+	double acceleration_y,
+	double acceleration_z,
+	std::function<bool(double, double, double)> extreme_func,
+	std::fstream& output_file
+) {
+	const bool extreme_x = extreme_func(acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
+	const bool extreme_y = extreme_func(acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
+	const bool extreme_z = extreme_func(acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
+
+	if (extreme_x) {
+		acceleration_x = AVERAGE_X;
+	}
+
+	if (extreme_y) {
+		acceleration_y = AVERAGE_Y;
+	}
+
+	if (extreme_z) {
+		acceleration_z = AVERAGE_Z;
+	}
+
+	double acceleration = sqrt(pow(acceleration_x, 2) + pow(acceleration_y, 2) + pow(acceleration_z, 2));
+	output_file << DELIMITER << acceleration;
+}
+
 [[nodiscard]] 
 uint64_t create_set(
 	std::fstream& current_file, 
@@ -68,19 +112,13 @@ uint64_t create_set(
 
 		const RawLine line = RawLine::extract(iss);
 
-		const bool extreme_x = extreme_func(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
-		const bool extreme_y = extreme_func(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
-		const bool extreme_z = extreme_func(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
-
-		if (!extreme_x && !extreme_y && !extreme_z) {
-			double acceleration = sqrt(
-				pow(line.user_acceleration_x, 2) +
-				pow(line.user_acceleration_y, 2) +
-				pow(line.user_acceleration_z, 2)
-			);
-
-			output_file << DELIMITER << acceleration;
-		}
+		filter_justone(
+			line.user_acceleration_x,
+			line.user_acceleration_y,
+			line.user_acceleration_z,
+			extreme_func,
+			output_file
+		);
 
 		lines_explored++;
 	}
