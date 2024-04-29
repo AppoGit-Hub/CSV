@@ -24,7 +24,7 @@ ProcessError create_pattern(
 	std::string block_line;
 	uint64_t block_movement;
 
-	std::vector<double> accelerations;
+	std::vector<std::pair<double, uint64_t>> accelerations;
 
 	while (std::getline(trainset, line)) {
 		std::istringstream iss(line);
@@ -33,7 +33,7 @@ ProcessError create_pattern(
 		movement = block_movement;
 
 		accelerations.clear();
-		size_t block_lines = 0;
+
 		while (block_movement == movement && std::getline(trainset, block_line)) {
 			std::istringstream block_iss(block_line);
 
@@ -49,22 +49,22 @@ ProcessError create_pattern(
 				block_iss >> acceleration >> delimiter;
 
 				if (acc_index < accelerations.size()) {
-					accelerations[acc_index] += acceleration;
+					accelerations[acc_index].first += acceleration;
+					accelerations[acc_index].second++;
 					cummulation++;
 				}
 				else {
-					accelerations.push_back(acceleration);
+					accelerations.push_back(std::pair(acceleration, 1));
 					added++;
 				}
 			}
 
 			std::cout << block_movement << " | " << cummulation << " | " << added << std::endl;
-			block_lines++;
 		}
 
 		pattern << block_movement;
 		for (size_t acc_index = 0; acc_index < accelerations.size(); acc_index++) {
-			pattern << DELIMITER << accelerations[acc_index] / block_lines;
+			pattern << DELIMITER << accelerations[acc_index].first / accelerations[acc_index].second;
 		}
 		pattern << std::endl;
 	}
