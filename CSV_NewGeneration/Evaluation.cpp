@@ -92,33 +92,33 @@ ProcessError evaluation(std::fstream& testset, std::fstream& pattern) {
 		
 		MovementType type = static_cast<MovementType>(movement);
 		if (verification.find(type) == verification.end()) {
-			verification[type] = EvalutionStats{ 0, 0 };
+			verification[type] = EvalutionStats{};
 		}
 		
 		EvalutionStats& evalution = verification[type];
-		if (movement == static_cast<uint64_t>(movement_min)) {
-			evalution.right++;
-		}
-		else {
-			evalution.wrong++;
-		}
+		uint64_t movement_id = static_cast<uint64_t>(movement_min);
+
+		evalution.guess_at[movement_id - 1]++;
 
 		//std::cout << movement << " >>> " << distance_min << " | " << static_cast<uint64_t>(movement_min) << std::endl;
 	}
-	double right_global = 0;
-	double total_global = 0;
+
 	//std::cout << "Verification: " << std::endl;
 	for (auto [type, evaluation] : verification) {
-		double total_local = evaluation.right + evaluation.wrong;
-		right_global += evaluation.right;
-		total_global += total_local;
+		uint64_t type_id = static_cast<uint64_t>(type);
+		std::cout << type_id << " | ";
+
+		uint64_t total = 0;
+		for (uint64_t guesses : evaluation.guess_at) {
+			std::cout << guesses << " | ";
+			total += guesses;
+		}
+
+		double succes_rate = ((double)evaluation.guess_at[type_id - 1] / total) * 100;
+
 		std::cout 
-			<< static_cast<uint64_t>(type) << " | " 
-			<< evaluation.right << " | "
-			<< evaluation.wrong << " | " 
-			<< total_local << " | " 
-			<< std::round((evaluation.right / total_local) * 100) << "%"
-			<< std::endl;
+			<< "Total : " << total << " | " 
+			<< "Accuracy: " << succes_rate << "%" << std::endl;
 	}
 	/*
 	std::cout 
