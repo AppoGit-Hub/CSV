@@ -60,9 +60,14 @@ void combinaition_stack() {
 }
 
 int main() {
+	std::cout << "Creating Set: " << std::endl;
 	phase_zero();
+	std::cout << "Creating Pattern: " << std::endl;
 	phase_two();
-
+	std::cout << "Creating Evaluation: " << std::endl;
+	phase_three();
+	std::cout << "FINISH" << std::endl;
+	
 
 	return EXIT_SUCCESS;
 }
