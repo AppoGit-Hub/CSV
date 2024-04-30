@@ -10,3 +10,9 @@ CSV_NewGeneration/.vs
 .vs
 CSV_NewGeneration/extreme.csv
 CSV_NewGeneration/pattern.csv
+CSV_NewGeneration/testset_x.csv
+CSV_NewGeneration/testset_y.csv
+CSV_NewGeneration/testset_z.csv
+CSV_NewGeneration/trainset_x.csv
+CSV_NewGeneration/trainset_y.csv
+CSV_NewGeneration/trainset_z.csv
