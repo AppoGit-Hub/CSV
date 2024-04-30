@@ -45,7 +45,7 @@ inline const double STANDARD_DEVIATION_Y = 0.61937128;
 inline const double STANDARD_DEVIATION_Z = 0.4300345;
 
 inline const uint64_t TRAINSET_COLUMNS = 600;
-const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS * TESTSET_PROPORTION;
+const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS;
 
 const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");
 
@@ -89,28 +89,6 @@ struct RawLine {
 	double user_acceleration_x;
 	double user_acceleration_y;
 	double user_acceleration_z;
-
-	static const RawLine extract(std::istringstream& iss) {
-		char delimiter;
-		RawLine line;
-
-		iss >>
-			line.id >> delimiter >>
-			line.attitude_roll >> delimiter >>
-			line.attitude_pitch >> delimiter >>
-			line.attitude_yaw >> delimiter >>
-			line.gravity_x >> delimiter >>
-			line.gravity_y >> delimiter >>
-			line.gravity_z >> delimiter >>
-			line.rotation_rate_x >> delimiter >>
-			line.rotation_rate_y >> delimiter >>
-			line.rotation_rate_z >> delimiter >>
-			line.user_acceleration_x >> delimiter >>
-			line.user_acceleration_y >> delimiter >>
-			line.user_acceleration_z >> delimiter;
-
-		return line;
-	};
 };
 
 struct SetLine {
@@ -118,10 +96,6 @@ struct SetLine {
 	uint64_t person_id;
 	uint64_t gender;
 	std::vector<double> accelerations;
-};
-
-struct SetResult {
-	uint64_t error;
 };
 
 struct EvalutionStats {
@@ -151,3 +125,12 @@ ProcessError evaluation(std::fstream& testset, std::fstream& pattern);
 ProcessError phase_three();
 
 ProcessError test();
+
+void create_header_xyz(std::fstream& output_file, const size_t columns_count);
+uint64_t create_set_xyz(std::fstream& current_file, std::fstream& output_file, const uint64_t line_count, std::function<double(RawLine)> get_acc);
+ProcessError set_xyz(std::fstream& trainset, std::fstream& testset, std::fstream& subjects, std::function<double(RawLine)> get_acc);
+
+void extract_rawline(RawLine& rawline, std::istringstream& iss);
+void extract_setline(SetLine& rawline, std::istringstream& iss);
+void extract_setline_core(SetLine& setline, std::istringstream& iss);
+void extract_setline_acceleration(SetLine& setline, std::istringstream& iss);

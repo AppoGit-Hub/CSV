@@ -38,41 +38,41 @@ ProcessError verification(
 		std::string header;
 		std::getline(current_file, header);
 
-		std::string line;
-		while (std::getline(current_file, line)) {
+		std::string strline;
+		while (std::getline(current_file, strline)) {
 			total_normal++;
 
-			std::istringstream iss(line);
+			RawLine rawline;
+			std::istringstream iss(strline);
+			extract_rawline(rawline, iss);
 
-			const RawLine line = RawLine::extract(iss);
-
-			const bool extreme_x = extreme_func(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
-			const bool extreme_y = extreme_func(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
-			const bool extreme_z = extreme_func(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
+			const bool extreme_x = extreme_func(rawline.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
+			const bool extreme_y = extreme_func(rawline.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y);
+			const bool extreme_z = extreme_func(rawline.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z);
 
 			if (extreme_x || extreme_y || extreme_z) {
 				total_extreme++;
 
 				checkfile <<
 					file << DELIMITER <<
-					line.id - 1 << DELIMITER;
+					rawline.id - 1 << DELIMITER;
 
 				if (extreme_x) {
-					checkfile << line.user_acceleration_x << DELIMITER;
+					checkfile << rawline.user_acceleration_x << DELIMITER;
 				}
 				else {
 					checkfile << DELIMITER;
 				}
 
 				if (extreme_y) {
-					checkfile << line.user_acceleration_y << DELIMITER;
+					checkfile << rawline.user_acceleration_y << DELIMITER;
 				}
 				else {
 					checkfile << DELIMITER;
 				}
 
 				if (extreme_z) {
-					checkfile << line.user_acceleration_z << DELIMITER;
+					checkfile << rawline.user_acceleration_z << DELIMITER;
 				}
 				else {
 					checkfile << DELIMITER;

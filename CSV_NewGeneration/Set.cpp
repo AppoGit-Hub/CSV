@@ -108,14 +108,14 @@ uint64_t create_set(
 
 	std::string line;
 	while (lines_explored < line_count && std::getline(current_file, line)) {
+		RawLine rawline;
 		std::istringstream iss(line);
-
-		const RawLine line = RawLine::extract(iss);
+		extract_rawline(rawline, iss);
 
 		filter_justone(
-			line.user_acceleration_x,
-			line.user_acceleration_y,
-			line.user_acceleration_z,
+			rawline.user_acceleration_x,
+			rawline.user_acceleration_y,
+			rawline.user_acceleration_z,
 			extreme_func,
 			output_file
 		);
@@ -189,5 +189,5 @@ ProcessError phase_zero() {
 	if (!testset.is_open())
 		return COUDLNT_OPEN_FILE;
 
-	return set(subjects, trainset, testset, no_extreme);
+	return set(subjects, trainset, testset, is_extreme);
 }
