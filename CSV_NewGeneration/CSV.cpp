@@ -18,7 +18,7 @@ void classic_stack_xyz() {
 	create_header_xyz(trainset_x, TRAINSET_COLUMNS);
 	std::fstream testset_x("testset_x.csv", std::ios::out);
 	create_header_xyz(testset_x, TESTSET_COLUMNS);
-	set_xyz(trainset_x, testset_x, subjects, [](const RawLine line) {
+	set_xyz(trainset_x, testset_x, [](const RawLine line) {
 		return line.user_acceleration_x;
 	});
 
@@ -26,7 +26,7 @@ void classic_stack_xyz() {
 	create_header_xyz(trainset_y, TRAINSET_COLUMNS);
 	std::fstream testset_y("testset_y.csv", std::ios::out);
 	create_header_xyz(testset_y, TESTSET_COLUMNS);
-	set_xyz(trainset_y, testset_y, subjects, [](const RawLine line) {
+	set_xyz(trainset_y, testset_y, [](const RawLine line) {
 		return line.user_acceleration_y;
 	});
 
@@ -34,7 +34,7 @@ void classic_stack_xyz() {
 	create_header_xyz(trainset_z, TRAINSET_COLUMNS);
 	std::fstream testset_z("testset_z.csv", std::ios::out);
 	create_header_xyz(testset_z, TESTSET_COLUMNS);
-	set_xyz(trainset_z, testset_z, subjects, [](const RawLine line) {
+	set_xyz(trainset_z, testset_z, [](const RawLine line) {
 		return line.user_acceleration_z;
 	});
 }
@@ -65,7 +65,7 @@ void combinaition_stack() {
 			<< testset.tellg() << std::endl;
 
 		std::cout << "Set: " << std::endl;
-		set(subjects, trainset, testset, no_extreme);
+		set(trainset, testset, no_extreme);
 		std::cout
 			<< subjects.tellg() << " | "
 			<< trainset.tellg() << " | "

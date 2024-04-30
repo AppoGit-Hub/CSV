@@ -98,6 +98,14 @@ struct SetLine {
 	std::vector<double> accelerations;
 };
 
+struct SubjectLine {
+	uint64_t code;
+	uint64_t weight;
+	uint64_t height;
+	uint64_t age;
+	uint64_t gender;
+};
+
 struct EvalutionStats {
 	std::array<uint64_t, 6> guess_at = {0};
 };
@@ -105,10 +113,10 @@ struct EvalutionStats {
 void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
 
 size_t find_directory_type(const std::string& directory_name);
-uint64_t find_gender(std::fstream& subjects, const uint64_t person_id) ;
+uint64_t find_gender(const uint64_t person_id);
 void create_header(std::fstream& output_file, const size_t columns_count);
 uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::fstream& output_file, std::function<bool(double, double, double)> extreme_func);
-ProcessError set(std::fstream& subjects, std::fstream& trainset, std::fstream& testset, std::function<bool(double, double, double)> extreme_func);
+ProcessError set(std::fstream& trainset, std::fstream& testset, std::function<bool(double, double, double)> extreme_func);
 ProcessError phase_zero();
 
 bool is_extreme(const double value, const double average, const double std);
@@ -128,9 +136,10 @@ ProcessError test();
 
 void create_header_xyz(std::fstream& output_file, const size_t columns_count);
 uint64_t create_set_xyz(std::fstream& current_file, std::fstream& output_file, const uint64_t line_count, std::function<double(RawLine)> get_acc);
-ProcessError set_xyz(std::fstream& trainset, std::fstream& testset, std::fstream& subjects, std::function<double(RawLine)> get_acc);
+ProcessError set_xyz(std::fstream& trainset, std::fstream& testset, std::function<double(RawLine)> get_acc);
 
 void extract_rawline(RawLine& rawline, std::istringstream& iss);
 void extract_setline(SetLine& rawline, std::istringstream& iss);
 void extract_setline_core(SetLine& setline, std::istringstream& iss);
 void extract_setline_acceleration(SetLine& setline, std::istringstream& iss);
+void extract_subjectline(SubjectLine& subjectline, std::istringstream& iss);

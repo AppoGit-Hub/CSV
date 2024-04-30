@@ -39,7 +39,6 @@ uint64_t create_set_xyz(
 ProcessError set_xyz(
 	std::fstream& trainset,
 	std::fstream& testset,
-	std::fstream& subjects,
 	std::function<double(RawLine)> get_acc
 ) {
 	uint64_t file_index = 1;
@@ -57,7 +56,7 @@ ProcessError set_xyz(
 
 		const MovementType directory_type = MOVEMENT_REGEX[directory_index].second;
 		const uint64_t person_id = std::stoull(matches[1].str());
-		const uint64_t gender = find_gender(subjects, person_id);
+		const uint64_t gender = find_gender(person_id);
 
 		std::fstream current_file(current_path);
 		if (!current_file.is_open())

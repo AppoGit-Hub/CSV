@@ -38,3 +38,14 @@ void extract_setline_core(SetLine& setline, std::istringstream& iss) {
 void extract_setline_acceleration(SetLine& setline, std::istringstream& iss) {
 
 }
+
+void extract_subjectline(SubjectLine& subjectline, std::istringstream& iss) {
+	char delimiter;
+	
+	iss >>
+		subjectline.code >> delimiter >>
+		subjectline.weight >> delimiter >>
+		subjectline.height >> delimiter >>
+		subjectline.age >> delimiter >>
+		subjectline.gender;
+}

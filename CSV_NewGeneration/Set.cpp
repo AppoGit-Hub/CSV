@@ -12,37 +12,28 @@ size_t find_directory_type(
 }
 
 [[nodiscard]] 
-uint64_t find_gender(
-	std::fstream& subjects, 
-	const uint64_t person_id
-) {
-	uint64_t code = 0;
-	uint64_t weight;
-	uint64_t height;
-	uint64_t age;
-	uint64_t gender = 0;
+uint64_t find_gender(const uint64_t person_id) {
+	std::ifstream subjects(SUBJECT_FILEPATH);
+	if (!subjects.good()) {
+		std::cerr << "Error while opening: " << SUBJECT_FILEPATH << std::endl;
+	}
 
-	char delimiter;
-
-	subjects.clear();
-	subjects.seekg(0, std::ios::beg);
+	SubjectLine subjectline{.code=0};
 
 	std::string header;
 	std::getline(subjects, header);
 
 	std::string line;
-	while (std::getline(subjects, line) && code < person_id) {
+	while (std::getline(subjects, line) && subjectline.code < person_id) {
 		std::istringstream iss(line);
-
-		iss >>
-			code >> delimiter >>
-			weight >> delimiter >>
-			height >> delimiter >>
-			age >> delimiter >>
-			gender;
+		extract_subjectline(subjectline, iss);
 	}
 
-	return gender;
+	if (subjectline.code = 0) {
+		std::cerr << "Couldnt find subject of id: " << person_id << std::endl;
+	}
+
+	return subjectline.gender;
 }
 
 void create_header(std::fstream& output_file, const size_t columns_count) {
@@ -128,7 +119,6 @@ uint64_t create_set(
 }
 
 ProcessError set(
-	std::fstream& subjects, 
 	std::fstream& trainset, 
 	std::fstream& testset,
 	std::function<bool(double, double, double)> extreme_func
@@ -153,7 +143,7 @@ ProcessError set(
 
 		const MovementType directory_type = MOVEMENT_REGEX[directory_index].second;
 		const uint64_t person_id = std::stoull(matches[1].str());
-		const uint64_t gender = find_gender(subjects, person_id);
+		const uint64_t gender = find_gender(person_id);
 
 		std::fstream current_file(current_path);
 		if (!current_file.is_open())
@@ -176,11 +166,7 @@ ProcessError set(
 	return NO_ERROR;
 }
 
-ProcessError phase_zero() {
-	std::fstream subjects(SUBJECT_FILEPATH, std::ios::in);
-	if (!subjects.is_open()) 
-		return COUDLNT_OPEN_FILE;
-	
+ProcessError phase_zero() {	
 	std::fstream trainset(TRAINSET_FILENAME, std::ios::out);
 	if (!trainset.is_open()) 
 		return COUDLNT_OPEN_FILE;
@@ -189,5 +175,5 @@ ProcessError phase_zero() {
 	if (!testset.is_open())
 		return COUDLNT_OPEN_FILE;
 
-	return set(subjects, trainset, testset, is_extreme);
+	return set(trainset, testset, is_extreme);
 }
