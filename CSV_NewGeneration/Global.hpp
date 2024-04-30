@@ -134,10 +134,8 @@ ProcessError phase_three();
 
 ProcessError test();
 
-void create_header_xyz(std::fstream& output_file, const size_t columns_count);
-uint64_t create_set_xyz(std::fstream& current_file, std::fstream& output_file, const uint64_t line_count, std::function<double(RawLine)> get_acc);
-ProcessError set_xyz(std::fstream& trainset, std::fstream& testset, std::function<double(RawLine)> get_acc);
-
+void create_header_xyz(std::ofstream& output_file, const size_t columns_count);
+void set_xyz();
 void extract_rawline(RawLine& rawline, std::istringstream& iss);
 void extract_setline(SetLine& rawline, std::istringstream& iss);
 void extract_setline_core(SetLine& setline, std::istringstream& iss);

@@ -12,31 +12,7 @@ void classic_stack() {
 }
 
 void classic_stack_xyz() {
-	std::fstream subjects(SUBJECT_FILEPATH, std::ios::in);
-
-	std::fstream trainset_x("trainset_x.csv", std::ios::out);
-	create_header_xyz(trainset_x, TRAINSET_COLUMNS);
-	std::fstream testset_x("testset_x.csv", std::ios::out);
-	create_header_xyz(testset_x, TESTSET_COLUMNS);
-	set_xyz(trainset_x, testset_x, [](const RawLine line) {
-		return line.user_acceleration_x;
-	});
-
-	std::fstream trainset_y("trainset_y.csv", std::ios::out);
-	create_header_xyz(trainset_y, TRAINSET_COLUMNS);
-	std::fstream testset_y("testset_y.csv", std::ios::out);
-	create_header_xyz(testset_y, TESTSET_COLUMNS);
-	set_xyz(trainset_y, testset_y, [](const RawLine line) {
-		return line.user_acceleration_y;
-	});
-
-	std::fstream trainset_z("trainset_z.csv", std::ios::out);
-	create_header_xyz(trainset_z, TRAINSET_COLUMNS);
-	std::fstream testset_z("testset_z.csv", std::ios::out);
-	create_header_xyz(testset_z, TESTSET_COLUMNS);
-	set_xyz(trainset_z, testset_z, [](const RawLine line) {
-		return line.user_acceleration_z;
-	});
+	set_xyz();
 }
 
 void combinaition_stack() {
@@ -94,7 +70,7 @@ void combinaition_stack() {
 
 
 int main() {
-	phase_zero();
+	classic_stack_xyz();
 
 	return EXIT_SUCCESS;
 }
