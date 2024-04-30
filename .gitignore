@@ -16,3 +16,9 @@ CSV_NewGeneration/testset_z.csv
 CSV_NewGeneration/trainset_x.csv
 CSV_NewGeneration/trainset_y.csv
 CSV_NewGeneration/trainset_z.csv
+CSV_NewGeneration/pattern_x.csv
+CSV_NewGeneration/pattern_y.csv
+CSV_NewGeneration/pattern_z.csv
+CSV_NewGeneration/pattern x.png
+CSV_NewGeneration/pattern y.png
+CSV_NewGeneration/pattern z.png
