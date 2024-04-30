@@ -93,10 +93,25 @@ ProcessError test_fstream() {
 	return NO_ERROR;
 }
 
+ProcessError test_open(const std::filesystem::path& filepath) {
+	std::ifstream file(filepath);
+	if (!file.good()) {
+		return COUDLNT_OPEN_FILE;
+	}
+
+	std::string line;
+	while (std::getline(file, line)) {
+		std::cout << line << std::endl;
+	}
+
+	return NO_ERROR;
+}
+
 ProcessError test() {
-	test_create_set();
-	test_set_out();
-	test_verification_extreme();
+	const std::string testa_name = "testa.csv";
+	test_open(testa_name);
+
+
 
 	return NO_ERROR;
 }
