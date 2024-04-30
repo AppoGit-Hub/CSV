@@ -22,8 +22,9 @@ with open("pattern.csv", "r") as csvfile:
     csv_reader = csv.reader(csvfile)
     next(csv_reader)
     lines = list(csv_reader)
+    
     for pattern_id, line in enumerate(lines):
-        accelerations = [float(data) for data in line]
+        accelerations = [float(data) for data in line if data != ""]
         legend.append(f"pattern {pattern_id + 1}")
 
         plt.plot(accelerations[1:], label=f"pattern {pattern_id + 1}")
