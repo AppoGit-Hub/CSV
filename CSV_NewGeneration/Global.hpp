@@ -125,7 +125,7 @@ bool no_extreme(const double value, const double average, const double std);
 ProcessError verification(std::fstream& checkfile, std::function<bool(double, double, double)> extreme_func);
 ProcessError phase_one();
 
-ProcessError create_pattern(std::fstream& pattern, std::fstream& trainset);
+ProcessError create_pattern(const std::string& pattern_name, const std::string& trainset_name);
 ProcessError phase_two();
 
 std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type);

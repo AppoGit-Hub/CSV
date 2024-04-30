@@ -17,22 +17,26 @@ def explore_all(dirpath: str, accelerations: list[tuple[float, float, float]]):
         elif os.path.isdir(path):
             explore_all(path, accelerations)
 
-legend = []
-with open("pattern.csv", "r") as csvfile:
-    csv_reader = csv.reader(csvfile)
-    next(csv_reader)
-    lines = list(csv_reader)
-    
-    for pattern_id, line in enumerate(lines):
-        accelerations = [float(data) for data in line if data != ""]
-        legend.append(f"pattern {pattern_id + 1}")
+def create_graph(filename: str, title: str):
+    legend = []
+    with open(filename, "r") as csvfile:
+        csv_reader = csv.reader(csvfile)
+        next(csv_reader)
+        lines = list(csv_reader)
+        
+        for pattern_id, line in enumerate(lines):
+            accelerations = [float(data) for data in line if data != ""]
+            legend.append(f"pattern {pattern_id + 1}")
 
-        plt.plot(accelerations[1:], label=f"pattern {pattern_id + 1}")
+            plt.plot(accelerations[1:100], label=f"pattern {pattern_id + 1}")
 
-title = "is_extreme_z-filter_toaverage"
+    plt.xlabel('Vacc')
+    plt.ylabel('Valeur')
+    plt.title(title)
+    plt.legend(legend)
+    plt.savefig(f"{title}.png")
+    plt.close()
 
-plt.xlabel('Vacc')
-plt.ylabel('Valeur')
-plt.title(f"Patterns {title}")
-plt.legend(legend)
-plt.savefig(f"Patterns-{title}.png")
+create_graph("pattern_x.csv", "pattern x")
+create_graph("pattern_y.csv", "pattern y")
+create_graph("pattern_z.csv", "pattern z")
