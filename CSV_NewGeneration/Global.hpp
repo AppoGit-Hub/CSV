@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <optional>
 #include <cassert>
+#include <cmath>
 
 namespace fs = std::filesystem;
 

@@ -239,45 +239,65 @@ void evaluation_xyz() {
 				pattern_user_acceleration_y_ss >> pattern_user_acceleration_y >> delimiter;
 				pattern_user_acceleration_z_ss >> pattern_user_acceleration_z >> delimiter;
 
-				total_attitude_roll += std::pow(testset_attitude_roll - pattern_attitude_roll, 2);
-				total_attitude_pitch += std::pow(testset_attitude_pitch - pattern_attitude_pitch, 2);
-				total_attitude_yaw += std::pow(testset_attitude_yaw - pattern_attitude_yaw, 2);
-				total_gravity_x += std::pow(testset_gravity_x - pattern_gravity_x, 2);
-				total_gravity_y += std::pow(testset_gravity_y - pattern_gravity_y, 2);
-				total_gravity_z += std::pow(testset_gravity_z - pattern_gravity_z, 2);
-				total_rotation_rate_x += std::pow(testset_rotation_rate_x - pattern_rotation_rate_x, 2);
-				total_rotation_rate_y += std::pow(testset_rotation_rate_y - pattern_rotation_rate_y, 2);
-				total_rotation_rate_z += std::pow(testset_rotation_rate_z - pattern_rotation_rate_z, 2);
-				total_user_acceleration_x += std::pow(testset_user_acceleration_x - pattern_user_acceleration_x, 2);
-				total_user_acceleration_y += std::pow(testset_user_acceleration_y - pattern_user_acceleration_y, 2);
-				total_user_acceleration_z += std::pow(testset_user_acceleration_z - pattern_user_acceleration_z, 2);
-			}
+				double testset_lenght = std::sqrt
+				(
+					std::pow(testset_attitude_roll, 2) +
+					std::pow(testset_attitude_pitch, 2) +
+					std::pow(testset_attitude_yaw, 2) +
+					std::pow(testset_gravity_x, 2) +
+					std::pow(testset_gravity_y, 2) +
+					std::pow(testset_gravity_z, 2) +
+					std::pow(testset_rotation_rate_x, 2) +
+					std::pow(testset_rotation_rate_y, 2) +
+					std::pow(testset_rotation_rate_z, 2) +
+					std::pow(testset_user_acceleration_x, 2) +
+					std::pow(testset_user_acceleration_y, 2) +
+					std::pow(testset_user_acceleration_z, 2)
+				);
 
-			double distance = std::sqrt(
-				total_attitude_roll + 
-				total_attitude_pitch + 
-				total_attitude_yaw + 
-				total_gravity_x +
-				total_gravity_y +
-				total_gravity_z +
-				total_rotation_rate_x +
-				total_rotation_rate_y +
-				total_rotation_rate_z + 
-				total_user_acceleration_x + 
-				total_user_acceleration_y + 
-				total_user_acceleration_z
-			);
+				double pattern_lenght = std::sqrt
+				(
+					std::pow(pattern_attitude_roll, 2) + 
+					std::pow(pattern_attitude_pitch, 2) +
+					std::pow(pattern_attitude_yaw, 2) +
+					std::pow(pattern_gravity_x, 2) +
+					std::pow(pattern_gravity_y, 2) +
+					std::pow(pattern_gravity_z, 2) +
+					std::pow(pattern_rotation_rate_x, 2) +
+					std::pow(pattern_rotation_rate_y, 2) +
+					std::pow(pattern_rotation_rate_z, 2) +
+					std::pow(pattern_user_acceleration_x, 2) +
+					std::pow(pattern_user_acceleration_y, 2) +
+					std::pow(pattern_user_acceleration_z, 2)
+				);
 
-			if (distance < distance_min) {
-				distance_min = distance;
-				movement_min = movement_index;
+				double testset_pattern_product =
+					(testset_attitude_roll * pattern_attitude_roll) +
+					(testset_attitude_pitch * pattern_attitude_pitch) +
+					(testset_attitude_yaw * pattern_attitude_yaw) +
+					(testset_gravity_x * pattern_gravity_x) +
+					(testset_gravity_y * pattern_gravity_y) +
+					(testset_gravity_z * pattern_gravity_z) +
+					(testset_rotation_rate_x * pattern_rotation_rate_x) +
+					(testset_rotation_rate_y * pattern_rotation_rate_y) +
+					(testset_rotation_rate_z * pattern_rotation_rate_z) +
+					(testset_user_acceleration_x * pattern_user_acceleration_x) +
+					(testset_user_acceleration_y * pattern_user_acceleration_y) +
+					(testset_user_acceleration_z * pattern_user_acceleration_z);
+
+				double cosinus_angle = testset_pattern_product / (testset_lenght * pattern_lenght);
+			
+				if (cosinus_angle < distance_min) {
+					distance_min = cosinus_angle;
+					movement_min = movement_index;
+				}
 			}
 		}
 
 		std::cout
 			<< "Movement: " << testset_movement << " | "
 			<< "Movement Min: " << movement_min << " | "
-			<< "Distance Min: " << std::pow(distance_min, 2) << " | "
+			<< "Distance Min: " << distance_min << " | "
 			<< std::endl;
 
 		MovementType type = static_cast<MovementType>(testset_movement);
