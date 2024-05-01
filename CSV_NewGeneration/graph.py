@@ -26,9 +26,9 @@ def create_graph(filename: str, title: str):
         
         for pattern_id, line in enumerate(lines):
             accelerations = [float(data) for data in line if data != ""]
-            legend.append(f"pattern {pattern_id + 1}")
+            legend.append(f"mouvement {pattern_id + 1}")
 
-            plt.plot(accelerations[1:100], label=f"pattern {pattern_id + 1}")
+            plt.plot(accelerations[1:], label=f"mouvement {pattern_id + 1}")
 
     plt.xlabel('Vacc')
     plt.ylabel('Valeur')
@@ -37,6 +37,15 @@ def create_graph(filename: str, title: str):
     plt.savefig(f"{title}.png")
     plt.close()
 
-create_graph("pattern_x.csv", "pattern x")
-create_graph("pattern_y.csv", "pattern y")
-create_graph("pattern_z.csv", "pattern z")
+create_graph("pattern_attitude_pitch.csv", "pattern pitch")
+create_graph("pattern_attitude_roll.csv", "pattern roll")
+create_graph("pattern_attitude_yaw.csv", "pattern yaw")
+create_graph("pattern_gravity_x.csv", "pattern gravity x")
+create_graph("pattern_gravity_y.csv", "pattern gravity y")
+create_graph("pattern_gravity_z.csv", "pattern gravity z")
+create_graph("pattern_rotation_rate_x.csv", "pattern rotation rate x")
+create_graph("pattern_rotation_rate_y.csv", "pattern rotation rate y")
+create_graph("pattern_rotation_rate_z.csv", "pattern rotation rate z")
+create_graph("pattern_user_acceleration_x.csv", "pattern user acceleration x")
+create_graph("pattern_user_acceleration_y.csv", "pattern user acceleration y")
+create_graph("pattern_user_acceleration_z.csv", "pattern user acceleration z")
