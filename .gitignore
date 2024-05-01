@@ -58,3 +58,15 @@ CSV_NewGeneration/pattern_rotation_rate_z.csv
 CSV_NewGeneration/pattern_user_acceleration_x.csv
 CSV_NewGeneration/pattern_user_acceleration_y.csv
 CSV_NewGeneration/pattern_user_acceleration_z.csv
+CSV_NewGeneration/pattern gravity x.png
+CSV_NewGeneration/pattern gravity y.png
+CSV_NewGeneration/pattern gravity z.png
+CSV_NewGeneration/pattern pitch.png
+CSV_NewGeneration/pattern roll.png
+CSV_NewGeneration/pattern rotation rate x.png
+CSV_NewGeneration/pattern rotation rate y.png
+CSV_NewGeneration/pattern rotation rate z.png
+CSV_NewGeneration/pattern user acceleration x.png
+CSV_NewGeneration/pattern user acceleration y.png
+CSV_NewGeneration/pattern user acceleration z.png
+CSV_NewGeneration/pattern yaw.png
