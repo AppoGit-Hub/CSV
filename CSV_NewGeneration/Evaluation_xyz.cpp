@@ -210,6 +210,8 @@ void evaluation_xyz() {
 			double total_user_acceleration_y = 0;
 			double total_user_acceleration_z = 0;
 
+			double total = 0;
+
 			// hope len(pattern_ss_x) == len(pattern_ss_y) == len(pattern_ss_z)
 
 			while (!pattern_attitude_roll_ss.eof()) {
@@ -239,58 +241,27 @@ void evaluation_xyz() {
 				pattern_user_acceleration_y_ss >> pattern_user_acceleration_y >> delimiter;
 				pattern_user_acceleration_z_ss >> pattern_user_acceleration_z >> delimiter;
 
-				double testset_lenght = std::sqrt
+				total += std::sqrt
 				(
-					std::pow(testset_attitude_roll, 2) +
-					std::pow(testset_attitude_pitch, 2) +
-					std::pow(testset_attitude_yaw, 2) +
-					std::pow(testset_gravity_x, 2) +
-					std::pow(testset_gravity_y, 2) +
-					std::pow(testset_gravity_z, 2) +
-					std::pow(testset_rotation_rate_x, 2) +
-					std::pow(testset_rotation_rate_y, 2) +
-					std::pow(testset_rotation_rate_z, 2) +
-					std::pow(testset_user_acceleration_x, 2) +
-					std::pow(testset_user_acceleration_y, 2) +
-					std::pow(testset_user_acceleration_z, 2)
+					std::pow(pattern_attitude_roll - pattern_attitude_roll, 2) +
+					std::pow(pattern_attitude_pitch - pattern_attitude_pitch, 2) +
+					std::pow(pattern_attitude_yaw - pattern_attitude_yaw, 2) +
+					std::pow(pattern_gravity_x - pattern_gravity_x, 2) +
+					std::pow(pattern_gravity_y - pattern_gravity_y, 2) +
+					std::pow(pattern_gravity_z - pattern_gravity_z, 2) +
+					std::pow(pattern_rotation_rate_x - pattern_rotation_rate_x, 2) +
+					std::pow(pattern_rotation_rate_y - pattern_rotation_rate_y, 2) +
+					std::pow(pattern_rotation_rate_z - pattern_rotation_rate_z, 2) +
+					std::pow(pattern_user_acceleration_x - pattern_user_acceleration_x, 2) +
+					std::pow(pattern_user_acceleration_y - pattern_user_acceleration_y, 2) +
+					std::pow(pattern_user_acceleration_z - pattern_user_acceleration_z, 2)
 				);
+			}
 
-				double pattern_lenght = std::sqrt
-				(
-					std::pow(pattern_attitude_roll, 2) + 
-					std::pow(pattern_attitude_pitch, 2) +
-					std::pow(pattern_attitude_yaw, 2) +
-					std::pow(pattern_gravity_x, 2) +
-					std::pow(pattern_gravity_y, 2) +
-					std::pow(pattern_gravity_z, 2) +
-					std::pow(pattern_rotation_rate_x, 2) +
-					std::pow(pattern_rotation_rate_y, 2) +
-					std::pow(pattern_rotation_rate_z, 2) +
-					std::pow(pattern_user_acceleration_x, 2) +
-					std::pow(pattern_user_acceleration_y, 2) +
-					std::pow(pattern_user_acceleration_z, 2)
-				);
-
-				double testset_pattern_product =
-					(testset_attitude_roll * pattern_attitude_roll) +
-					(testset_attitude_pitch * pattern_attitude_pitch) +
-					(testset_attitude_yaw * pattern_attitude_yaw) +
-					(testset_gravity_x * pattern_gravity_x) +
-					(testset_gravity_y * pattern_gravity_y) +
-					(testset_gravity_z * pattern_gravity_z) +
-					(testset_rotation_rate_x * pattern_rotation_rate_x) +
-					(testset_rotation_rate_y * pattern_rotation_rate_y) +
-					(testset_rotation_rate_z * pattern_rotation_rate_z) +
-					(testset_user_acceleration_x * pattern_user_acceleration_x) +
-					(testset_user_acceleration_y * pattern_user_acceleration_y) +
-					(testset_user_acceleration_z * pattern_user_acceleration_z);
-
-				double cosinus_angle = testset_pattern_product / (testset_lenght * pattern_lenght);
-			
-				if (cosinus_angle < distance_min) {
-					distance_min = cosinus_angle;
-					movement_min = movement_index;
-				}
+			double distance = total;
+			if (distance < distance_min) {
+				distance_min = distance;
+				movement_min = movement_index;
 			}
 		}
 
