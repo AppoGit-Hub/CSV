@@ -12,21 +12,57 @@ void create_header_xyz(
 }
 
 void set_xyz() {
-	std::ofstream trainset_x("trainset_x.csv");
-	std::ofstream trainset_y("trainset_y.csv");
-	std::ofstream trainset_z("trainset_z.csv");
+	std::ofstream trainset_attitude_roll("trainset_attitude_roll.csv");
+	std::ofstream trainset_attitude_pitch("trainset_attitude_pitch.csv");
+	std::ofstream trainset_attitude_yaw("trainset_attitude_yaw.csv");
+	std::ofstream trainset_gravity_x("trainset_gravity_x.csv");
+	std::ofstream trainset_gravity_y("trainset_gravity_y.csv");
+	std::ofstream trainset_gravity_z("trainset_gravity_z.csv");
+	std::ofstream trainset_rotation_rate_x("trainset_rotation_rate_x.csv");
+	std::ofstream trainset_rotation_rate_y("trainset_rotation_rate_y.csv");
+	std::ofstream trainset_rotation_rate_z("trainset_rotation_rate_z.csv");
+	std::ofstream trainset_user_acceleration_x("trainset_user_acceleration_x.csv");
+	std::ofstream trainset_user_acceleration_y("trainset_user_acceleration_y.csv");
+	std::ofstream trainset_user_acceleration_z("trainset_user_acceleration_z.csv");
 
-	std::ofstream testset_x("testset_x.csv");
-	std::ofstream testset_y("testset_y.csv");
-	std::ofstream testset_z("testset_z.csv");
+	std::ofstream testset_attitude_roll("testset_attitude_roll.csv");
+	std::ofstream testset_attitude_pitch("testset_attitude_pitch.csv");
+	std::ofstream testset_attitude_yaw("testset_attitude_yaw.csv");
+	std::ofstream testset_gravity_x("testset_gravity_x.csv");
+	std::ofstream testset_gravity_y("testset_gravity_y.csv");
+	std::ofstream testset_gravity_z("testset_gravity_z.csv");
+	std::ofstream testset_rotation_rate_x("testset_rotation_rate_x.csv");
+	std::ofstream testset_rotation_rate_y("testset_rotation_rate_y.csv");
+	std::ofstream testset_rotation_rate_z("testset_rotation_rate_z.csv");
+	std::ofstream testset_user_acceleration_x("testset_user_acceleration_x.csv");
+	std::ofstream testset_user_acceleration_y("testset_user_acceleration_y.csv");
+	std::ofstream testset_user_acceleration_z("testset_user_acceleration_z.csv");
 
-	create_header_xyz(trainset_x, TRAINSET_COLUMNS);
-	create_header_xyz(trainset_y, TRAINSET_COLUMNS);
-	create_header_xyz(trainset_z, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_attitude_roll, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_attitude_pitch, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_attitude_yaw, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_gravity_x, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_gravity_y, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_gravity_z, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_rotation_rate_x, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_rotation_rate_y, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_rotation_rate_z, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_user_acceleration_x, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_user_acceleration_y, TRAINSET_COLUMNS);
+	create_header_xyz(trainset_user_acceleration_z, TRAINSET_COLUMNS);
 
-	create_header_xyz(testset_x, TESTSET_COLUMNS);
-	create_header_xyz(testset_y, TESTSET_COLUMNS);
-	create_header_xyz(testset_z, TESTSET_COLUMNS);
+	create_header_xyz(testset_attitude_roll, TESTSET_COLUMNS);
+	create_header_xyz(testset_attitude_pitch, TESTSET_COLUMNS);
+	create_header_xyz(testset_attitude_yaw, TESTSET_COLUMNS);
+	create_header_xyz(testset_gravity_x, TESTSET_COLUMNS);
+	create_header_xyz(testset_gravity_y, TESTSET_COLUMNS);
+	create_header_xyz(testset_gravity_z, TESTSET_COLUMNS);
+	create_header_xyz(testset_rotation_rate_x, TESTSET_COLUMNS);
+	create_header_xyz(testset_rotation_rate_y, TESTSET_COLUMNS);
+	create_header_xyz(testset_rotation_rate_z, TESTSET_COLUMNS);
+	create_header_xyz(testset_user_acceleration_x, TESTSET_COLUMNS);
+	create_header_xyz(testset_user_acceleration_y, TESTSET_COLUMNS);
+	create_header_xyz(testset_user_acceleration_z, TESTSET_COLUMNS);
 
 	uint64_t file_index = 1;
 	for_file(DATA_FOLDERPATH, [&](const fs::path current_path) {
@@ -52,9 +88,18 @@ void set_xyz() {
 		std::string header;
 		std::getline(current_file, header);
 
-		trainset_x << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
-		trainset_y << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
-		trainset_z << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_attitude_roll << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_attitude_pitch << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_attitude_yaw << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_gravity_x << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_gravity_y << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_gravity_z << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_rotation_rate_x << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_rotation_rate_y << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_rotation_rate_z << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_user_acceleration_x << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_user_acceleration_y << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+		trainset_user_acceleration_z << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
 		
 		std::string line;
 		uint64_t trainset_explored = 0;
@@ -63,22 +108,49 @@ void set_xyz() {
 			std::istringstream iss(line);
 			extract_rawline(rawline, iss);
 
-			trainset_x << DELIMITER << rawline.user_acceleration_x;
-			trainset_y << DELIMITER << rawline.user_acceleration_y;
-			trainset_z << DELIMITER << rawline.user_acceleration_z;
+			trainset_attitude_roll << DELIMITER << rawline.attitude_roll;
+			trainset_attitude_pitch << DELIMITER << rawline.attitude_pitch;
+			trainset_attitude_yaw << DELIMITER << rawline.attitude_yaw;
+			trainset_gravity_x << DELIMITER << rawline.gravity_x;
+			trainset_gravity_y << DELIMITER << rawline.gravity_y;
+			trainset_gravity_z << DELIMITER << rawline.gravity_z;
+			trainset_rotation_rate_x << DELIMITER << rawline.rotation_rate_x;
+			trainset_rotation_rate_y << DELIMITER << rawline.rotation_rate_y;
+			trainset_rotation_rate_z << DELIMITER << rawline.rotation_rate_z;
+			trainset_user_acceleration_x << DELIMITER << rawline.user_acceleration_x;
+			trainset_user_acceleration_y << DELIMITER << rawline.user_acceleration_y;
+			trainset_user_acceleration_z << DELIMITER << rawline.user_acceleration_z;
 			
 			trainset_explored++;
 		}
 
-		trainset_x << std::endl;
-		trainset_y << std::endl;
-		trainset_z << std::endl;
+		trainset_attitude_roll << std::endl;
+		trainset_attitude_pitch << std::endl;
+		trainset_attitude_yaw << std::endl;
+		trainset_gravity_x << std::endl;
+		trainset_gravity_y << std::endl;
+		trainset_gravity_z << std::endl;
+		trainset_rotation_rate_x << std::endl;
+		trainset_rotation_rate_y << std::endl;
+		trainset_rotation_rate_z << std::endl;
+		trainset_user_acceleration_x << std::endl;
+		trainset_user_acceleration_y << std::endl;
+		trainset_user_acceleration_z << std::endl;
 
 		if (trainset_explored == TRAINSET_COLUMNS) {
-			testset_x << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
-			testset_y << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
-			testset_z << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
-			
+			testset_attitude_roll << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_attitude_pitch << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_attitude_yaw << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_gravity_x << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_gravity_y << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_gravity_z << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_rotation_rate_x << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_rotation_rate_y << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_rotation_rate_z << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_user_acceleration_x << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_user_acceleration_y << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+			testset_user_acceleration_z << (directory_index + 1) << DELIMITER << gender << DELIMITER << file_index;
+
 			std::string line;
 			uint64_t testset_explored = 0;
 			while (testset_explored < TESTSET_COLUMNS && std::getline(current_file, line)) {
@@ -86,16 +158,34 @@ void set_xyz() {
 				std::istringstream iss(line);
 				extract_rawline(rawline, iss);
 				
-				testset_x << DELIMITER << rawline.user_acceleration_x;
-				testset_y << DELIMITER << rawline.user_acceleration_y;
-				testset_z << DELIMITER << rawline.user_acceleration_z;
+				testset_attitude_roll << DELIMITER << rawline.attitude_roll;
+				testset_attitude_pitch << DELIMITER << rawline.attitude_pitch;
+				testset_attitude_yaw << DELIMITER << rawline.attitude_yaw;
+				testset_gravity_x << DELIMITER << rawline.gravity_x;
+				testset_gravity_y << DELIMITER << rawline.gravity_y;
+				testset_gravity_z << DELIMITER << rawline.gravity_z;
+				testset_rotation_rate_x << DELIMITER << rawline.rotation_rate_x;
+				testset_rotation_rate_y << DELIMITER << rawline.rotation_rate_y;
+				testset_rotation_rate_z << DELIMITER << rawline.rotation_rate_z;
+				testset_user_acceleration_x << DELIMITER << rawline.user_acceleration_x;
+				testset_user_acceleration_y << DELIMITER << rawline.user_acceleration_y;
+				testset_user_acceleration_z << DELIMITER << rawline.user_acceleration_z;
 				
 				testset_explored++;
 			}
 
-			testset_x << std::endl;
-			testset_y << std::endl;
-			testset_z << std::endl;
+			testset_attitude_roll << std::endl;
+			testset_attitude_pitch << std::endl;
+			testset_attitude_yaw << std::endl;
+			testset_gravity_x << std::endl;
+			testset_gravity_y << std::endl;
+			testset_gravity_z << std::endl;
+			testset_rotation_rate_x << std::endl;
+			testset_rotation_rate_y << std::endl;
+			testset_rotation_rate_z << std::endl;
+			testset_user_acceleration_x << std::endl;
+			testset_user_acceleration_y << std::endl;
+			testset_user_acceleration_z << std::endl;
 		}
 
 		file_index++;

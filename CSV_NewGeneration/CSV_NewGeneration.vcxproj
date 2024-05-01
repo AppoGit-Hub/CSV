@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="CSV.cpp" />
     <ClCompile Include="Evaluation.cpp" />
+    <ClCompile Include="Evaluation_xyz.cpp" />
     <ClCompile Include="Extraction.cpp" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="Pattern.cpp" />

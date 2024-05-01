@@ -33,7 +33,13 @@ std::vector<double> find_acceleration(std::fstream& pattern, const MovementType 
 	return accelerations;
 }
 
-ProcessError evaluation(std::fstream& testset, std::fstream& pattern) {
+ProcessError evaluation(
+	const std::string& testset_name, 
+	const std::string& pattern_name
+) {
+	std::fstream testset(testset_name, std::ios::in);
+	std::fstream pattern(pattern_name, std::ios::in);
+
 	std::unordered_map<MovementType, EvalutionStats> verification;
 	std::unordered_map<MovementType, std::vector<double>> testset_lines;
 	
@@ -132,13 +138,5 @@ ProcessError evaluation(std::fstream& testset, std::fstream& pattern) {
 }
 
 ProcessError phase_three() {
-	std::fstream testset(TESTSET_FILENAME, std::ios::in);
-	if (!testset.is_open())
-		return COUDLNT_OPEN_FILE;
-
-	std::fstream pattern(PATTERN_FILENAME, std::ios::in);
-	if (!pattern.is_open())
-		return COUDLNT_OPEN_FILE;
-
-	return evaluation(testset, pattern);
+	return evaluation(TESTSET_FILENAME, PATTERN_FILENAME);
 }

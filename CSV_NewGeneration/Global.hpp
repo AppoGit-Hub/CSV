@@ -129,7 +129,7 @@ ProcessError create_pattern(const std::string& pattern_name, const std::string& 
 ProcessError phase_two();
 
 std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type);
-ProcessError evaluation(std::fstream& testset, std::fstream& pattern);
+ProcessError evaluation(const std::string& testset_name, const std::string& pattern_name);
 ProcessError phase_three();
 
 ProcessError test();
@@ -141,3 +141,5 @@ void extract_setline(SetLine& rawline, std::istringstream& iss);
 void extract_setline_core(SetLine& setline, std::istringstream& iss);
 void extract_setline_acceleration(SetLine& setline, std::istringstream& iss);
 void extract_subjectline(SubjectLine& subjectline, std::istringstream& iss);
+
+void evaluation_xyz();
