@@ -94,6 +94,8 @@ void set() {
 	const auto& data_filepath = fs::path{ BASE_FOLDER } / DATA_FOLDER;
 	const auto& subject_filepath = fs::path{ BASE_FOLDER } / SUBJECT_FILENAME;
 
+	std::regex badPattern("\\._"); // to avaoid, 3 stranges opening of file that is not a file, I don't known 
+
 	std::ifstream subjects_file(subject_filepath);
 
 	std::ofstream trainset_file(TRAINSET_FILENAME);
@@ -105,12 +107,14 @@ void set() {
 	uint64_t file_index = 1;
 	for_file(DATA_FOLDERPATH, [&](const fs::path current_path) {
 		try {
-			uint64_t train_index = create_set(current_path, TRAINSET_COLUMNS, subjects_file, trainset_file, file_index);
-			if (train_index == TRAINSET_COLUMNS) {
-				uint64_t test_index = create_set(current_path, TESTSET_COLUMNS, subjects_file, testset_file, file_index);
+			if (!std::regex_search(current_path.string(), badPattern)) {
+				uint64_t train_index = create_set(current_path, TRAINSET_COLUMNS, subjects_file, trainset_file, file_index);
+				if (train_index == TRAINSET_COLUMNS) {
+					uint64_t test_index = create_set(current_path, TESTSET_COLUMNS, subjects_file, testset_file, file_index);
+				}
+				std::cout << "Processed file : " << current_path << std::endl;
+				file_index++;
 			}
-			std::cout << "Processed file : " << current_path << std::endl;
-			file_index++;
 		}
 		catch (const std::exception& error) {
 			std::cout << "Couldnt process file : " << current_path << std::endl;
