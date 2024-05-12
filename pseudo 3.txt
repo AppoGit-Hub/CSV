@@ -1,0 +1,74 @@
+module(find_acceleration;;)
+---*
+    movement_search = movement_type
+    movement = 0
+    header = read line from pattern
+
+    delimiter = ','
+    while (movement != movement_search AND read line from pattern is not false)
+        read line from pattern
+        read movement, delimiter from line
+    endwhile
+
+    read movement, delimiter from line
+
+    accelerations = create VECTOR
+
+    while (end of file is not reached)
+        read acceleration, delimiter from line
+        accelerations.push_back(acceleration)
+    endwhile
+    
+    return accelerations
+------ 
+
+module(evaluation;;)
+---*
+    accesFichierPattern = open file "pattern.csv" for writing
+    accesFichierTrainSet = open file "trainset.csv" for reading
+
+    // add column names to "pattern.csv"
+
+    index = 0
+    accesFichierPattern add "Mouvement"
+    while (index < 600)
+        accesFichierPattern add "Vacc"
+        index++
+    endwhile
+
+    accesFichierPattern add END_OF_LINE
+
+    accelerations = create VECTOR
+    accelerations.clean() 
+
+    while (read line from accesFichierTrainSet is not false)
+        read mouvement from line
+        mouvementActuelle = mouvement
+
+        nbLignesBlock = 0
+        while (mouvement == mouvementObtenue AND read line from accesFichierTrainSet is not false)
+            read mouvement, person_id, gender from line // objective: move within the line
+
+            acc_index = 0
+            while (read acceleration from line is not false)
+                if (acc_index < size of accelerations)
+                    accelerations[acc_index] += acceleration 
+                    acc_index++ 
+                else
+                    accelerations.push_back(acceleration)
+                endif
+                acc_index++
+            endwhile
+            nbBlockLigne++
+        endwhile
+        
+        acc_index = 0
+        while (acc_index < size of accelerations)
+            accesFichierPattern add accelerations[acc_index] / nbLignesBlock
+            acc_index++
+        endwhile
+        accesFichierPattern add END_OF_LINE
+    endwhile
+    close file accesFichierPattern
+    close file accesFichierTrainSet
+------
