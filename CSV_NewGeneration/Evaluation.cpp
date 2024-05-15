@@ -109,31 +109,36 @@ ProcessError evaluation(
 		//std::cout << movement << " >>> " << distance_min << " | " << static_cast<uint64_t>(movement_min) << std::endl;
 	}
 
-	//std::cout << "Verification: " << std::endl;
+	uint64_t total_right = 0;
+	uint64_t total = 0;
 	for (auto [type, evaluation] : verification) {
 		uint64_t type_id = static_cast<uint64_t>(type);
 		std::cout << type_id << " | ";
 
-		uint64_t total = 0;
+		uint64_t mov_total = 0;
 		for (uint64_t guesses : evaluation.guess_at) {
 			std::cout << guesses << " | ";
+			mov_total += guesses;
 			total += guesses;
 		}
 
-		double succes_rate = ((double)evaluation.guess_at[type_id - 1] / total) * 100;
+		uint64_t mov_right = evaluation.guess_at[type_id - 1];
+		total_right += mov_right;
+
+		double succes_rate = ((double)mov_right / mov_total) * 100;
 
 		std::cout 
-			<< "Total : " << total << " | " 
+			<< "Total : " << mov_total << " | "
 			<< "Accuracy: " << succes_rate << "%" << std::endl;
 	}
-	/*
+
 	std::cout 
 		<< "Total: " 
-		<< right_global << " | " 
-		<< total_global << " | "
-		<< std::round((right_global / total_global) * 100) << "%" 
+		<< total_right << " | "
+		<< total << " | "
+		<< std::round(((double)total_right / total) * 100) << "%"
 		<< std::endl;
-	*/
+
 	return NO_ERROR;
 }
 
