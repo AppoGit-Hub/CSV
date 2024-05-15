@@ -3,10 +3,14 @@ import csv
 import os
 import matplotlib.pyplot as plt
 
+plt.rcParams['axes.facecolor'] = 'none'
+
+mode = "white"
+
 def explore_all(dirpath: str, accelerations: list[tuple[float, float, float]]):
     for item in os.listdir(dirpath):
         path = os.path.join(dirpath, item)
-        
+
         if os.path.isfile(path):
             with open(path, "r") as csvfile:
                 csv_reader = csv.reader(csvfile)
@@ -19,21 +23,33 @@ def explore_all(dirpath: str, accelerations: list[tuple[float, float, float]]):
 
 def create_graph(filename: str, title: str):
     legend = []
+
+    plt.figure(facecolor='none')
+
     with open(filename, "r") as csvfile:
         csv_reader = csv.reader(csvfile)
         next(csv_reader)
         lines = list(csv_reader)
-        
+
         for pattern_id, line in enumerate(lines):
             accelerations = [float(data) for data in line if data != ""]
             legend.append(f"mouvement {pattern_id + 1}")
 
-            plt.plot(accelerations[1:], label=f"mouvement {pattern_id + 1}")
+            plt.plot(accelerations[1:100], label=f"mouvement {pattern_id + 1}")
 
-    plt.xlabel('Vacc')
-    plt.ylabel('Valeur')
-    plt.title(title)
-    plt.legend(legend)
+    plt.xlabel('Vacc', color=mode)
+    plt.ylabel('Valeur', color=mode)
+    plt.title(title, color=mode)
+    plt.legend(legend, labelcolor=mode)
+
+    plt.xticks(color=mode)
+    plt.yticks(color=mode)
+
+    plt.gca().spines['bottom'].set_color(mode)
+    plt.gca().spines['top'].set_color(mode)
+    plt.gca().spines['right'].set_color(mode)
+    plt.gca().spines['left'].set_color(mode)
+
     plt.savefig(f"{title}.png")
     plt.close()
 
