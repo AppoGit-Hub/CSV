@@ -62,12 +62,17 @@ ProcessError create_pattern(
 				}
 			}
 
-			std::cout << block_movement << " | " << cummulation << " | " << added << std::endl;
+			//std::cout << block_movement << " | " << cummulation << " | " << added << std::endl;
 		}
 
 		pattern << block_movement;
 		for (size_t acc_index = 0; acc_index < accelerations.size(); acc_index++) {
-			pattern << DELIMITER << accelerations[acc_index].first / accelerations[acc_index].second;
+			double cummulation = accelerations[acc_index].first;
+			uint64_t stack_count = accelerations[acc_index].second;
+
+			pattern << DELIMITER << cummulation / stack_count;
+			std::cout << block_movement << " | " << cummulation << " | " << stack_count << std::endl;
+		
 		}
 		pattern << std::endl;
 	}
