@@ -53,6 +53,27 @@ def create_graph(filename: str, title: str):
     plt.savefig(f"{title}.png")
     plt.close()
 
+def view_testset(filename: str, view_index: int, title: str):
+    with open(filename, "r") as csvfile:
+        csv_reader = csv.reader(csvfile)
+        next(csv_reader)
+        lines = list(csv_reader)
+
+        line = lines[view_index - 1]
+        for data in line:
+            accelerations = [float(data) for data in line if data != ""]
+            #plt.hist(accelerations[1:])
+            
+            plt.plot(accelerations[1:])
+        
+    plt.savefig(f"{title}.png")
+    plt.close()
+
+
+view_testset("testset.csv", 1, "testset")
+
+
+"""
 create_graph("pattern.csv", "pattern")
 create_graph("pattern_attitude_pitch.csv", "pattern pitch")
 create_graph("pattern_attitude_roll.csv", "pattern roll")
@@ -66,3 +87,4 @@ create_graph("pattern_rotation_rate_z.csv", "pattern rotation rate z")
 create_graph("pattern_user_acceleration_x.csv", "pattern user acceleration x")
 create_graph("pattern_user_acceleration_y.csv", "pattern user acceleration y")
 create_graph("pattern_user_acceleration_z.csv", "pattern user acceleration z")
+"""
