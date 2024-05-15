@@ -144,3 +144,5 @@ void extract_setline_acceleration(SetLine& setline, std::istringstream& iss);
 void extract_subjectline(SubjectLine& subjectline, std::istringstream& iss);
 
 void evaluation_xyz();
+
+void evaluation_freq(const std::string& testset_name, const std::string& pattern_name);
