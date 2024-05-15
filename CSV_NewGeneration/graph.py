@@ -33,9 +33,9 @@ def create_graph(filename: str, title: str):
 
         for pattern_id, line in enumerate(lines):
             accelerations = [float(data) for data in line if data != ""]
-            legend.append(f"mouvement {pattern_id + 1}")
+            legend.append(f"mouvement {int(line[0])}")
 
-            plt.plot(accelerations[1:100], label=f"mouvement {pattern_id + 1}")
+            plt.plot(accelerations[1:], label=f"mouvement {int(line[0])}")
 
     plt.xlabel('Vacc', color=mode)
     plt.ylabel('Valeur', color=mode)
@@ -53,6 +53,7 @@ def create_graph(filename: str, title: str):
     plt.savefig(f"{title}.png")
     plt.close()
 
+create_graph("pattern.csv", "pattern")
 create_graph("pattern_attitude_pitch.csv", "pattern pitch")
 create_graph("pattern_attitude_roll.csv", "pattern roll")
 create_graph("pattern_attitude_yaw.csv", "pattern yaw")
