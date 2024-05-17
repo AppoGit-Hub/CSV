@@ -67,8 +67,8 @@ enum ProcessError : uint64_t {
 	COUDLNT_OPEN_FILE
 };
 
-enum RawColumnName {
-	ATTITUDE_ROLL = 1,
+enum RawColumnName : uint64_t {
+	ATTITUDE_ROLL,
 	ATTITUDE_PITCH,
 	ATTITUDE_YAW,
 	GRAVITY_X,
@@ -166,10 +166,15 @@ struct RawColumnData {
 };
 
 struct RunParameter {
-	uint64_t trainset_columns;
-	uint64_t testset_columns;
-	std::vector<RawColumnName> extraction_columnns;
+	uint64_t trainset_col;
+	uint64_t testset_col;
+	std::vector<RawColumnName> extract_col;
+	ExtremeFunction extreme;
 	FilterFunction filter;
+};
+
+struct GlobalState {
+	std::unordered_map<RawColumnName, std::pair<double, double>> columns_data;
 };
 
 void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);

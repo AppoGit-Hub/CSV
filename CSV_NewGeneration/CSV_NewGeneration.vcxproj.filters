@@ -54,6 +54,9 @@
     <ClCompile Include="UnitTest.cpp">
       <Filter>Fichiers sources\search</Filter>
     </ClCompile>
+    <ClCompile Include="Set_dyn.cpp">
+      <Filter>Fichiers sources\search</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Global.hpp">

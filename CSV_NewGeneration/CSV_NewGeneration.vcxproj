@@ -28,6 +28,7 @@
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="Pattern_xyz.cpp" />
     <ClCompile Include="Set.cpp" />
+    <ClCompile Include="Set_dyn.cpp" />
     <ClCompile Include="Set_xyz.cpp" />
     <ClCompile Include="UnitTest.cpp" />
     <ClCompile Include="Verification.cpp" />
