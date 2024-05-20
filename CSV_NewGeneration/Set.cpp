@@ -44,6 +44,10 @@ void create_header(std::fstream& output_file, const size_t columns_count) {
 	output_file << std::endl;
 }
 
+/// <summary>
+/// When a single column is extreme it ignores
+/// the complete line
+/// </summary>
 void filter_justone(
 	const double acceleration_x, 
 	const double acceleration_y,
@@ -61,6 +65,10 @@ void filter_justone(
 	}
 }
 
+/// <summary>
+/// When a single column is extreme replace that column value by
+/// its average value
+/// </summary>
 void filter_toaverage(
 	double acceleration_x,
 	double acceleration_y,
@@ -175,5 +183,5 @@ ProcessError phase_zero() {
 	if (!testset.is_open())
 		return COUDLNT_OPEN_FILE;
 
-	return set(trainset, testset, is_extreme);
+	return set(trainset, testset, no_extreme);
 }

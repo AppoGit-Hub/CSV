@@ -46,7 +46,7 @@ inline const double STANDARD_DEVIATION_Y = 0.61937128;
 inline const double STANDARD_DEVIATION_Z = 0.4300345;
 
 inline const uint64_t TRAINSET_COLUMNS = 600;
-const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS;
+const uint64_t TESTSET_COLUMNS = TESTSET_PROPORTION * TRAINSET_COLUMNS;
 
 const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");
 
@@ -67,7 +67,22 @@ enum ProcessError : uint64_t {
 	COUDLNT_OPEN_FILE
 };
 
-static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
+enum RawColumnName : uint64_t {
+	ATTITUDE_ROLL,
+	ATTITUDE_PITCH,
+	ATTITUDE_YAW,
+	GRAVITY_X,
+	GRAVITY_Y,
+	GRAVITY_Z,
+	ROTATION_X,
+	ROTATION_Y,
+	ROTATION_Z,
+	ACCLERERATION_X,
+	ACCLERERATION_Y,
+	ACCLERERATION_Z
+};
+
+std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("dws_(\\d+)"), MovementType::DOWNSTAIR},
 	{std::regex("jog_(\\d+)"), MovementType::JOGGING},
 	{std::regex("ups_(\\d+)"), MovementType::UPSTAIRS},
@@ -75,6 +90,39 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("std_(\\d+)"), MovementType::STAND_UP},
 	{std::regex("wlk_(\\d+)"), MovementType::WALKING}
 } };
+
+std::unordered_map<std::string, RawColumnName> RAW_COLUMN_MAP = {
+	{"attitude.roll", ATTITUDE_ROLL},
+	{"attitude.pitch", ATTITUDE_PITCH},
+	{"attitude.yaw", ATTITUDE_YAW},
+	{"gravity.x", GRAVITY_X},
+	{"gravity.y", GRAVITY_Y},
+	{"gravity.z", GRAVITY_Z},
+	{"rotationRate.x", ROTATION_X},
+	{"rotationRate.y", ROTATION_Y},
+	{"rotationRate.z", ROTATION_Z},
+	{"userAcceleration.x", ACCLERERATION_X},
+	{"userAcceleration.y", ACCLERERATION_Y},
+	{"userAcceleration.z", ACCLERERATION_Z},
+};
+
+/// <summary>
+/// Detects extemes values
+/// </summary>
+using ExtremeFunction = std::function<bool(
+	double value, 
+	double average, 
+	double std
+)>;
+
+/// <summary>
+/// Filter the line of raw data
+/// </summary>
+using FilterFunction = std::function<void(
+	std::vector<std::pair<double, RawColumnName>>,
+	ExtremeFunction, 
+	std::fstream
+)>;
 
 struct RawLine {
 	uint64_t id;
@@ -109,6 +157,24 @@ struct SubjectLine {
 
 struct EvalutionStats {
 	std::array<uint64_t, 6> guess_at = {0};
+};
+
+struct RawColumnData {
+	RawColumnName name;
+	double average;
+	double std;
+};
+
+struct RunParameter {
+	uint64_t trainset_col;
+	uint64_t testset_col;
+	std::vector<RawColumnName> extract_col;
+	ExtremeFunction extreme;
+	FilterFunction filter;
+};
+
+struct GlobalState {
+	std::unordered_map<RawColumnName, std::pair<double, double>> columns_data;
 };
 
 void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
