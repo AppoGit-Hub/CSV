@@ -82,7 +82,7 @@ enum RawColumnName : uint64_t {
 	ACCLERERATION_Z
 };
 
-std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
+static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("dws_(\\d+)"), MovementType::DOWNSTAIR},
 	{std::regex("jog_(\\d+)"), MovementType::JOGGING},
 	{std::regex("ups_(\\d+)"), MovementType::UPSTAIRS},
@@ -91,7 +91,7 @@ std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("wlk_(\\d+)"), MovementType::WALKING}
 } };
 
-std::unordered_map<std::string, RawColumnName> RAW_COLUMN_MAP = {
+static std::unordered_map<std::string, RawColumnName> RAW_COLUMN_MAP = {
 	{"attitude.roll", ATTITUDE_ROLL},
 	{"attitude.pitch", ATTITUDE_PITCH},
 	{"attitude.yaw", ATTITUDE_YAW},
