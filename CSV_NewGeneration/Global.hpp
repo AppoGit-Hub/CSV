@@ -130,7 +130,7 @@ ProcessError create_pattern(const std::string& pattern_name, const std::string& 
 ProcessError phase_two();
 
 std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type);
-ProcessError evaluation(const std::string& testset_name, const std::string& pattern_name);
+ProcessError evaluation(const std::string& testset_name, const std::string& pattern_name, const std::string& evaluation_name);
 ProcessError phase_three();
 
 ProcessError test();

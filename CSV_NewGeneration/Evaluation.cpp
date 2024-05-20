@@ -40,9 +40,9 @@ ProcessError evaluation(
 	std::fstream testset(testset_name, std::ios::in);
 	std::fstream pattern(pattern_name, std::ios::in);
 
-	std::unordered_map<MovementType, EvalutionStats> verification;
+	std::array<std::array<uint64_t, 6>, 6> verification = {0};
 	std::unordered_map<MovementType, std::vector<double>> testset_lines;
-	
+
 	std::string header;
 	std::getline(testset, header);
 
@@ -97,43 +97,50 @@ ProcessError evaluation(
 		}
 		
 		MovementType type = static_cast<MovementType>(movement);
-		if (verification.find(type) == verification.end()) {
-			verification[type] = EvalutionStats{};
-		}
-		
-		EvalutionStats& evalution = verification[type];
 		uint64_t movement_id = static_cast<uint64_t>(movement_min);
 
-		evalution.guess_at[movement_id - 1]++;
-
+		verification[movement - 1][movement_id - 1]++;
 		//std::cout << movement << " >>> " << distance_min << " | " << static_cast<uint64_t>(movement_min) << std::endl;
 	}
 
+	std::fstream evaluation(EVALUATION_FILENAME, std::ios::out);
+	evaluation <<
+		"Mouvement" << DELIMITER <<
+		"1" << DELIMITER <<
+		"2" << DELIMITER <<
+		"3" << DELIMITER <<
+		"4" << DELIMITER <<
+		"5" << DELIMITER <<
+		"6" << DELIMITER << std::endl;
+
 	uint64_t total_right = 0;
 	uint64_t total = 0;
-	for (auto [type, evaluation] : verification) {
-		uint64_t type_id = static_cast<uint64_t>(type);
-		std::cout << type_id << " | ";
-
+	for (size_t eval_index = 0; eval_index < verification.size(); eval_index++) {
+		std::cout << (eval_index + 1) << " | ";
+		evaluation << (eval_index + 1) << DELIMITER;
+		
 		uint64_t mov_total = 0;
-		for (uint64_t guesses : evaluation.guess_at) {
+		for (size_t guess_index = 0; guess_index < verification[eval_index].size(); guess_index++) {
+			uint64_t guesses = verification[eval_index][guess_index];
 			std::cout << guesses << " | ";
+			evaluation << guesses << DELIMITER;
 			mov_total += guesses;
 			total += guesses;
 		}
+		evaluation << std::endl;
 
-		uint64_t mov_right = evaluation.guess_at[type_id - 1];
+		uint64_t mov_right = verification[eval_index][eval_index];
 		total_right += mov_right;
 
 		double succes_rate = ((double)mov_right / mov_total) * 100;
 
-		std::cout 
+		std::cout
 			<< "Total : " << mov_total << " | "
 			<< "Accuracy: " << succes_rate << "%" << std::endl;
 	}
 
-	std::cout 
-		<< "Total: " 
+	std::cout
+		<< "Total: "
 		<< total_right << " | "
 		<< total << " | "
 		<< std::round(((double)total_right / total) * 100) << "%"

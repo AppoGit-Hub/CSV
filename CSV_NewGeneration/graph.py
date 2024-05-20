@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 plt.rcParams['axes.facecolor'] = 'none'
 
-mode = "white"
+mode = "black"
 
 def explore_all(dirpath: str, accelerations: list[tuple[float, float, float]]):
     for item in os.listdir(dirpath):
@@ -33,9 +33,9 @@ def create_graph(filename: str, title: str):
 
         for pattern_id, line in enumerate(lines):
             accelerations = [float(data) for data in line if data != ""]
-            legend.append(f"mouvement {int(line[0])}")
+            legend.append(f"Mouvement {int(line[0])}")
 
-            plt.plot(accelerations[1:], label=f"mouvement {int(line[0])}")
+            plt.plot(accelerations[1:], label=f"Mouvement {int(line[0])}")
 
     plt.xlabel('Vacc', color=mode)
     plt.ylabel('Valeur', color=mode)
@@ -63,14 +63,64 @@ def view_testset(filename: str, view_index: int, title: str):
         for data in line:
             accelerations = [float(data) for data in line if data != ""]
             #plt.hist(accelerations[1:])
-            
-            plt.plot(accelerations[1:])
-        
+            plt.plot(accelerations[3:100])
+    
+    plt.title(int(line[0]))
     plt.savefig(f"{title}.png")
     plt.close()
 
+def view_evaluation(filename: str, title: str):
+    colors = ['#FF5733', '#3399FF', '#33FF57', '#FFA500', '#800080', '#FFFF00']
 
-view_testset("testset.csv", 1, "testset")
+    plt.figure(facecolor='none')
+
+    with open(filename, "r") as csvfile:
+        csv_reader = csv.reader(csvfile)
+        next(csv_reader)
+        data = []
+        for line in csv_reader:
+            data.append([float(data) for data in list(line)[1:] if data != ''])
+    
+        percentages = [[(val / sum(row)) * 100 for val in row] for row in data]
+
+        x = range(1, len(data) + 1)
+        bottom = [0] * len(data)
+        for i in range(len(data[0])):
+            plt.bar(x, [percentages[j][i] for j in range(len(data))], bottom=bottom, color=colors[i], label=f'Movement {i+1}')
+            bottom = [bottom[j] + percentages[j][i] for j in range(len(data))]
+
+    plt.xlabel('Mouvement', color=mode)
+    plt.ylabel('Estimations', color=mode)
+    plt.title('Evaluation', color=mode)
+    plt.legend(labelcolor=mode)
+    plt.savefig(f"{title}.png")
+    plt.close()
+
+def view_performance(filename: str, title: str):
+    plt.figure(facecolor='none')
+    
+    with open(filename, "r") as csvfile:
+        csv_reader = csv.reader(csvfile)
+        next(csv_reader)
+        data = []
+        for index, line in enumerate(csv_reader, 1):
+            rights = float(list(line)[index])
+            all = sum([float(data) for data in list(line)[1:] if data != ''])
+            print([rights, all, rights / all])
+            
+            data.append((rights / all) * 100)
+    
+
+    plt.bar(range(1, len(data) + 1), data)
+    plt.xlabel('Mouvement', color=mode)
+    plt.ylabel('Performance', color=mode)
+    plt.title(f"Evaluation {title}", color=mode)
+    plt.savefig(f"{title}.png")
+    plt.close()
+
+create_graph("pattern.csv", "pattern")
+view_evaluation("evaluation.csv", "evaluation")
+view_performance("evaluation.csv", "performance")
 
 
 """
