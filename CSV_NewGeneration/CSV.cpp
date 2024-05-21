@@ -28,9 +28,12 @@ void classic_stack_xyz() {
 	evaluation_xyz();
 }
 
+
 int main() {
 	//classic_stack();
-	evaluation_freq("testset.csv", "pattern.csv");
+	//evaluation_freq("testset.csv", "pattern.csv");
+
+	finder();
 
 	return EXIT_SUCCESS;
 }

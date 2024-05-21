@@ -18,6 +18,9 @@
 #include <optional>
 #include <cassert>
 #include <cmath>
+#include <utility>
+#include <algorithm>
+#include <bitset>
 
 namespace fs = std::filesystem;
 
@@ -79,8 +82,10 @@ enum RawColumnName : uint64_t {
 	ROTATION_Z,
 	ACCLERERATION_X,
 	ACCLERERATION_Y,
-	ACCLERERATION_Z
+	ACCLERERATION_Z,
+	SIZE
 };
+
 
 static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("dws_(\\d+)"), MovementType::DOWNSTAIR},
@@ -91,19 +96,19 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("wlk_(\\d+)"), MovementType::WALKING}
 } };
 
-static std::unordered_map<std::string, RawColumnName> RAW_COLUMN_MAP = {
-	{"attitude.roll", ATTITUDE_ROLL},
-	{"attitude.pitch", ATTITUDE_PITCH},
-	{"attitude.yaw", ATTITUDE_YAW},
-	{"gravity.x", GRAVITY_X},
-	{"gravity.y", GRAVITY_Y},
-	{"gravity.z", GRAVITY_Z},
-	{"rotationRate.x", ROTATION_X},
-	{"rotationRate.y", ROTATION_Y},
-	{"rotationRate.z", ROTATION_Z},
-	{"userAcceleration.x", ACCLERERATION_X},
-	{"userAcceleration.y", ACCLERERATION_Y},
-	{"userAcceleration.z", ACCLERERATION_Z},
+static std::unordered_map<RawColumnName, std::string> RAW_COLUMN_MAP = {
+	{ATTITUDE_ROLL, "attitude.roll"},
+	{ATTITUDE_PITCH, "attitude.pitch"},
+	{ATTITUDE_YAW, "attitude.yaw"},
+	{GRAVITY_X, "gravity.x"},
+	{GRAVITY_Y, "gravity.y"},
+	{GRAVITY_Z, "gravity.z"},
+	{ROTATION_X, "rotationRate.x"},
+	{ROTATION_Y, "rotationRate.y"},
+	{ROTATION_Z, "rotationRate.z"},
+	{ACCLERERATION_X, "userAcceleration.x"},
+	{ACCLERERATION_Y, "userAcceleration.y"},
+	{ACCLERERATION_Z, "userAcceleration.z"},
 };
 
 /// <summary>
@@ -170,7 +175,6 @@ struct RunParameter {
 	uint64_t testset_col;
 	std::vector<RawColumnName> extract_col;
 	ExtremeFunction extreme;
-	FilterFunction filter;
 };
 
 struct GlobalState {
@@ -196,8 +200,8 @@ ProcessError create_pattern(const std::string& pattern_name, const std::string& 
 ProcessError phase_two();
 
 std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type);
-ProcessError evaluation(const std::string& testset_name, const std::string& pattern_name, const std::string& evaluation_name);
-ProcessError phase_three();
+std::array<std::array<uint64_t, 6>, 6> evaluation(const std::string& testset_name, const std::string& pattern_name);
+std::array<std::array<uint64_t, 6>, 6> phase_three();
 
 ProcessError test();
 
@@ -212,3 +216,9 @@ void extract_subjectline(SubjectLine& subjectline, std::istringstream& iss);
 void evaluation_xyz();
 
 void evaluation_freq(const std::string& testset_name, const std::string& pattern_name);
+
+uint64_t create_set_dyn(const RunParameter& parameter, const GlobalState& global, std::fstream& current_file, std::fstream& output_file, const uint64_t line_count);
+
+void get_data(GlobalState& state, const RunParameter& run, const std::filesystem::path current_path, const uint64_t line_count);
+void csv_dyn(const RunParameter& run, GlobalState& state);
+void finder();

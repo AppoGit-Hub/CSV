@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CSV.cpp" />
+    <ClCompile Include="CSV_dyn.cpp" />
     <ClCompile Include="Evaluation.cpp" />
     <ClCompile Include="Evaluation_freq.cpp" />
     <ClCompile Include="Evaluation_xyz.cpp" />

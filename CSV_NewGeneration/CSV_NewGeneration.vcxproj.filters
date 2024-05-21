@@ -57,6 +57,9 @@
     <ClCompile Include="Set_dyn.cpp">
       <Filter>Fichiers sources\search</Filter>
     </ClCompile>
+    <ClCompile Include="CSV_dyn.cpp">
+      <Filter>Fichiers sources\search</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Global.hpp">

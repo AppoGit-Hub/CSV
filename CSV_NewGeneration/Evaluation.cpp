@@ -1,5 +1,51 @@
 #include "Global.hpp"
 
+void view_result(const std::array<std::array<uint64_t, 6>, 6>& result) {
+	std::fstream evaluation(EVALUATION_FILENAME, std::ios::out);
+	
+	evaluation <<
+		"Mouvement" << DELIMITER <<
+		"1" << DELIMITER <<
+		"2" << DELIMITER <<
+		"3" << DELIMITER <<
+		"4" << DELIMITER <<
+		"5" << DELIMITER <<
+		"6" << DELIMITER << std::endl;
+
+	uint64_t total_right = 0;
+	uint64_t total = 0;
+	for (size_t eval_index = 0; eval_index < result.size(); eval_index++) {
+		std::cout << (eval_index + 1) << " | ";
+		evaluation << (eval_index + 1) << DELIMITER;
+
+		uint64_t mov_total = 0;
+		for (size_t guess_index = 0; guess_index < result[eval_index].size(); guess_index++) {
+			uint64_t guesses = result[eval_index][guess_index];
+			std::cout << guesses << " | ";
+			evaluation << guesses << DELIMITER;
+			mov_total += guesses;
+			total += guesses;
+		}
+		evaluation << std::endl;
+
+		uint64_t mov_right = result[eval_index][eval_index];
+		total_right += mov_right;
+
+		double succes_rate = ((double)mov_right / mov_total) * 100;
+
+		std::cout
+			<< "Total : " << mov_total << " | "
+			<< "Accuracy: " << succes_rate << "%" << std::endl;
+	}
+
+	std::cout
+		<< "Total: "
+		<< total_right << " | "
+		<< total << " | "
+		<< std::round(((double)total_right / total) * 100) << "%"
+		<< std::endl;
+}
+
 std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type) {
 	std::vector<double> accelerations;
 
@@ -33,7 +79,7 @@ std::vector<double> find_acceleration(std::fstream& pattern, const MovementType 
 	return accelerations;
 }
 
-ProcessError evaluation(
+std::array<std::array<uint64_t, 6>, 6> evaluation(
 	const std::string& testset_name, 
 	const std::string& pattern_name
 ) {
@@ -103,52 +149,9 @@ ProcessError evaluation(
 		//std::cout << movement << " >>> " << distance_min << " | " << static_cast<uint64_t>(movement_min) << std::endl;
 	}
 
-	std::fstream evaluation(EVALUATION_FILENAME, std::ios::out);
-	evaluation <<
-		"Mouvement" << DELIMITER <<
-		"1" << DELIMITER <<
-		"2" << DELIMITER <<
-		"3" << DELIMITER <<
-		"4" << DELIMITER <<
-		"5" << DELIMITER <<
-		"6" << DELIMITER << std::endl;
-
-	uint64_t total_right = 0;
-	uint64_t total = 0;
-	for (size_t eval_index = 0; eval_index < verification.size(); eval_index++) {
-		std::cout << (eval_index + 1) << " | ";
-		evaluation << (eval_index + 1) << DELIMITER;
-		
-		uint64_t mov_total = 0;
-		for (size_t guess_index = 0; guess_index < verification[eval_index].size(); guess_index++) {
-			uint64_t guesses = verification[eval_index][guess_index];
-			std::cout << guesses << " | ";
-			evaluation << guesses << DELIMITER;
-			mov_total += guesses;
-			total += guesses;
-		}
-		evaluation << std::endl;
-
-		uint64_t mov_right = verification[eval_index][eval_index];
-		total_right += mov_right;
-
-		double succes_rate = ((double)mov_right / mov_total) * 100;
-
-		std::cout
-			<< "Total : " << mov_total << " | "
-			<< "Accuracy: " << succes_rate << "%" << std::endl;
-	}
-
-	std::cout
-		<< "Total: "
-		<< total_right << " | "
-		<< total << " | "
-		<< std::round(((double)total_right / total) * 100) << "%"
-		<< std::endl;
-
-	return NO_ERROR;
+	return verification;
 }
 
-ProcessError phase_three() {
+std::array<std::array<uint64_t, 6>, 6> phase_three() {
 	return evaluation(TESTSET_FILENAME, PATTERN_FILENAME);
 }
