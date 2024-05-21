@@ -49,7 +49,7 @@ inline const double STANDARD_DEVIATION_Y = 0.61937128;
 inline const double STANDARD_DEVIATION_Z = 0.4300345;
 
 inline const uint64_t TRAINSET_COLUMNS = 600;
-const uint64_t TESTSET_COLUMNS = TESTSET_PROPORTION * TRAINSET_COLUMNS;
+const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS;
 
 const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");
 
@@ -222,4 +222,8 @@ uint64_t create_set_dyn(const RunParameter& parameter, const GlobalState& global
 
 void get_data(GlobalState& state, const RunParameter& run, const std::filesystem::path current_path, const uint64_t line_count);
 void csv_dyn(const RunParameter& run, GlobalState& state);
+void to_columns(const std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits, std::vector<RawColumnName>& columns);
+void to_bitset(const std::vector<RawColumnName>& columns, std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits);
+std::array<std::array<uint64_t, 6>, 6> test_combination(const RunParameter& run, GlobalState& state);
+double get_performance(const std::array<std::array<uint64_t, 6>, 6>& results);
 void finder();

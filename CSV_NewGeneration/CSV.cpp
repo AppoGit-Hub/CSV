@@ -8,7 +8,8 @@ void classic_stack() {
 	std::cout << "Creating Pattern: " << std::endl;
 	phase_two();
 	std::cout << "Creating Evaluation: " << std::endl;
-	phase_three();
+	auto result = phase_three();
+	view_result(result);
 }
 
 void classic_stack_xyz() {
@@ -28,6 +29,21 @@ void classic_stack_xyz() {
 	evaluation_xyz();
 }
 
+void dynamic() {
+	auto extract = {
+		RawColumnName::ACCLERERATION_X,
+		RawColumnName::ACCLERERATION_Y,
+		RawColumnName::ACCLERERATION_Z
+	};
+	RunParameter run = RunParameter(TRAINSET_COLUMNS, TRAINSET_COLUMNS, extract, no_extreme);
+	GlobalState state;
+
+	auto result = test_combination(run, state);
+	auto perforamce = get_performance(result);
+
+	std::cout << perforamce << std::endl;
+	view_result(result);
+}
 
 int main() {
 	//classic_stack();
