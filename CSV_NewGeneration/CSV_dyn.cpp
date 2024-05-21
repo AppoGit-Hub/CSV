@@ -181,6 +181,8 @@ void finder() {
 		phase_two();
 		auto result = phase_three();
 
+		view_result(result);
+
 		uint64_t total = 0;
 		uint64_t total_right = 0;
 		for (size_t eval_index = 0; eval_index < result.size(); eval_index++) {

@@ -200,6 +200,7 @@ ProcessError create_pattern(const std::string& pattern_name, const std::string& 
 ProcessError phase_two();
 
 std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type);
+void view_result(const std::array<std::array<uint64_t, 6>, 6>& result);
 std::array<std::array<uint64_t, 6>, 6> evaluation(const std::string& testset_name, const std::string& pattern_name);
 std::array<std::array<uint64_t, 6>, 6> phase_three();
 

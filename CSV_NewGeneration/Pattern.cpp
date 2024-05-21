@@ -71,7 +71,7 @@ ProcessError create_pattern(
 			uint64_t stack_count = accelerations[acc_index].second;
 
 			pattern << DELIMITER << cummulation / stack_count;
-			std::cout << block_movement << " | " << cummulation << " | " << stack_count << std::endl;
+			//std::cout << block_movement << " | " << cummulation << " | " << stack_count << std::endl;
 		
 		}
 		pattern << std::endl;
