@@ -36,6 +36,7 @@ const std::string EVALUATION_FILENAME = "evaluation.csv";
 const std::string SUBJECT_FILENAME = "data_subjects_info.csv";
 const std::string TRAINSET_FILENAME = "trainset.csv";
 const std::string TESTSET_FILENAME = "testset.csv";
+const std::string COMBINATION_FILENAME = "combination.csv";
 
 const auto DATA_FOLDERPATH = std::filesystem::path{ BASE_FOLDER } / DATA_FOLDER;
 const auto SUBJECT_FILEPATH = fs::path{ BASE_FOLDER } / SUBJECT_FILENAME;
@@ -147,13 +148,38 @@ struct RunParameter {
 	ExtremeFunction extreme;
 };
 
-// Global.cpp
+// global.cpp
 void for_file(
 	const fs::path& directory, 
 	std::function<void(fs::path)> on_file
 );
-
-// Set.cpp
+void extract_rawline(
+	RawLine& rawline, 
+	std::istringstream& iss
+);
+void extract_setline_core(
+	SetLine& setline, 
+	std::istringstream& iss
+);
+void extract_subjectline(
+	SubjectLine& subjectline, 
+	std::istringstream& iss
+);
+bool is_extreme_z(
+	const double value, 
+	const double average, 
+	const double std
+);
+bool is_extreme(
+	const double value, 
+	const double average, 
+	const double std
+);
+bool no_extreme(
+	const double value, 
+	const double average, 
+	const double std
+);
 size_t find_directory_type(
 	const std::string& directory_name
 );
@@ -164,112 +190,23 @@ void create_header(
 	std::fstream& output_file, 
 	const size_t columns_count
 );
-void filter_justone(
-	const double acceleration_x,
-	const double acceleration_y,
-	const double acceleration_z,
-	ExtremeFunction extreme_func,
-	std::fstream& output_file
-);
-void filter_toaverage(
-	double acceleration_x,
-	double acceleration_y,
-	double acceleration_z,
-	ExtremeFunction extreme_func,
-	std::fstream& output_file
-);
-uint64_t create_set(
-	std::fstream& current_file, 
-	const uint64_t line_count, 
-	std::fstream& output_file, 
-	ExtremeFunction extreme_func
-);
-void set(
-	std::fstream& trainset, 
-	std::fstream& testset, 
-	ExtremeFunction extreme_func
-);
-void phase_zero();
-
-// Verification.cpp
-bool is_extreme(
-	const double value, 
-	const double average, 
-	const double std
-);
-bool is_extreme_z(
-	const double value, 
-	const double average, 
-	const double std
-);
-bool no_extreme(
-	const double value, 
-	const double average, 
-	const double std
-);
-void verification(
-	std::fstream& checkfile, 
-	ExtremeFunction extreme_func
-);
-void phase_one();
-
-// Pattern.cpp
-void create_pattern(
-	const std::string& pattern_name,
-	const std::string& trainset_name
-);
-void phase_two();
-
-// Evaluation.cpp
 void view_result(
-	const std::vector<std::vector<double>>& result,
+	const std::vector<std::vector<double>>& result, 
 	const std::string evalution_filename
 );
-std::vector<double> find_acceleration(
-	std::fstream& pattern,
-	const MovementType movement_type
-);
-std::array<std::array<uint64_t, 6>, 6> evaluation(
-	const std::string& testset_name,
-	const std::string& pattern_name
-);
-std::array<std::array<uint64_t, 6>, 6> phase_three();
-
-// Extraction.cpp
-void extract_rawline(
-	RawLine& rawline, 
-	std::istringstream& iss
-);
-void extract_setline(
-	SetLine& rawline, 
-	std::istringstream& iss
-);
-void extract_setline_core(
-	SetLine& setline, 
-	std::istringstream& iss
-);
-void extract_setline_acceleration(
-	SetLine& setline, 
-	std::istringstream& iss
-);
-void extract_subjectline(
-	SubjectLine& subjectline, 
-	std::istringstream& iss
-);
-
-// CSV.cpp
-void classic_stack();
 void to_columns(
-	const std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits,
+	const std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits, 
 	std::vector<RawColumnName>& columns
 );
 void to_bitset(
-	const std::vector<RawColumnName>& columns,
+	const std::vector<RawColumnName>& columns, 
 	std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits
 );
 double get_performance(
 	const std::vector<std::vector<double>>& results
 );
+
+// set.cpp
 uint64_t create_set_matrix(
 	const std::vector<std::vector<double>>& file_matrix,
 	const uint64_t start_row,
@@ -285,9 +222,15 @@ uint64_t create_set_matrix(
 	const double max_value
 );
 std::vector<std::vector<double>> do_run(
-	const RunParameter& run, 
-	const std::string& trainset_filename, 
-	const std::string& testset_filename, 
-	const std::string& pattern_filename, 
+	const RunParameter& run,
+	const std::string& trainset_filename,
+	const std::string& testset_filename,
+	const std::string& pattern_filename,
 	const std::string& evaluation_filename
+);
+
+// verification.cpp
+void verification(
+	std::fstream& checkfile,
+	ExtremeFunction extreme_func
 );

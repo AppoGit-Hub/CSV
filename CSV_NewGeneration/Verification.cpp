@@ -1,20 +1,4 @@
-#include "Global.hpp"
-
-[[nodiscard]] 
-bool is_extreme_z(const double value, const double average, const double std) {
-	const double z_score = (value - average) / std;
-	return z_score > average + (3 * std) || z_score < average - (3 * std);
-}
-
-[[nodiscard]]
-bool is_extreme(const double value, const double average, const double std) {
-	return value > average + (3 * std) || value < average - (3 * std);
-}
-
-[[nodiscard]]
-bool no_extreme(const double value, const double average, const double std) {
-	return false;
-}
+#include "global.hpp"
 
 void verification(
 	std::fstream& checkfile, 
