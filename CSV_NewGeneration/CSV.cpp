@@ -218,18 +218,18 @@ std::vector<std::vector<double>> do_run(
 		}
 
 		RawLine average = { 0 };
-		average.attitude_roll += total.attitude_roll / columns;
-		average.attitude_pitch += total.attitude_pitch / columns;
-		average.attitude_yaw += total.attitude_yaw / columns;
-		average.gravity_x += total.gravity_x / columns;
-		average.gravity_y += total.gravity_y / columns;
-		average.gravity_z += total.gravity_z / columns;
-		average.rotation_rate_x += total.rotation_rate_x / columns;
-		average.rotation_rate_y += total.rotation_rate_y / columns;
-		average.rotation_rate_z += total.rotation_rate_z / columns;
-		average.user_acceleration_x += total.user_acceleration_x / columns;
-		average.user_acceleration_y += total.user_acceleration_y / columns;
-		average.user_acceleration_z += total.user_acceleration_z / columns;
+		average.attitude_roll += total.attitude_roll / total_rows;
+		average.attitude_pitch += total.attitude_pitch / total_rows;
+		average.attitude_yaw += total.attitude_yaw / total_rows;
+		average.gravity_x += total.gravity_x / total_rows;
+		average.gravity_y += total.gravity_y / total_rows;
+		average.gravity_z += total.gravity_z / total_rows;
+		average.rotation_rate_x += total.rotation_rate_x / total_rows;
+		average.rotation_rate_y += total.rotation_rate_y / total_rows;
+		average.rotation_rate_z += total.rotation_rate_z / total_rows;
+		average.user_acceleration_x += total.user_acceleration_x / total_rows;
+		average.user_acceleration_y += total.user_acceleration_y / total_rows;
+		average.user_acceleration_z += total.user_acceleration_z / total_rows;
 
 		RawLine std = { 0 };
 		for (size_t row_index = 0; row_index < total_rows; row_index++) {
@@ -249,18 +249,18 @@ std::vector<std::vector<double>> do_run(
 			std.user_acceleration_z += pow(row[RawColumnName::ACCLERERATION_Z + 1] - average.user_acceleration_z, 2);
 		}
 
-		std.attitude_roll = sqrt(std.attitude_roll / columns);
-		std.attitude_pitch = sqrt(std.attitude_pitch / columns);
-		std.attitude_yaw = sqrt(std.attitude_yaw / columns);
-		std.gravity_x = sqrt(std.gravity_x / columns);
-		std.gravity_y = sqrt(std.gravity_y / columns);
-		std.gravity_z = sqrt(std.gravity_z / columns);
-		std.rotation_rate_x = sqrt(std.rotation_rate_x / columns);
-		std.rotation_rate_y = sqrt(std.rotation_rate_y / columns);
-		std.rotation_rate_z = sqrt(std.rotation_rate_z / columns);
-		std.user_acceleration_x = sqrt(std.user_acceleration_x / columns);
-		std.user_acceleration_y = sqrt(std.user_acceleration_y / columns);
-		std.user_acceleration_z = sqrt(std.user_acceleration_z / columns);
+		std.attitude_roll = sqrt(std.attitude_roll / total_rows);
+		std.attitude_pitch = sqrt(std.attitude_pitch / total_rows);
+		std.attitude_yaw = sqrt(std.attitude_yaw / total_rows);
+		std.gravity_x = sqrt(std.gravity_x / total_rows);
+		std.gravity_y = sqrt(std.gravity_y / total_rows);
+		std.gravity_z = sqrt(std.gravity_z / total_rows);
+		std.rotation_rate_x = sqrt(std.rotation_rate_x / total_rows);
+		std.rotation_rate_y = sqrt(std.rotation_rate_y / total_rows);
+		std.rotation_rate_z = sqrt(std.rotation_rate_z / total_rows);
+		std.user_acceleration_x = sqrt(std.user_acceleration_x / total_rows);
+		std.user_acceleration_y = sqrt(std.user_acceleration_y / total_rows);
+		std.user_acceleration_z = sqrt(std.user_acceleration_z / total_rows);
 
 		std::unordered_map<RawColumnName, std::pair<double, double>> columns_data = {
 			{ RawColumnName::ATTITUDE_ROLL, std::pair(average.attitude_roll, std.attitude_roll) },
