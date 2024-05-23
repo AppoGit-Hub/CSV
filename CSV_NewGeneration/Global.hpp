@@ -24,6 +24,9 @@
 
 namespace fs = std::filesystem;
 
+#define LOGFILE 0
+#define EVALUTIONFILE 1
+
 const std::string DELIMITER = ",";
 const std::string BASE_FOLDER = "archive";
 const std::string DATA_FOLDER = "data";
@@ -33,9 +36,8 @@ const std::string EVALUATION_FILENAME = "evaluation.csv";
 const std::string SUBJECT_FILENAME = "data_subjects_info.csv";
 const std::string TRAINSET_FILENAME = "trainset.csv";
 const std::string TESTSET_FILENAME = "testset.csv";
-const std::string CLEANED_TRAINSET_FILENAME = "cleanedtrainset.csv";
 
-const auto DATA_FOLDERPATH = fs::path{ BASE_FOLDER } / DATA_FOLDER;
+const auto DATA_FOLDERPATH = std::filesystem::path{ BASE_FOLDER } / DATA_FOLDER;
 const auto SUBJECT_FILEPATH = fs::path{ BASE_FOLDER } / SUBJECT_FILENAME;
 
 inline const double TESTSET_PROPORTION = 0.1;
@@ -63,13 +65,6 @@ enum class MovementType : uint64_t {
 	SIZE,
 };
 
-enum ProcessError : uint64_t {
-	NO_ERROR,
-	DIRECTORY_TYPE_NOT_FOUND,
-	PERSON_FILE_NOT_FOUND,
-	COUDLNT_OPEN_FILE
-};
-
 enum RawColumnName : uint64_t {
 	ATTITUDE_ROLL,
 	ATTITUDE_PITCH,
@@ -95,21 +90,6 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("std_(\\d+)"), MovementType::STAND_UP},
 	{std::regex("wlk_(\\d+)"), MovementType::WALKING}
 } };
-
-static std::unordered_map<RawColumnName, std::string> RAW_COLUMN_MAP = {
-	{ATTITUDE_ROLL, "attitude.roll"},
-	{ATTITUDE_PITCH, "attitude.pitch"},
-	{ATTITUDE_YAW, "attitude.yaw"},
-	{GRAVITY_X, "gravity.x"},
-	{GRAVITY_Y, "gravity.y"},
-	{GRAVITY_Z, "gravity.z"},
-	{ROTATION_X, "rotationRate.x"},
-	{ROTATION_Y, "rotationRate.y"},
-	{ROTATION_Z, "rotationRate.z"},
-	{ACCLERERATION_X, "userAcceleration.x"},
-	{ACCLERERATION_Y, "userAcceleration.y"},
-	{ACCLERERATION_Z, "userAcceleration.z"},
-};
 
 /// <summary>
 /// Detects extemes values
@@ -160,16 +140,6 @@ struct SubjectLine {
 	uint64_t gender;
 };
 
-struct EvalutionStats {
-	std::array<uint64_t, 6> guess_at = {0};
-};
-
-struct RawColumnData {
-	RawColumnName name;
-	double average;
-	double std;
-};
-
 struct RunParameter {
 	uint64_t trainset_col;
 	uint64_t testset_col;
@@ -177,53 +147,147 @@ struct RunParameter {
 	ExtremeFunction extreme;
 };
 
-struct GlobalState {
-	std::unordered_map<RawColumnName, std::pair<double, double>> columns_data;
-};
+// Global.cpp
+void for_file(
+	const fs::path& directory, 
+	std::function<void(fs::path)> on_file
+);
 
-void for_file(const fs::path& directory, std::function<void(fs::path)> on_file);
+// Set.cpp
+size_t find_directory_type(
+	const std::string& directory_name
+);
+uint64_t find_gender(
+	const uint64_t person_id
+);
+void create_header(
+	std::fstream& output_file, 
+	const size_t columns_count
+);
+void filter_justone(
+	const double acceleration_x,
+	const double acceleration_y,
+	const double acceleration_z,
+	ExtremeFunction extreme_func,
+	std::fstream& output_file
+);
+void filter_toaverage(
+	double acceleration_x,
+	double acceleration_y,
+	double acceleration_z,
+	ExtremeFunction extreme_func,
+	std::fstream& output_file
+);
+uint64_t create_set(
+	std::fstream& current_file, 
+	const uint64_t line_count, 
+	std::fstream& output_file, 
+	ExtremeFunction extreme_func
+);
+void set(
+	std::fstream& trainset, 
+	std::fstream& testset, 
+	ExtremeFunction extreme_func
+);
+void phase_zero();
 
-size_t find_directory_type(const std::string& directory_name);
-uint64_t find_gender(const uint64_t person_id);
-void create_header(std::fstream& output_file, const size_t columns_count);
-uint64_t create_set(std::fstream& current_file, const uint64_t line_count, std::fstream& output_file, std::function<bool(double, double, double)> extreme_func);
-ProcessError set(std::fstream& trainset, std::fstream& testset, std::function<bool(double, double, double)> extreme_func);
-ProcessError phase_zero();
+// Verification.cpp
+bool is_extreme(
+	const double value, 
+	const double average, 
+	const double std
+);
+bool is_extreme_z(
+	const double value, 
+	const double average, 
+	const double std
+);
+bool no_extreme(
+	const double value, 
+	const double average, 
+	const double std
+);
+void verification(
+	std::fstream& checkfile, 
+	ExtremeFunction extreme_func
+);
+void phase_one();
 
-bool is_extreme(const double value, const double average, const double std);
-bool is_extreme_z(const double value, const double average, const double std);
-bool no_extreme(const double value, const double average, const double std);
-ProcessError verification(std::fstream& checkfile, std::function<bool(double, double, double)> extreme_func);
-ProcessError phase_one();
+// Pattern.cpp
+void create_pattern(
+	const std::string& pattern_name,
+	const std::string& trainset_name
+);
+void phase_two();
 
-ProcessError create_pattern(const std::string& pattern_name, const std::string& trainset_name);
-ProcessError phase_two();
-
-std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type);
-void view_result(const std::vector<std::vector<double>>& result, const std::string evalution_filename);
-std::array<std::array<uint64_t, 6>, 6> evaluation(const std::string& testset_name, const std::string& pattern_name);
+// Evaluation.cpp
+void view_result(
+	const std::vector<std::vector<double>>& result,
+	const std::string evalution_filename
+);
+std::vector<double> find_acceleration(
+	std::fstream& pattern,
+	const MovementType movement_type
+);
+std::array<std::array<uint64_t, 6>, 6> evaluation(
+	const std::string& testset_name,
+	const std::string& pattern_name
+);
 std::array<std::array<uint64_t, 6>, 6> phase_three();
 
-ProcessError test();
+// Extraction.cpp
+void extract_rawline(
+	RawLine& rawline, 
+	std::istringstream& iss
+);
+void extract_setline(
+	SetLine& rawline, 
+	std::istringstream& iss
+);
+void extract_setline_core(
+	SetLine& setline, 
+	std::istringstream& iss
+);
+void extract_setline_acceleration(
+	SetLine& setline, 
+	std::istringstream& iss
+);
+void extract_subjectline(
+	SubjectLine& subjectline, 
+	std::istringstream& iss
+);
 
-void create_header_xyz(std::ofstream& output_file, const size_t columns_count);
-void set_xyz();
-void extract_rawline(RawLine& rawline, std::istringstream& iss);
-void extract_setline(SetLine& rawline, std::istringstream& iss);
-void extract_setline_core(SetLine& setline, std::istringstream& iss);
-void extract_setline_acceleration(SetLine& setline, std::istringstream& iss);
-void extract_subjectline(SubjectLine& subjectline, std::istringstream& iss);
-
-void evaluation_xyz();
-
-void evaluation_freq(const std::string& testset_name, const std::string& pattern_name);
-
-uint64_t create_set_dyn(const RunParameter& parameter, const GlobalState& global, std::fstream& current_file, std::fstream& output_file, const uint64_t line_count);
-
-void get_data(GlobalState& state, const RunParameter& run, const std::filesystem::path current_path, const uint64_t line_count);
-void csv_dyn(const RunParameter& run, const std::string trainset_filename, const std::string testset_filename);
-void to_columns(const std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits, std::vector<RawColumnName>& columns);
-void to_bitset(const std::vector<RawColumnName>& columns, std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits);
-std::array<std::array<uint64_t, 6>, 6> test_combination(const RunParameter& run, const std::string pattern_filename, const std::string testset_filename, const std::string trainset_filename);
-double get_performance(const std::vector<std::vector<double>>& results);
-void finder();
+// CSV.cpp
+void classic_stack();
+void to_columns(
+	const std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits,
+	std::vector<RawColumnName>& columns
+);
+void to_bitset(
+	const std::vector<RawColumnName>& columns,
+	std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits
+);
+double get_performance(
+	const std::vector<std::vector<double>>& results
+);
+uint64_t create_set_matrix(
+	const std::vector<std::vector<double>>& file_matrix,
+	const uint64_t start_row,
+	const uint64_t rows,
+	const uint64_t columns,
+	const RunParameter& run,
+	const std::unordered_map<RawColumnName, std::pair<double, double>>& columns_data,
+#if LOGFILE
+	std::fstream& output,
+#endif
+	const size_t line_count,
+	std::vector<double>& setrow,
+	const double max_value
+);
+std::vector<std::vector<double>> do_run(
+	const RunParameter& run, 
+	const std::string& trainset_filename, 
+	const std::string& testset_filename, 
+	const std::string& pattern_filename, 
+	const std::string& evaluation_filename
+);

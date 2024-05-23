@@ -1,53 +1,46 @@
 #include "Global.hpp"
 
 void classic_stack() {
-	std::cout << "Creating Set: " << std::endl;
 	phase_zero();
-	std::cout << "Creating Verification: " << std::endl;
 	//phase_one();
-	std::cout << "Creating Pattern: " << std::endl;
 	phase_two();
-	std::cout << "Creating Evaluation: " << std::endl;
-	auto result = phase_three();
-	///view_result(result, EVALUATION_FILENAME);
+	phase_three();
 }
 
-void classic_stack_xyz() {
-	set_xyz();
-	create_pattern("pattern_attitude_roll.csv", "trainset_attitude_roll.csv");
-	create_pattern("pattern_attitude_pitch.csv", "trainset_attitude_pitch.csv");
-	create_pattern("pattern_attitude_yaw.csv", "trainset_attitude_yaw.csv");
-	create_pattern("pattern_gravity_x.csv", "trainset_gravity_x.csv");
-	create_pattern("pattern_gravity_y.csv", "trainset_gravity_y.csv");
-	create_pattern("pattern_gravity_z.csv", "trainset_gravity_z.csv");
-	create_pattern("pattern_rotation_rate_x.csv", "trainset_rotation_rate_x.csv");
-	create_pattern("pattern_rotation_rate_y.csv", "trainset_rotation_rate_y.csv");
-	create_pattern("pattern_rotation_rate_z.csv", "trainset_rotation_rate_z.csv");
-	create_pattern("pattern_user_acceleration_x.csv", "trainset_user_acceleration_x.csv");
-	create_pattern("pattern_user_acceleration_y.csv", "trainset_user_acceleration_y.csv");
-	create_pattern("pattern_user_acceleration_z.csv", "trainset_user_acceleration_z.csv");
-	evaluation_xyz();
+void to_columns(
+	const std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits,
+	std::vector<RawColumnName>& columns
+) {
+	for (size_t flag_index = 0; flag_index < bits.size(); flag_index++) {
+		bool bit = bits.test(flag_index);
+		if (bit) {
+			columns.push_back(static_cast<RawColumnName>(flag_index));
+		}
+	}
 }
 
-void dynamic() {
-	/*
-	auto extract = {
-		RawColumnName::ACCLERERATION_X,
-		RawColumnName::ACCLERERATION_Y,
-		RawColumnName::ACCLERERATION_Z
-	};
-	RunParameter run = RunParameter(TRAINSET_COLUMNS, TRAINSET_COLUMNS, extract, no_extreme);
-
-	auto result = test_combination(run, PATTERN_FILENAME, TESTSET_FILENAME, TRAINSET_FILENAME);
-	auto perforamce = get_performance(result);
-
-	std::cout << perforamce << std::endl;
-	view_result(result, EVALUATION_FILENAME);
-	*/
+void to_bitset(
+	const std::vector<RawColumnName>& columns,
+	std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits
+) {
+	for (size_t col_index = 0; col_index < columns.size(); col_index++) {
+		auto column = columns[col_index];
+		bits.set(static_cast<uint64_t>(column));
+	}
 }
 
-#define LOGFILE 0
-#define EVALUTIONFILE 1
+double get_performance(const std::vector<std::vector<double>>& results) {
+	uint64_t total = 0;
+	uint64_t total_right = 0;
+	for (size_t eval_index = 0; eval_index < results.size(); eval_index++) {
+		total_right += results[eval_index][eval_index];
+
+		for (size_t guess_index = 0; guess_index < results[eval_index].size(); guess_index++) {
+			total += results[eval_index][guess_index];
+		}
+	}
+	return double(total_right) / total;
+}
 
 uint64_t create_set_matrix(
 	const std::vector<std::vector<double>>& file_matrix,

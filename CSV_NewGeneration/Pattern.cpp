@@ -1,6 +1,6 @@
 #include "Global.hpp"
 
-ProcessError create_pattern(
+void create_pattern(
 	const std::string& pattern_name, 
 	const std::string& trainset_name
 ) {
@@ -61,8 +61,6 @@ ProcessError create_pattern(
 					added++;
 				}
 			}
-
-			//std::cout << block_movement << " | " << cummulation << " | " << added << std::endl;
 		}
 
 		pattern << block_movement;
@@ -70,16 +68,12 @@ ProcessError create_pattern(
 			double cummulation = accelerations[acc_index].first;
 			uint64_t stack_count = accelerations[acc_index].second;
 
-			pattern << DELIMITER << cummulation / stack_count;
-			//std::cout << block_movement << " | " << cummulation << " | " << stack_count << std::endl;
-		
+			pattern << DELIMITER << cummulation / stack_count;		
 		}
 		pattern << std::endl;
 	}
-
-	return NO_ERROR;
 }
 
-ProcessError phase_two() {
-	return create_pattern(PATTERN_FILENAME, TRAINSET_FILENAME);
+void phase_two() {
+	create_pattern(PATTERN_FILENAME, TRAINSET_FILENAME);
 }

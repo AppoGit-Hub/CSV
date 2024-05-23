@@ -16,9 +16,9 @@ bool no_extreme(const double value, const double average, const double std) {
 	return false;
 }
 
-ProcessError verification(
+void verification(
 	std::fstream& checkfile, 
-	std::function<bool(double, double, double)> extreme_func
+	ExtremeFunction extreme_func
 ) {
 	checkfile <<
 		"Filename" << DELIMITER <<
@@ -33,7 +33,7 @@ ProcessError verification(
 	for_file(DATA_FOLDERPATH, [&](const fs::path& file) {
 		std::ifstream current_file(file);
 		if (!current_file.is_open())
-			return COUDLNT_OPEN_FILE;
+			std::cerr << "Couldnt open: " << file << std::endl;
 
 		std::string header;
 		std::getline(current_file, header);
@@ -81,24 +81,13 @@ ProcessError verification(
 				checkfile << std::endl;
 			}
 		}
-		//std::cout << file.string() << " | " << total_normal << " | " << total_extreme << std::endl;
 	});
-
-	/*
-	std::cout 
-		<< "Total : " 
-		<< total_extreme << " | " 
-		<< total_normal << " | " 
-		<< (total_extreme / total_normal) << std::endl;
-	*/
-
-	return NO_ERROR;
 }
 
-ProcessError phase_one() {
+void phase_one() {
 	std::fstream checkfile(CHECK_FILENAME, std::ios::out);
 	if (!checkfile.is_open())
-		return COUDLNT_OPEN_FILE;
+		std::cerr << "Couldnt open: " << CHECK_FILENAME << std::endl;
 	
-	return verification(checkfile, is_extreme);
+	verification(checkfile, is_extreme);
 }

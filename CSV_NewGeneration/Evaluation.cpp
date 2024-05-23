@@ -49,7 +49,10 @@ void view_result(
 		<< std::endl;
 }
 
-std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type) {
+std::vector<double> find_acceleration(
+	std::fstream& pattern, 
+	const MovementType movement_type
+) {
 	std::vector<double> accelerations;
 
 	pattern.clear();

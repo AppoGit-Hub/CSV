@@ -166,52 +166,6 @@ void csv_dyn(
 	});
 }
 
-void to_columns(
-	const std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits,
-	std::vector<RawColumnName>& columns
-) {
-	for (size_t flag_index = 0; flag_index < bits.size(); flag_index++) {
-		bool bit = bits.test(flag_index);
-		if (bit) {
-			columns.push_back(static_cast<RawColumnName>(flag_index));
-		}
-	}
-}
-
-void to_bitset(
-	const std::vector<RawColumnName>& columns,
-	std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits
-) {
-	for (size_t col_index = 0; col_index < columns.size(); col_index++) {
-		auto column = columns[col_index];
-		bits.set(static_cast<uint64_t>(column));
-	}
-}
-
-std::array<std::array<uint64_t, 6>, 6> test_combination(
-	const RunParameter& run,
-	const std::string pattern_filename,
-	const std::string testset_filename,
-	const std::string trainset_filename
-) {	
-	csv_dyn(run, trainset_filename, testset_filename);
-	create_pattern(pattern_filename, trainset_filename);
-	auto result = evaluation(testset_filename, pattern_filename);
-	return result;
-}
-
-double get_performance(const std::vector<std::vector<double>>& results) {
-	uint64_t total = 0;
-	uint64_t total_right = 0;
-	for (size_t eval_index = 0; eval_index < results.size(); eval_index++) {
-		total_right += results[eval_index][eval_index];
-
-		for (size_t guess_index = 0; guess_index < results[eval_index].size(); guess_index++) {
-			total += results[eval_index][guess_index];
-		}
-	}
-	return double(total_right) / total;
-}
 
 void finder() {
 	GlobalState state;

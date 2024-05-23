@@ -52,7 +52,7 @@ void filter_justone(
 	const double acceleration_x, 
 	const double acceleration_y,
 	const double acceleration_z,
-	std::function<bool(double, double, double)> extreme_func,
+	ExtremeFunction extreme_func,
 	std::fstream& output_file
 ) {
 	const bool extreme_x = extreme_func(acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
@@ -73,7 +73,7 @@ void filter_toaverage(
 	double acceleration_x,
 	double acceleration_y,
 	double acceleration_z,
-	std::function<bool(double, double, double)> extreme_func,
+	ExtremeFunction extreme_func,
 	std::fstream& output_file
 ) {
 	const bool extreme_x = extreme_func(acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X);
@@ -101,7 +101,7 @@ uint64_t create_set(
 	std::fstream& current_file, 
 	const uint64_t line_count, 
 	std::fstream& output_file,
-	std::function<bool(double, double, double)> extreme_func
+	ExtremeFunction extreme_func
 ) {
 	uint64_t lines_explored = 0;
 
@@ -126,10 +126,10 @@ uint64_t create_set(
 	return lines_explored;
 }
 
-ProcessError set(
+void set(
 	std::fstream& trainset, 
 	std::fstream& testset,
-	std::function<bool(double, double, double)> extreme_func
+	ExtremeFunction extreme_func
 ) {
 	std::unordered_map<uint64_t, uint64_t> gender_map;
 
@@ -142,12 +142,12 @@ ProcessError set(
 
 		const size_t directory_index = find_directory_type(directory_name);
 		if (directory_index == MOVEMENT_REGEX.size())
-			return DIRECTORY_TYPE_NOT_FOUND;
+			std::cerr << "Couldnt find directory: " << directory_name << std::endl;
 
 		const std::string filepath_name = current_path.string();
 		std::smatch matches;
 		if (!std::regex_search(filepath_name, matches, PERSON_FILE_REGEX))
-			return PERSON_FILE_NOT_FOUND;
+			std::cerr << "Couldnt find person" << std::endl;
 
 		const MovementType directory_type = MOVEMENT_REGEX[directory_index].second;
 		const uint64_t person_id = std::stoull(matches[1].str());
@@ -155,7 +155,7 @@ ProcessError set(
 
 		std::fstream current_file(current_path);
 		if (!current_file.is_open())
-			return COUDLNT_OPEN_FILE;
+			std::cerr << "Coulnd open file: " << current_path << std::endl;
 
 		std::string header;
 		std::getline(current_file, header);
@@ -170,18 +170,16 @@ ProcessError set(
 		
 		file_index++;
 	});
-
-	return NO_ERROR;
 }
 
-ProcessError phase_zero() {	
+void phase_zero() {	
 	std::fstream trainset(TRAINSET_FILENAME, std::ios::out);
 	if (!trainset.is_open()) 
-		return COUDLNT_OPEN_FILE;
+		std::cerr << "Couldn open file: " << TRAINSET_FILENAME << std::endl;
 	
 	std::fstream testset(TESTSET_FILENAME, std::ios::out);
 	if (!testset.is_open())
-		return COUDLNT_OPEN_FILE;
+		std::cerr << "Couldn open file: " << TESTSET_FILENAME << std::endl;
 
-	return set(trainset, testset, no_extreme);
+	set(trainset, testset, no_extreme);
 }
