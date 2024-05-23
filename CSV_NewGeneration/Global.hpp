@@ -200,7 +200,7 @@ ProcessError create_pattern(const std::string& pattern_name, const std::string& 
 ProcessError phase_two();
 
 std::vector<double> find_acceleration(std::fstream& pattern, const MovementType movement_type);
-void view_result(const std::array<std::array<uint64_t, 6>, 6>& result);
+void view_result(const std::vector<std::vector<double>>& result, const std::string evalution_filename);
 std::array<std::array<uint64_t, 6>, 6> evaluation(const std::string& testset_name, const std::string& pattern_name);
 std::array<std::array<uint64_t, 6>, 6> phase_three();
 
@@ -221,9 +221,9 @@ void evaluation_freq(const std::string& testset_name, const std::string& pattern
 uint64_t create_set_dyn(const RunParameter& parameter, const GlobalState& global, std::fstream& current_file, std::fstream& output_file, const uint64_t line_count);
 
 void get_data(GlobalState& state, const RunParameter& run, const std::filesystem::path current_path, const uint64_t line_count);
-void csv_dyn(const RunParameter& run, GlobalState& state);
+void csv_dyn(const RunParameter& run, const std::string trainset_filename, const std::string testset_filename);
 void to_columns(const std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits, std::vector<RawColumnName>& columns);
 void to_bitset(const std::vector<RawColumnName>& columns, std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits);
-std::array<std::array<uint64_t, 6>, 6> test_combination(const RunParameter& run, GlobalState& state);
-double get_performance(const std::array<std::array<uint64_t, 6>, 6>& results);
+std::array<std::array<uint64_t, 6>, 6> test_combination(const RunParameter& run, const std::string pattern_filename, const std::string testset_filename, const std::string trainset_filename);
+double get_performance(const std::vector<std::vector<double>>& results);
 void finder();

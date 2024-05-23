@@ -22,7 +22,7 @@ void get_data(
 		extract_rawline(rawline, iss);
 
 		total.attitude_roll += rawline.attitude_roll;
-		total.attitude_roll += rawline.attitude_pitch;
+		total.attitude_pitch += rawline.attitude_pitch;
 		total.attitude_yaw += rawline.attitude_yaw;
 		total.gravity_x += rawline.gravity_x;
 		total.gravity_y += rawline.gravity_y;
@@ -108,9 +108,20 @@ void get_data(
 	};
 }
 
-void csv_dyn(const RunParameter& run, GlobalState& state) {
-	std::fstream trainset("trainset.csv", std::ios::out);
-	std::fstream testset("testset.csv", std::ios::out);
+void csv_dyn(
+	const RunParameter& run,
+	const std::string trainset_filename,
+	const std::string testset_filename
+) {
+	GlobalState state;
+
+	std::fstream trainset(trainset_filename, std::ios::out);
+	if (!trainset.is_open())
+		std::cerr << "Couldnt open file: " << trainset_filename << std::endl;
+
+	std::fstream testset(testset_filename, std::ios::out);
+	if (!testset.is_open())
+		std::cerr << "Couldnt open file: " << testset_filename << std::endl;
 
 	create_header(trainset, run.trainset_col);
 	create_header(testset, run.testset_col);
@@ -125,12 +136,12 @@ void csv_dyn(const RunParameter& run, GlobalState& state) {
 
 		const size_t directory_index = find_directory_type(directory_name);
 		if (directory_index == MOVEMENT_REGEX.size())
-			return DIRECTORY_TYPE_NOT_FOUND;
+			std::cerr << "Directory " << directory_index << " couldnt be found" << std::endl;
 
 		const std::string filepath_name = current_path.string();
 		std::smatch matches;
 		if (!std::regex_search(filepath_name, matches, PERSON_FILE_REGEX))
-			return PERSON_FILE_NOT_FOUND;
+			std::cerr << "Person file couldnt be found" << std::endl;
 
 		const MovementType directory_type = MOVEMENT_REGEX[directory_index].second;
 		const uint64_t person_id = std::stoull(matches[1].str());
@@ -138,7 +149,7 @@ void csv_dyn(const RunParameter& run, GlobalState& state) {
 
 		std::fstream current_file(current_path);
 		if (!current_file.is_open())
-			return COUDLNT_OPEN_FILE;
+			std::cerr << "Counld open file: " << current_path << std::endl;
 
 		std::string header;
 		std::getline(current_file, header);
@@ -177,13 +188,19 @@ void to_bitset(
 	}
 }
 
-std::array<std::array<uint64_t, 6>, 6> test_combination(const RunParameter& run, GlobalState& state) {
-	csv_dyn(run, state);
-	phase_two();
-	return phase_three();
+std::array<std::array<uint64_t, 6>, 6> test_combination(
+	const RunParameter& run,
+	const std::string pattern_filename,
+	const std::string testset_filename,
+	const std::string trainset_filename
+) {	
+	csv_dyn(run, trainset_filename, testset_filename);
+	create_pattern(pattern_filename, trainset_filename);
+	auto result = evaluation(testset_filename, pattern_filename);
+	return result;
 }
 
-double get_performance(const std::array<std::array<uint64_t, 6>, 6>& results) {
+double get_performance(const std::vector<std::vector<double>>& results) {
 	uint64_t total = 0;
 	uint64_t total_right = 0;
 	for (size_t eval_index = 0; eval_index < results.size(); eval_index++) {
@@ -200,23 +217,78 @@ void finder() {
 	GlobalState state;
 
 	std::fstream combination("combination.csv", std::ios::out);
-	combination << "Combination" << DELIMITER << "Result" << std::endl;
+	combination << 
+		"Combination" << DELIMITER << 
+		"Extreme Function" << DELIMITER <<
+		"Trainset Columns" << DELIMITER <<
+		"Testset Columns" << DELIMITER <<
+		"Result" << 
+		std::endl;
+
+	std::unordered_map<std::string, ExtremeFunction> extremes_func = {
+		{"noextreme", no_extreme},
+		{"isextreme", is_extreme},
+		{"isextremez", is_extreme_z}
+	};
+
+	std::vector<uint64_t> columns_volums = {
+		TRAINSET_COLUMNS,
+		TRAINSET_COLUMNS * 2,
+		TRAINSET_COLUMNS * 3,
+	};
+
+	std::vector<double> testset_proportions = {
+		1,
+		0.1,
+		0.5
+	};
 
 	const auto max_names = static_cast<size_t>(RawColumnName::SIZE);
-	for (size_t name_index = 0; name_index < pow(2, max_names); ++name_index) {
+	for (size_t name_index = 1; name_index < pow(2, max_names); name_index++) {
 		const std::bitset<static_cast<uint64_t>(RawColumnName::SIZE)> flags(name_index);
 		std::vector<RawColumnName> extract;
 		to_columns(flags, extract);
 
-		RunParameter run = RunParameter(TRAINSET_COLUMNS, TRAINSET_COLUMNS, extract, no_extreme);
+		for (auto [extreme_name, extreme_func] : extremes_func) {
+			for (auto column : columns_volums) {
+				for (auto proportion : testset_proportions) {
+					auto start = std::chrono::system_clock::now();
+					
+					RunParameter run = RunParameter(column, column * proportion, extract, extreme_func);
 
-		std::cout << "Combination: " << flags.to_string() << std::endl;
+					std::string combination_name =
+						flags.to_string() + "_" +
+						extreme_name + "_" +
+						std::to_string(column) + "_" +
+						std::to_string((uint64_t)(column * proportion));
 
-		auto result = test_combination(run, state);
-		view_result(result);
+					std::cout << "Combination: " << combination_name << std::endl;
 
-		auto performance = get_performance(result);
+					const std::string pattern_filename = "pattern_" + combination_name + ".csv";
+					const std::string testset_filename = "testset_" + combination_name + ".csv";
+					const std::string trainset_filename = "trainset_" + combination_name + ".csv";
+					const std::string evaluation_filename = "evalution_" + combination_name + ".csv";
 
-		combination << flags.to_string() << DELIMITER << performance * 100 << std::endl;
+					auto result = test_combination(run, pattern_filename, testset_filename, trainset_filename);
+					//view_result(result, evaluation_filename);
+
+					/*
+					auto performance = get_performance(result);
+					auto end = std::chrono::system_clock::now();
+					std::chrono::duration<double> elapsed = end - start;
+
+					std::cout << "Took: " << elapsed.count() << std::endl;
+
+					combination << 
+						flags.to_string() << DELIMITER << 
+						extreme_name << DELIMITER <<
+						column << DELIMITER <<
+						column * proportion << DELIMITER <<
+						performance << 
+						std::endl;
+					*/
+				}
+			}
+		}
 	}
 }

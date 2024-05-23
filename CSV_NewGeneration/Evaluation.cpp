@@ -1,7 +1,10 @@
 #include "Global.hpp"
 
-void view_result(const std::array<std::array<uint64_t, 6>, 6>& result) {
-	std::fstream evaluation(EVALUATION_FILENAME, std::ios::out);
+void view_result(
+	const std::vector<std::vector<double>>& result,
+	const std::string evalution_filename
+) {
+	std::fstream evaluation(evalution_filename, std::ios::out);
 	
 	evaluation <<
 		"Mouvement" << DELIMITER <<
