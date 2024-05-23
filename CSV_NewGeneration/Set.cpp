@@ -150,7 +150,7 @@ std::vector<std::vector<double>> do_run(
 			//std::cout << "File index " << file_index << " - " << current_path << " has " << file_lines << " lines" << std::endl;
 		}
 
-
+		// create averages and std
 		RawLine total = { 0 };
 		for (size_t row_index = 0; row_index < total_rows; row_index++) {
 			auto row = file_matrix[row_index];
@@ -229,6 +229,7 @@ std::vector<std::vector<double>> do_run(
 			{ RawColumnName::ACCLERERATION_Z, std::pair(average.user_acceleration_z, std.user_acceleration_z) },
 		};
 
+		// create sets
 		const std::string directory_name = current_path.parent_path().filename().string();
 
 		const size_t directory_index = find_directory_type(directory_name);
@@ -284,8 +285,9 @@ std::vector<std::vector<double>> do_run(
 		}
 
 		file_index++;
-		});
+	});
 
+	// create pattern
 	size_t trainset_row_index = 0;
 	while (trainset_row_index < trainset_matrix.size()) {
 		auto row = trainset_matrix[trainset_row_index];
@@ -329,6 +331,7 @@ std::vector<std::vector<double>> do_run(
 
 	}
 
+	// create evaluation
 	for (size_t testset_row_index = 0; testset_row_index < 360; testset_row_index++) {
 		auto is_sensitive = sensitives_files.find(testset_row_index) != sensitives_files.end();
 		int64_t testset_lines = is_sensitive ? (int64_t)(sensitives_files.at(testset_row_index) - run.trainset_col) : run.testset_col;

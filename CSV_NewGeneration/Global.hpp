@@ -56,6 +56,9 @@ const uint64_t TESTSET_COLUMNS = TRAINSET_COLUMNS;
 
 const std::regex PERSON_FILE_REGEX("sub_(\\d+).csv");
 
+/// <summary>
+/// all types of movements that file can contains
+/// </summary>
 enum class MovementType : uint64_t {
 	DOWNSTAIR = 1,
 	JOGGING,
@@ -66,6 +69,9 @@ enum class MovementType : uint64_t {
 	SIZE,
 };
 
+/// <summary>
+/// each column name a raw file can have
+/// </summary>
 enum RawColumnName : uint64_t {
 	ATTITUDE_ROLL,
 	ATTITUDE_PITCH,
@@ -83,6 +89,9 @@ enum RawColumnName : uint64_t {
 };
 
 
+/// <summary>
+/// file structure to MovemetType converter
+/// </summary>
 static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 	{std::regex("dws_(\\d+)"), MovementType::DOWNSTAIR},
 	{std::regex("jog_(\\d+)"), MovementType::JOGGING},
@@ -93,7 +102,7 @@ static std::array<std::pair<std::regex, MovementType>, 6> MOVEMENT_REGEX = { {
 } };
 
 /// <summary>
-/// Detects extemes values
+/// extreme function model for a file value
 /// </summary>
 using ExtremeFunction = std::function<bool(
 	double value, 
@@ -102,7 +111,7 @@ using ExtremeFunction = std::function<bool(
 )>;
 
 /// <summary>
-/// Filter the line of raw data
+/// filter function model for a line of raw data
 /// </summary>
 using FilterFunction = std::function<void(
 	std::vector<std::pair<double, RawColumnName>>,
@@ -110,6 +119,9 @@ using FilterFunction = std::function<void(
 	std::fstream
 )>;
 
+/// <summary>
+/// model of each column data of a raw file
+/// </summary>
 struct RawLine {
 	uint64_t id;
 	double attitude_roll;
@@ -126,6 +138,9 @@ struct RawLine {
 	double user_acceleration_z;
 };
 
+/// <summary>
+/// model of each column in trainset or testset
+/// </summary>
 struct SetLine {
 	MovementType movement_type;
 	uint64_t person_id;
@@ -133,6 +148,9 @@ struct SetLine {
 	std::vector<double> accelerations;
 };
 
+/// <summary>
+/// model of each column in data_subjects_info.csv
+/// </summary>
 struct SubjectLine {
 	uint64_t code;
 	uint64_t weight;
@@ -141,6 +159,9 @@ struct SubjectLine {
 	uint64_t gender;
 };
 
+/// <summary>
+/// model of a combination of all parameter of a run
+/// </summary>
 struct RunParameter {
 	uint64_t trainset_col;
 	uint64_t testset_col;
@@ -149,64 +170,123 @@ struct RunParameter {
 };
 
 // global.cpp
+
+/// <summary>
+/// explore all files in the root directory and call on_file
+/// </summary>
+/// <param name="directory">root directory</param>
+/// <param name="on_file">on each file callback</param>
 void for_file(
 	const fs::path& directory, 
 	std::function<void(fs::path)> on_file
 );
+/// <summary>
+/// extracts a rawline of the stringstream
+/// </summary>
+/// <param name="rawline">destination</param>
+/// <param name="iss">source</param>
 void extract_rawline(
 	RawLine& rawline, 
 	std::istringstream& iss
 );
+
+/// <summary>
+/// only extract the movement type, person id and gender from trainset or testset file
+/// </summary>
+/// <param name="setline">destination</param>
+/// <param name="iss">source</param>
 void extract_setline_core(
 	SetLine& setline, 
 	std::istringstream& iss
 );
+/// <summary>
+/// extract a line from data_subjects_info.csv
+/// </summary>
+/// <param name="subjectline">destination</param>
+/// <param name="iss">source</param>
 void extract_subjectline(
 	SubjectLine& subjectline, 
 	std::istringstream& iss
 );
+/// <summary>
+/// reduce and centers the value before checking the value
+/// </summary>
 bool is_extreme_z(
 	const double value, 
 	const double average, 
 	const double std
 );
+/// <summary>
+/// checks if the value is extreme
+/// </summary>
 bool is_extreme(
 	const double value, 
 	const double average, 
 	const double std
 );
+/// <summary>
+/// no checks are done
+/// </summary>
 bool no_extreme(
 	const double value, 
 	const double average, 
 	const double std
 );
+/// <summary>
+/// search for directory_name in MOVEMENT_REGEX and returns the index
+/// </summary>
 size_t find_directory_type(
 	const std::string& directory_name
 );
+/// <summary>
+/// search in data_subjects_info.csv with the person id and returns the gender
+/// </summary>
 uint64_t find_gender(
 	const uint64_t person_id
 );
+/// <summary>
+/// create a the header for set-like files
+/// </summary>
 void create_header(
 	std::fstream& output_file, 
 	const size_t columns_count
 );
+/// <summary>
+/// display in a nice matrix the result and logs it
+/// </summary>
 void view_result(
 	const std::vector<std::vector<double>>& result, 
 	const std::string evalution_filename
 );
+/// <summary>
+/// transform a bitset into a list of RawColumnName
+/// </summary>
+/// <param name="bits">source</param>
+/// <param name="columns">destination</param>
 void to_columns(
 	const std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits, 
 	std::vector<RawColumnName>& columns
 );
+/// <summary>
+/// transform a list of RawColumnName in a bitset
+/// </summary>
+/// <param name="columns">source</param>
+/// <param name="bits">destination</param>
 void to_bitset(
 	const std::vector<RawColumnName>& columns, 
 	std::bitset<static_cast<RawColumnName>(RawColumnName::SIZE)>& bits
 );
+/// <summary>
+/// with a result matrix, return a the average performance of all movement
+/// </summary>
 double get_performance(
 	const std::vector<std::vector<double>>& results
 );
 
 // set.cpp
+/// <summary>
+/// fill the set with all the data
+/// </summary>
 uint64_t create_set_matrix(
 	const std::vector<std::vector<double>>& file_matrix,
 	const uint64_t start_row,
@@ -221,6 +301,9 @@ uint64_t create_set_matrix(
 	std::vector<double>& setrow,
 	const double max_value
 );
+/// <summary>
+/// test a combination of a run
+/// </summary>
 std::vector<std::vector<double>> do_run(
 	const RunParameter& run,
 	const std::string& trainset_filename,
@@ -230,6 +313,9 @@ std::vector<std::vector<double>> do_run(
 );
 
 // verification.cpp
+/// <summary>
+/// logs every extreme values that it finds
+/// </summary>
 void verification(
 	std::fstream& checkfile,
 	ExtremeFunction extreme_func
