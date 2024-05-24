@@ -117,11 +117,11 @@ std::vector<std::vector<double>> do_run(
 		<< std::endl;
 #endif
 
+	const uint64_t columns = 13;
+	const uint64_t total_rows = run.trainset_col + run.testset_col;
+
 	uint64_t file_index = 1;
 	for_file(DATA_FOLDERPATH, [&](const fs::path& current_path) {
-		const uint64_t columns = 13;
-		const uint64_t total_rows = run.trainset_col + run.testset_col;
-
 		std::vector<std::vector<double>> file_matrix(total_rows, std::vector<double>(columns, DOUBLE_INF));
 
 		std::fstream file(current_path, std::ios::in);
