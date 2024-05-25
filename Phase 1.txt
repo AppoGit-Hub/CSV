@@ -1,0 +1,128 @@
+module(trouverPerson;fichier;id)
+---*
+module(extraireId;fichier, /sub(\\d+).csv/;id)
+------
+
+module(typeDossier;dossier;dossierIndice)
+---*
+mouvementType = ARRAY[["dws_(//d+)", DOWNSTAIR], ["jog_(//d+)", JOGGING], ["ups_(\\d+)", UPSTAIRS], ["sit_(\\d+)", SIT_DOWN], ["std_(\\d+)", STAND_UP], ["wlk_(\\d+)", WALKING]]
+dossierIndice = 0
+while (dossierIndice < 6 && mouvementType[dossierIndice] == dossier)
+dossierIndice++
+endwhile
+------
+
+module(trouverGenre;personId;sujetGenre)
+---*
+module(ouvrirFichier;"\archive\data_subjects_info.csv", "r";sujetFichier)
+module(passerHeader;sujetFichier;sujetFichier)
+sujetCode = 0
+sujetGenre = 0
+module(avoirProchaineLigne;sujetFichier;ligne)
+while (sujetIndice < personId)
+module(extraireSujet;sujetFichier;sujet)
+sujetCode = sujet.code
+sujetGenre = sujet.genre
+module(avoirProchaineLigne;sujetFichier;ligne)
+endwhile
+module(fermerFichier;"\archive\data_subjects_info.csv";)
+------
+
+module(estExtreme;value, average, std;extreme)
+---*
+extreme = value > average + (3 * std) || value < average - (3 * std)
+------
+
+module(creerSet;fichierMatrice, ligneCommence, ligneFin, totalColonne, totalLigne, sortieFichier;ligneExplorer)
+---*
+ligneIndice = ligneCommence
+ligneExplorer = 0
+while (ligneIndice < (ligneCommence + ligneFin) && ligneExplorer < totalLigne && ligneIndice < totalLigne)
+accelerationX = fichierMatrice[ligneIndice][9];
+accelerationY = fichierMatrice[ligneIndice][10];
+accelerationZ = fichierMatrice[ligneIndice][11];
+
+module(estExtreme;accelerationX, 0.00096087, 0.38875666;extremeX)
+module(estExtreme;accelerationY, 0.05525659, 0.61937128;extremeY)
+module(estExtreme;accelerationZ, 0.0352192, 0.4300345;extremeZ)
+
+if (!extremeX && !extremeY && !extremeZ)
+acceleration = sqrt(pow(accelerationX) + pow(accelerationY) + pow(accelerationZ))
+module(ecrireFichier;sortieFichier, acceleration + ",";)
+endif
+ligneIndice++
+ligneExplorer++
+endwhile
+module(ecrireFichier;sortieFichier, "\n";)
+------
+
+module(creerMatrice;fichier, totalLignes, totalColonnes;fichierMatrice, ligneExplore)
+---*
+ligneIndice = 0
+ligneExplore = 0
+module(avoirProchaineLigne;fichier;fichier, ligne)
+while (ligneIndice < totalLignes && ligne)
+colonneIndice = 0
+module(extraireValeur;ligne, colonneIndice;valeur, valeurExiste)
+while (colonneIndice < totalColonnes && valeureExiste)
+module(convertirValeur;valeur;valeurDouble)
+fichierMatrice[ligneIndice][colonneIndice] = valeurDouble;
+module(extraireValeur;ligne, colonneIndice;valeur, valeurExiste)
+colonneIndice++
+endwhile
+module(avoirProchaineLigne;fichier;fichier, ligne)
+ligneIndice++
+ligneExplore++
+endwhile
+------
+
+module(main;;)
+---*
+// l'ensemble des fichiers ont moins de 600 lignes, ils doivent etre traités différement
+fichiersSensibles = MAP[nomFichier, nbLignes]
+
+// ouvre tous les fichiers néccésaires
+module(ouvrirFichier;"trainset.csv", "a";trainsetFichier)
+module(ouvrirFichier;"testset.csv", "a";testsetFichier)
+
+// rajoute les en-tête au fichier
+module(create_header;trainsetFichier, 600;)
+module(create_header;testsetFichier, 60;)
+
+// explore tous les fichiers dans le repertoire
+fichieIndice = 0
+module(ouvrirProchainFichier;"\archive\data", "r";fichier, fichierExiste)
+while (fichierExiste)
+module(passerHeader;fichier;fichier)
+// represente le fichier d'on va traiter comme une matrice
+module(creerMatrice;fichier, 600 + 60, 13, fichiersSensibles;fichierMatrice, ligneExplore)
+if (ligneExplore < 600 + 60)
+fichiersSensibles.ajouter([fichieIndice - 1, ligneExplore])
+endif
+// trouve le type de mouvement du fichier en fonction de son dossier
+module(trouverDossier;fichier;dossier)
+module(typeDossier;dossier;mouvementType)
+
+// trouver l'appartenance du fichier à une personne
+module(trouverPerson;fichier;id)
+
+// trouver le gender de la personne avec son identifiant
+module(trouverGenre;personId;sujetGenre)
+
+// ecrie les 3 premieres colonne et creer le trainset
+module(ecrireFichier;trainsetFichier, mouvementType + "," + sujetGenre + "," + fichieIndice ;)
+module(creerSet;fichierMatrice, 0, 600, 13, 600, trainsetFichier;trainsetligneExplorer)
+// si le trainset à assez de ligne pour creer un testset
+if (trainsetligneExplorer == 600)
+// ecrie les 3 premieres colonne et creer le testset
+module(ecrireFichier;testsetFichier, mouvementType + "," + sujetGenre + "," + fichieIndice ;)
+module(creerSet;fichierMatrice, 600, 660, 13, 660, testsetFichier;testsetligneExplorer)
+endif
+module(ouvrirProchainFichier;"\archive\data", "r";fichier, fichierExiste)
+fichieIndice++
+endwhile
+
+// ferme tous les fichiers utilisés
+module(fermerFichier;"trainset.csv";)
+module(fermerFichier;"testset.csv";)
+------

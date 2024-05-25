@@ -1,0 +1,60 @@
+module(pattern;;)
+---*
+// ouvre tous les fichier nécessaires
+module(ouvrirFichier;"pattern.csv", "w";patternFichier)
+module(ouvrirFichier;"trainset.csv", "r";trainsetFichier)
+
+// creer l'en-tête pour pattern.csv
+index = 0;
+module(ajouterFichier;patternFichier, "Mouvement,";)
+while (index < 600)
+  module(ajouterFichier;patternFichier, "Vacc,";)
+  index++
+endwhile
+module(ajouterFichier;patternFichier, "\n";)
+
+// on lit une ligne pour savoir si trainset contient bien une ligne
+module(lireLigneFichier;trainsetFichier;trainsetLigne)
+while (trainsetLigne)
+  // represente le total poour chaque colonne pour un type de mouvement
+  accelerations = ARRAY[]
+  // on trouve le mouvement
+  module(lireFichier;trainsetFichier;mouvement)
+  mouvementObtenue = mouvement
+  // on explore chaque ligne pour chaque type mouvement
+  while (mouvement == mouvementObtenue AND trainsetLigne)
+    // on prend chaque valeur de la ligne
+    module(lireFichier;trainsetFichier;mouvement)
+    module(lireFichier;trainsetFichier;person_id)
+    module(lireFichier;trainsetFichier;gender)
+    
+    // on explore toutes les accelerations
+    module(lireFichier;trainsetFichier;acceleration)
+    acc_index = 0
+    while (acc_index < 600 AND acceleration)
+      // si les emplacement pour cette colonnes n'existe pas
+      // alors on les creers, on finit pas acculumuler
+      // le total des valeurs pour un type de mouveme
+      if (acc_index < accelerations.size())
+        accelerations[acc_index] += acceleration 
+        acc_index++ 
+      else
+        accelerations.push_back(acceleration);
+      endif
+      module(lireFichier;trainsetFichier;acceleration)
+    endwhile
+    module(lireLigneFichier;trainsetFichier;trainsetLigne)
+  endwhile
+  
+  // quand on a finit d'avoir toutes l'acculumation pour un mouvement,
+  // on ajoute toutes les moyennnes dane le fichier pattern.csv
+  acc_index = 0
+  while (acc_index < accelerations.size())
+    module(ajouteLigneFichier;patternFichier;accelerations[acc_index] / nbLignesBlock)
+    acc_index++
+  endwhile
+    module(ajouteLigneFichier;patternFichier;'\n')
+endwhile
+module(fermerFichier;patternFichier;)
+module(fermerFichier;trainsetFichier;)
+------

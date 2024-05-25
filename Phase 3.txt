@@ -1,0 +1,98 @@
+// explore pattern.csv et trouve la ligne qui correspond à mouvementType
+module(trouveAccelerations;mouvementType;accelerations, nbAcceleration)
+---*
+// l'ensemble des accelerations qui correspond à mouvementType
+accelerations = ARRAY[DOUBLE]
+
+// ouvre le fichier "pattern.csv" en lecture
+module(ouvrirFichier;"pattern.csv", "r";patternFichier)
+
+// passe l'en-tête, il n'est pas nécesaire
+module(passerEnTete;patternFichier;patternFichier)
+
+// recherche et s'arrette à la ligne correspodant à mouvementType
+module(passerProchaineLigne;patternFichier;patternLigne, patterLigne, ligneExiste)
+module(extraireValeur;patternLigne;patternLigne, mouvemenTypeLigne, valeurExiste)
+while (valeurExiste && ligneExiste && mouvementType < mouvemenTypeLigne)
+module(passerProchaineLigne;patternFichier;patterLigne, ligneExiste)
+module(extraireValeur;patternLigne;patternLigne, mouvemenTypeLigne, valeurExiste )
+endwhile
+
+// ici mouvementType vaut mouvemenTypeLigne (mouvementType == mouvemenTypeLigne)
+// Ca veut dire que patternLigne vaut la ligne dont on extraire toutes
+// les accelerations qui correspond à mouvementType
+nbAcceleration = 0
+module(extrainValeur;patternLigne;acceleration, valeurExiste)
+while (valeurExiste)
+accelerations[nbAcceleration] = acceleration
+nbAcceleration++
+module(extrainValeur;patternLigne;acceleration, valeurExiste)
+endwhile
+
+// ferme le fichier utilisé
+module(fermerFichier;patternFichier)
+------ 
+
+// trouve le minimum entre 2 valeurs
+module(min;a, b;c)
+---*
+if (a < b)
+c = a
+else
+c = b
+endif
+------
+
+// tous commence ici
+module(evaluation;;)
+---*
+// ouvre tous les fichiers nécesaires
+module(ouvrirFichier;"testset.csv", "r";testsetFichier)
+
+// passer l'en-tête du testset
+module(passerEnTete;testsetFichier;testsetFichier)
+
+// pour chaque ligne dans testset
+module(passerProchainLigne;testsetFichier;testsetLigne, ligneExiste)
+while (ligneExiste)
+// extrait le type de mouvement, le genre et index de chaque ligne
+module(extraireValeur;testsetLigne;testsetLigne, mouvement, valeurExiste)
+module(extraireValeur;testsetLigne;testsetLigne, genre, valeurExiste)
+module(extraireValeur;testsetLigne;testsetLigne, index, valeurExiste)
+
+distanceMin = MX;
+movementMin = MX;
+
+// compare la ligne du testset à chaque ligne du pattern
+mouvemenTypeIndice = 0
+while (mouvemenTypeIndice < 6)
+ // trouve la ligne qui correspond à mouvementType
+module(trouveAccelerations;mouvemenTypeIndice;accelerations, nbAcceleration)
+
+total = 0
+
+// compare la ligne de testset avec celle de pattern
+iAcceleration = 0
+while (iAcceleration < nbAcceleration)
+// extrait la valeur testset de la valeur accelerations correspondante
+module(extraireValeur;accelerations;accelerations, acceleration, valeurExiste)
+module(extraireValeur;testsetLigne;testsetLigne, valeur, valeurExiste)
+
+total += pow(acceleration - valeur, 2)
+mouvemenTypeIndice++
+endwhile
+
+// trouve la distance euclidienne minimal pour cette ligne du testset
+if (sqrt(total) < distanceMin)
+distanceMin = sqrt(total)
+movementMin = mouvemenTypeIndice 
+endif
+
+module(passerProchainLigne;testsetFichier;testsetLigne, ligneExiste)
+endwhile
+
+sortir "le mouvement: ", mouvement, "a été devinier comme", movementMin
+
+// ferme tous les fichiers ouvert
+module(fermerFichier;testsetFichier)
+------
