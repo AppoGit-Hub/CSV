@@ -1,6 +1,17 @@
 #include "Global.hpp"
 
-int main() {
+void base() {
+	auto extract = {
+		RawColumnName::ACCLERERATION_X,
+		RawColumnName::ACCLERERATION_Y,
+		RawColumnName::ACCLERERATION_Z
+	};
+
+	RunParameter run = RunParameter(600, 600, extract, is_extreme);
+	do_run(run, "trainset.csv", "testset.csv", "pattern.csv", "evaluation.csv");
+}
+
+void combination() {
 	std::fstream combination(COMBINATION_FILENAME, std::ios::out);
 
 	combination <<
@@ -59,7 +70,7 @@ int main() {
 					view_result(result, evaluation_filename);
 
 					auto performance = get_performance(result);
-					
+
 					auto end = std::chrono::system_clock::now();
 					std::chrono::duration<double> elapsed = end - start;
 					std::cout << "Took: " << elapsed.count() << std::endl;
@@ -75,4 +86,8 @@ int main() {
 			}
 		}
 	}
+}
+
+int main() {
+	base();
 }

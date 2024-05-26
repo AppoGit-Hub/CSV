@@ -118,9 +118,39 @@ def view_performance(filename: str, title: str):
     plt.savefig(f"{title}.png")
     plt.close()
 
+def view_histogram(filename: str, title: str):
+    plt.figure(facecolor='none')
+
+    with open(filename, "r") as csvfile:
+        csv_reader = csv.reader(csvfile)
+        next(csv_reader)
+
+        all = []
+        for combination in csv_reader:
+            all.append(float(combination[4]))
+
+    plt.hist(all)
+
+    plt.xticks(color=mode)
+    plt.yticks(color=mode)
+
+    plt.gca().spines['bottom'].set_color(mode)
+    plt.gca().spines['top'].set_color(mode)
+    plt.gca().spines['right'].set_color(mode)
+    plt.gca().spines['left'].set_color(mode)
+
+    plt.title(title, color=mode)
+    plt.savefig("histogram.png")
+    plt.close()
+
+
+view_histogram("combination.csv", "Combinaisons")
+
+"""
 create_graph("pattern.csv", "pattern")
-view_evaluation("evaluation.csv", "evaluation")
-view_performance("evaluation.csv", "performance")
+view_evaluation("evalution_000111111111_isextremez_1800_1800.csv", "evaluation")
+view_performance("evalution_000111111111_isextremez_1800_1800.csv", "performance")
+"""
 
 
 """

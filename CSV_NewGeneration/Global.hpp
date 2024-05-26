@@ -24,7 +24,7 @@
 
 namespace fs = std::filesystem;
 
-#define LOGFILE 0
+#define LOGFILE 1
 #define EVALUTIONFILE 1
 
 const std::string DELIMITER = ",";
