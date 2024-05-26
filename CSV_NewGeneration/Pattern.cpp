@@ -64,7 +64,8 @@ void pattern() {
 
 		pattern_file << block_movement;
 		for (size_t acc_index = 0; acc_index < accelerations.size(); acc_index++) {
-			pattern_file << DELIMITER << accelerations[acc_index] / block_lines;
+			double parterValue = accelerations[acc_index] / block_lines;
+			pattern_file << DELIMITER << parterValue;
 		}
 		pattern_file << std::endl;
 	}

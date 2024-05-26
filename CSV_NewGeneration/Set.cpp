@@ -77,11 +77,42 @@ void create_header(std::ofstream& output_file, const size_t columns_count) {
 
 	std::string line;
 	while (total_lines < line_count && std::getline(current_file, line)) {
-		std::istringstream iss(line);
 
+		std::istringstream iss(line);
 		const RawLine line = RawLine::extract(iss);
 
-		double acceleration = sqrt(pow(line.user_acceleration_x, 2) + pow(line.user_acceleration_y, 2) + pow(line.user_acceleration_z, 2));
+		 // amélioration : remplacer les aberrations par la moyennes 
+	/*
+		if (is_extreme(line.user_acceleration_x, AVERAGE_X, STANDARD_DEVIATION_X)) {
+			line.user_acceleration_x = AVERAGE_X;
+		}
+		if (is_extreme(line.user_acceleration_y, AVERAGE_Y, STANDARD_DEVIATION_Y)) {
+			line.user_acceleration_y = AVERAGE_Y;
+		}
+		if (is_extreme(line.user_acceleration_z, AVERAGE_Z, STANDARD_DEVIATION_Z)) {
+			line.user_acceleration_z = AVERAGE_Z;
+		}
+	*/
+		// amélioration : changer le paramètres pris en compte : gravité, attitude ou rotation à la place de (acceleration) 
+		//double acceleration = sqrt(pow(line.gravity_x, 2) + pow(line.gravity_y, 2) + pow(line.gravity_z, 2));
+		//double acceleration = sqrt(pow(line.rotation_rate_x, 2) + pow(line.rotation_rate_y, 2) + pow(line.rotation_rate_z, 2));
+		//double acceleration = sqrt(pow(line.attitude_pitch, 2) + pow(line.attitude_roll, 2) + pow(line.attitude_yaw, 2));
+		
+		//double acceleration = line.attitude_pitch;
+		//double acceleration = line.attitude_roll;
+		//double acceleration = line.attitude_yaw;
+
+		//double acceleration = line.user_acceleration_x;
+		//double acceleration = line.user_acceleration_y;
+		//double acceleration = line.user_acceleration_z;
+
+		//double acceleration = line.rotation_rate_x;
+		//double acceleration = line.rotation_rate_y;
+		//double acceleration = line.rotation_rate_z;
+		
+		double acceleration = line.gravity_z;
+		
+		//double acceleration = sqrt(pow(line.user_acceleration_x, 2) + pow(line.user_acceleration_y, 2) + pow(line.user_acceleration_z, 2));
 		output_file << DELIMITER << acceleration;
 		total_lines++;
 	}
@@ -94,8 +125,6 @@ void set() {
 	const auto& data_filepath = fs::path{ BASE_FOLDER } / DATA_FOLDER;
 	const auto& subject_filepath = fs::path{ BASE_FOLDER } / SUBJECT_FILENAME;
 
-	std::regex badPattern("\\._"); // to avaoid, 3 stranges opening of file that is not a file, I don't known 
-
 	std::ifstream subjects_file(subject_filepath);
 
 	std::ofstream trainset_file(TRAINSET_FILENAME);
@@ -107,14 +136,14 @@ void set() {
 	uint64_t file_index = 1;
 	for_file(DATA_FOLDERPATH, [&](const fs::path current_path) {
 		try {
-			if (!std::regex_search(current_path.string(), badPattern)) {
+		
 				uint64_t train_index = create_set(current_path, TRAINSET_COLUMNS, subjects_file, trainset_file, file_index);
 				if (train_index == TRAINSET_COLUMNS) {
 					uint64_t test_index = create_set(current_path, TESTSET_COLUMNS, subjects_file, testset_file, file_index);
 				}
 				std::cout << "Processed file : " << current_path << std::endl;
 				file_index++;
-			}
+			//}
 		}
 		catch (const std::exception& error) {
 			std::cout << "Couldnt process file : " << current_path << std::endl;
