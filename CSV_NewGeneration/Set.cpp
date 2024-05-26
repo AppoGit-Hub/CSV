@@ -93,6 +93,7 @@ void create_header(std::ofstream& output_file, const size_t columns_count) {
 			line.user_acceleration_z = AVERAGE_Z;
 		}
 	*/
+		/*
 		// amélioration : changer le paramètres pris en compte : gravité, attitude ou rotation à la place de (acceleration) 
 		//double acceleration = sqrt(pow(line.gravity_x, 2) + pow(line.gravity_y, 2) + pow(line.gravity_z, 2));
 		//double acceleration = sqrt(pow(line.rotation_rate_x, 2) + pow(line.rotation_rate_y, 2) + pow(line.rotation_rate_z, 2));
@@ -101,18 +102,12 @@ void create_header(std::ofstream& output_file, const size_t columns_count) {
 		//double acceleration = line.attitude_pitch;
 		//double acceleration = line.attitude_roll;
 		//double acceleration = line.attitude_yaw;
-
+		//changer avec y ou x 
 		//double acceleration = line.user_acceleration_x;
-		//double acceleration = line.user_acceleration_y;
-		//double acceleration = line.user_acceleration_z;
-
 		//double acceleration = line.rotation_rate_x;
-		//double acceleration = line.rotation_rate_y;
-		//double acceleration = line.rotation_rate_z;
-		
-		double acceleration = line.gravity_z;
-		
-		//double acceleration = sqrt(pow(line.user_acceleration_x, 2) + pow(line.user_acceleration_y, 2) + pow(line.user_acceleration_z, 2));
+		//double acceleration = line.gravity_z; 
+		*/
+		double acceleration = sqrt(pow(line.user_acceleration_x, 2) + pow(line.user_acceleration_y, 2) + pow(line.user_acceleration_z, 2));
 		output_file << DELIMITER << acceleration;
 		total_lines++;
 	}
