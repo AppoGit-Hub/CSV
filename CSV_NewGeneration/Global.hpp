@@ -306,9 +306,11 @@ uint64_t create_set_matrix(
 /// </summary>
 std::vector<std::vector<double>> do_run(
 	const RunParameter& run,
+#if LOGFILE
 	const std::string& trainset_filename,
 	const std::string& testset_filename,
 	const std::string& pattern_filename,
+#endif
 	const std::string& evaluation_filename
 );
 

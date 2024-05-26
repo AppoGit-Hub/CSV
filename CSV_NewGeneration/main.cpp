@@ -8,7 +8,15 @@ void base() {
 	};
 
 	RunParameter run = RunParameter(600, 600, extract, is_extreme);
-	do_run(run, "trainset.csv", "testset.csv", "pattern.csv", "evaluation.csv");
+	do_run(
+		run,
+#if LOGFILE
+		"trainset.csv", 
+		"testset.csv", 
+		"pattern.csv", 
+#endif
+		"evaluation.csv"
+	);
 }
 
 void combination() {
@@ -61,12 +69,22 @@ void combination() {
 
 					std::cout << "Combination: " << combination_name << std::endl;
 
+#if LOGFILE
 					const std::string pattern_filename = "pattern_" + combination_name + ".csv";
 					const std::string testset_filename = "testset_" + combination_name + ".csv";
 					const std::string trainset_filename = "trainset_" + combination_name + ".csv";
+#endif
 					const std::string evaluation_filename = "evalution_" + combination_name + ".csv";
 
-					auto result = do_run(run, trainset_filename, testset_filename, pattern_filename, evaluation_filename);
+					auto result = do_run(
+						run, 
+#if LOGFILE
+						trainset_filename, 
+						testset_filename, 
+						pattern_filename, 
+#endif
+						evaluation_filename
+					);
 					view_result(result, evaluation_filename);
 
 					auto performance = get_performance(result);
